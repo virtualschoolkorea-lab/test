@@ -184,9 +184,28 @@
         }
 
         /* 🌟 가로폭 절약을 위해 gap과 padding 미세 조정 */
-        .checkbox-group {
-            display: flex;
-            flex-wrap: nowrap;
+/* 👇 여기서부터 새로 추가하는 안개 효과 코드 👇 */
+        .filter-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .filter-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 40px; 
+            background: linear-gradient(to right, rgba(250, 250, 250, 0), rgba(250, 250, 250, 1));
+            pointer-events: none; 
+        }
+        /* 👆 여기까지 새로 추가 👆 */
+
+        /* 🌟 가로폭 절약을 위해 gap과 padding 미세 조정 */
+        .checkbox-group {
+            display: flex;
+            flex-wrap: nowrap;
             overflow-x: auto;
             gap: 4px; 
             padding: 8px 10px; 
@@ -350,15 +369,17 @@
             <input type="text" id="search-input" class="search-input" placeholder="검색어를 입력하세요 (예: 도서관, 과학)" onkeyup="applyFilters()">
         </div>
 
-        <div class="tabs">
-            <div class="tab active" onclick="changeTab(this, 'ongoing')">사전예약 중</div>
-            <div class="tab" onclick="changeTab(this, 'always')">상시예약/현장접수</div>
-            <div class="tab" onclick="changeTab(this, 'affiliate')">제휴 이벤트</div>
-        </div>
+<div class="tabs">
+            <div class="tab active" onclick="changeTab(this, 'ongoing')">사전예약 중</div>
+            <div class="tab" onclick="changeTab(this, 'always')">상시예약/현장접수</div>
+            <div class="tab" onclick="changeTab(this, 'affiliate')">제휴 이벤트</div>
+        </div>
 
-        <div class="checkbox-group" id="combined-filter-group">
-            </div>
-    </div>
+        <div class="filter-wrapper">
+            <div class="checkbox-group" id="combined-filter-group">
+            </div>
+        </div>
+            </div>
 
     <div class="content" id="list-container">
         <div class="loading-state">데이터를 불러오는 중입니다... ⏳</div>
