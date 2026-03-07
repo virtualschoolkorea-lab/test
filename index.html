@@ -590,90 +590,91 @@
         });
     }
 
-    // 🌟 지역 필터와 연령 필터를 한 줄에 모두 렌더링하는 함수
-    function generateFilters() {
-        const filterGroup = document.getElementById('combined-filter-group');
-        filterGroup.innerHTML = ''; 
+// 🌟 지역 필터와 연령 필터를 한 줄에 모두 렌더링하는 함수
+    function generateFilters() {
+        const filterGroup = document.getElementById('combined-filter-group');
+        filterGroup.innerHTML = ''; 
 
-        // 1. 지역 데이터를 분석하여 mappedLoc 에 저장
-        const presentLocs = new Set();
-        const fixedLocs = ['청주', '충북', '대전', '세종', '온라인'];
-        const chungbukSubRegions = ['괴산', '음성', '증평', '보은', '옥천', '충주', '제천', '진천', '단양', '영동'];
+        // 1. 지역 데이터를 분석하여 mappedLoc 에 저장 (이 부분은 그대로 유지)
+        const presentLocs = new Set();
+        const fixedLocs = ['청주', '충북', '대전', '세종', '온라인'];
+        const chungbukSubRegions = ['괴산', '음성', '증평', '보은', '옥천', '충주', '제천', '진천', '단양', '영동'];
 
-        eventData.forEach(item => {
-            if (item.loc && item.loc.trim() !== '') {
-                const locText = item.loc.trim();
-                
-                if (chungbukSubRegions.includes(locText) || locText === '충북') {
-                    item.mappedLoc = '충북';
-                } else if (fixedLocs.includes(locText)) {
-                    item.mappedLoc = locText;
-                } else {
-                    // 고정된 5개 지역이나 충북 하위지역이 아니면 모두 '기타'로 묶임 (천안 포함)
-                    item.mappedLoc = '기타';
-                }
-                presentLocs.add(item.mappedLoc);
-            } else {
-                item.mappedLoc = null; // 위치 정보가 아예 없는 경우
-            }
-        });
+        eventData.forEach(item => {
+            if (item.loc && item.loc.trim() !== '') {
+                const locText = item.loc.trim();
+                
+                if (chungbukSubRegions.includes(locText) || locText === '충북') {
+                    item.mappedLoc = '충북';
+                } else if (fixedLocs.includes(locText)) {
+                    item.mappedLoc = locText;
+                } else {
+                    item.mappedLoc = '기타';
+                }
+                presentLocs.add(item.mappedLoc);
+            } else {
+                item.mappedLoc = null; 
+            }
+        });
 
-        // 2. 지역 버튼 렌더링
-        const orderedLocs = [...fixedLocs, '기타'];
-        orderedLocs.forEach((loc, index) => {
-            if (presentLocs.has(loc)) {
-                const id = `loc-dynamic-${index}`;
-                
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.id = id;
-                checkbox.value = loc;
-                checkbox.className = 'filter-cb loc-cb'; 
-                checkbox.onchange = applyFilters;
+        // 👇 여기서부터 순서가 변경되었습니다! 👇
 
-                const label = document.createElement('label');
-                label.htmlFor = id;
-                label.className = 'cb-label';
-                label.innerText = loc;
+        // 2. 연령 버튼 렌더링 (가장 먼저 그려서 왼쪽에 배치)
+        const ageFilters = ['미취학', '초등', '중고등', '성인'];
+        ageFilters.forEach((age, index) => {
+            const id = `age-dynamic-${index}`;
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = id;
+            checkbox.value = age;
+            checkbox.className = 'filter-cb age-cb'; 
+            checkbox.onchange = applyFilters;
 
-                filterGroup.appendChild(checkbox);
-                filterGroup.appendChild(label);
-            }
-        });
+            const label = document.createElement('label');
+            label.htmlFor = id;
+            label.className = 'cb-label age-label';
+            label.innerText = age;
 
-        // 3. 지역과 연령을 구분하는 시각적 분리선 추가 (| 기호)
-        if (presentLocs.size > 0) {
-            const divider = document.createElement('span');
-            divider.innerText = '|';
-            divider.style.color = '#ccc';
-            divider.style.display = 'flex';
-            divider.style.alignItems = 'center';
-            divider.style.fontSize = '0.7rem';
-            divider.style.margin = '0 2px';
-            filterGroup.appendChild(divider);
-        }
+            filterGroup.appendChild(checkbox);
+            filterGroup.appendChild(label);
+        });
 
-        // 4. 연령 버튼 렌더링
-        const ageFilters = ['미취학', '초등', '중고등', '성인'];
-        ageFilters.forEach((age, index) => {
-            const id = `age-dynamic-${index}`;
-            
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.id = id;
-            checkbox.value = age;
-            checkbox.className = 'filter-cb age-cb'; 
-            checkbox.onchange = applyFilters;
+        // 3. 연령과 지역을 구분하는 시각적 분리선 추가 (| 기호)
+        if (presentLocs.size > 0) {
+            const divider = document.createElement('span');
+            divider.innerText = '|';
+            divider.style.color = '#ccc';
+            divider.style.display = 'flex';
+            divider.style.alignItems = 'center';
+            divider.style.fontSize = '0.7rem';
+            divider.style.margin = '0 2px';
+            filterGroup.appendChild(divider);
+        }
 
-            const label = document.createElement('label');
-            label.htmlFor = id;
-            label.className = 'cb-label age-label';
-            label.innerText = age;
+        // 4. 지역 버튼 렌더링 (연령 다음, 즉 오른쪽에 배치)
+        const orderedLocs = [...fixedLocs, '기타'];
+        orderedLocs.forEach((loc, index) => {
+            if (presentLocs.has(loc)) {
+                const id = `loc-dynamic-${index}`;
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = id;
+                checkbox.value = loc;
+                checkbox.className = 'filter-cb loc-cb'; 
+                checkbox.onchange = applyFilters;
 
-            filterGroup.appendChild(checkbox);
-            filterGroup.appendChild(label);
-        });
-    }
+                const label = document.createElement('label');
+                label.htmlFor = id;
+                label.className = 'cb-label';
+                label.innerText = loc;
+
+                filterGroup.appendChild(checkbox);
+                filterGroup.appendChild(label);
+            }
+        });
+    }
 
     function parseDateValue(dateStr) {
         if (!dateStr) return 9999; 
