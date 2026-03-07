@@ -183,31 +183,28 @@
             font-weight: 700;
         }
 
+        /* 🌟 가로폭 절약을 위해 gap과 padding 미세 조정 */
         .checkbox-group {
             display: flex;
             flex-wrap: nowrap;
             overflow-x: auto;
-            gap: 5px; 
-            padding: 8px 12px; 
+            gap: 4px; 
+            padding: 8px 10px; 
             background: #fafafa;
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
-        /* 지역과 연령 필터 구분선 */
-        .checkbox-group.age-group {
-            border-top: 1px dashed #e0e0e0;
-            padding-top: 8px;
-            padding-bottom: 12px;
-        }
-
         .checkbox-group::-webkit-scrollbar { display: none; }
+        
         .filter-cb { display: none; }
+        
+        /* 🌟 버튼 여백과 폰트 크기 줄임 */
         .cb-label {
-            padding: 4px 10px; 
+            padding: 3px 8px; 
             background: #fff;
             border: 1px solid #ddd;
-            border-radius: 16px;
-            font-size: 0.75rem; 
+            border-radius: 14px;
+            font-size: 0.72rem; 
             color: #555;
             cursor: pointer;
             transition: all 0.2s;
@@ -222,7 +219,6 @@
             box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
         }
         
-        /* 연령별 뱃지 스타일 추가 (선택) */
         .filter-cb:checked + .cb-label.age-label {
             background: #ff9800;
             border-color: #ff9800;
@@ -360,22 +356,8 @@
             <div class="tab" onclick="changeTab(this, 'affiliate')">제휴 이벤트</div>
         </div>
 
-        <div class="checkbox-group" id="region-filter-group">
-        </div>
-        
-        <div class="checkbox-group age-group" id="age-filter-group">
-            <input type="checkbox" id="age-pre" value="미취학" onchange="applyFilters()" class="filter-cb age-cb">
-            <label for="age-pre" class="cb-label age-label">미취학</label>
-            
-            <input type="checkbox" id="age-ele" value="초등" onchange="applyFilters()" class="filter-cb age-cb">
-            <label for="age-ele" class="cb-label age-label">초등</label>
-            
-            <input type="checkbox" id="age-mid" value="중고등" onchange="applyFilters()" class="filter-cb age-cb">
-            <label for="age-mid" class="cb-label age-label">중고등</label>
-            
-            <input type="checkbox" id="age-adult" value="성인" onchange="applyFilters()" class="filter-cb age-cb">
-            <label for="age-adult" class="cb-label age-label">성인</label>
-        </div>
+        <div class="checkbox-group" id="combined-filter-group">
+            </div>
     </div>
 
     <div class="content" id="list-container">
@@ -488,8 +470,8 @@
             eventData = parseCSVToJSON(csvText);
             
             processEventDates(); 
-            processEventAges(); // 🌟 엑셀의 ageFilter를 읽어오는 함수
-            generateRegionFilters();
+            processEventAges(); 
+            generateFilters(); // 🌟 함수명 변경 (지역+연령 동시 생성)
             applyFilters();
         } catch (error) {
             console.error("데이터 로딩 실패:", error);
@@ -588,76 +570,105 @@
         });
     }
 
-    // 🌟 엑셀에 새로 만든 'ageFilter' 칸의 글자를 그대로 읽어오는 함수로 수정됨
     function processEventAges() {
         eventData.forEach(item => {
             const mapped = new Set();
             
-            // 엑셀의 ageFilter 열에 글자가 적혀있다면 콤마(,) 기준으로 쪼개서 담기
             if (item.ageFilter && item.ageFilter.trim() !== '') {
                 const filters = item.ageFilter.split(',');
                 filters.forEach(f => {
-                    const cleanF = f.trim(); // 띄어쓰기 제거
+                    const cleanF = f.trim(); 
                     if (cleanF) mapped.add(cleanF);
                 });
             }
             
-            // 만약 ageFilter 칸이 비어있다면, 아예 화면에서 사라지면 안 되니까 모든 필터에서 보이게 기본값 설정
             if (mapped.size === 0) {
                 mapped.add('미취학').add('초등').add('중고등').add('성인');
             }
             
-            // 분석된 배열을 저장해둠
             item.mappedAges = Array.from(mapped);
         });
     }
 
-    function generateRegionFilters() {
-        const filterGroup = document.getElementById('region-filter-group');
+    // 🌟 지역 필터와 연령 필터를 한 줄에 모두 렌더링하는 함수
+    function generateFilters() {
+        const filterGroup = document.getElementById('combined-filter-group');
         filterGroup.innerHTML = ''; 
 
-        const uniqueLocs = new Set();
-        
+        // 1. 지역 데이터를 분석하여 mappedLoc 에 저장
+        const presentLocs = new Set();
+        const fixedLocs = ['청주', '충북', '대전', '세종', '온라인'];
         const chungbukSubRegions = ['괴산', '음성', '증평', '보은', '옥천', '충주', '제천', '진천', '단양', '영동'];
 
         eventData.forEach(item => {
             if (item.loc && item.loc.trim() !== '') {
                 const locText = item.loc.trim();
-                if (chungbukSubRegions.includes(locText)) {
-                    uniqueLocs.add('충북');
+                
+                if (chungbukSubRegions.includes(locText) || locText === '충북') {
+                    item.mappedLoc = '충북';
+                } else if (fixedLocs.includes(locText)) {
+                    item.mappedLoc = locText;
                 } else {
-                    uniqueLocs.add(locText);
+                    // 고정된 5개 지역이나 충북 하위지역이 아니면 모두 '기타'로 묶임 (천안 포함)
+                    item.mappedLoc = '기타';
                 }
+                presentLocs.add(item.mappedLoc);
+            } else {
+                item.mappedLoc = null; // 위치 정보가 아예 없는 경우
             }
         });
 
-        const fixedOrder = ['청주', '충북', '대전', '세종', '온라인'];
-        const presentFixedLocs = [];
-        
-        fixedOrder.forEach(loc => {
-            if (uniqueLocs.has(loc)) {
-                presentFixedLocs.push(loc);
-                uniqueLocs.delete(loc); 
+        // 2. 지역 버튼 렌더링
+        const orderedLocs = [...fixedLocs, '기타'];
+        orderedLocs.forEach((loc, index) => {
+            if (presentLocs.has(loc)) {
+                const id = `loc-dynamic-${index}`;
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = id;
+                checkbox.value = loc;
+                checkbox.className = 'filter-cb loc-cb'; 
+                checkbox.onchange = applyFilters;
+
+                const label = document.createElement('label');
+                label.htmlFor = id;
+                label.className = 'cb-label';
+                label.innerText = loc;
+
+                filterGroup.appendChild(checkbox);
+                filterGroup.appendChild(label);
             }
         });
 
-        const sortedOtherLocs = Array.from(uniqueLocs).sort();
-        const finalLocs = [...presentFixedLocs, ...sortedOtherLocs];
+        // 3. 지역과 연령을 구분하는 시각적 분리선 추가 (| 기호)
+        if (presentLocs.size > 0) {
+            const divider = document.createElement('span');
+            divider.innerText = '|';
+            divider.style.color = '#ccc';
+            divider.style.display = 'flex';
+            divider.style.alignItems = 'center';
+            divider.style.fontSize = '0.7rem';
+            divider.style.margin = '0 2px';
+            filterGroup.appendChild(divider);
+        }
 
-        finalLocs.forEach((loc, index) => {
-            const id = `loc-dynamic-${index}`;
+        // 4. 연령 버튼 렌더링
+        const ageFilters = ['미취학', '초등', '중고등', '성인'];
+        ageFilters.forEach((age, index) => {
+            const id = `age-dynamic-${index}`;
             
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.id = id;
-            checkbox.value = loc;
-            checkbox.className = 'filter-cb loc-cb'; 
+            checkbox.value = age;
+            checkbox.className = 'filter-cb age-cb'; 
             checkbox.onchange = applyFilters;
 
             const label = document.createElement('label');
             label.htmlFor = id;
-            label.className = 'cb-label';
-            label.innerText = loc;
+            label.className = 'cb-label age-label';
+            label.innerText = age;
 
             filterGroup.appendChild(checkbox);
             filterGroup.appendChild(label);
@@ -707,20 +718,12 @@
         let filteredData = eventData.filter(item => {
             const matchTab = item.type === currentTab;
             
+            // 🌟 지역 필터 로직: 사전에 분류해둔 mappedLoc으로 깔끔하게 매칭
             let matchLoc = false;
             if (selectedLocs.length === 0) {
                 matchLoc = true; 
             } else {
-                let expandedLocs = [];
-                const chungbukSubRegions = ['괴산', '음성', '증평', '보은', '옥천', '충주', '제천', '진천', '단양', '영동'];
-                
-                selectedLocs.forEach(loc => {
-                    expandedLocs.push(loc);
-                    if (loc === '충북') {
-                        expandedLocs.push(...chungbukSubRegions);
-                    }
-                });
-                matchLoc = expandedLocs.some(locStr => item.loc && item.loc.includes(locStr));
+                matchLoc = selectedLocs.some(loc => item.mappedLoc === loc);
             }
 
             let matchAge = false;
@@ -730,6 +733,7 @@
                 matchAge = selectedAges.some(age => item.mappedAges && item.mappedAges.includes(age));
             }
 
+            // 검색어 매칭 시에는 엑셀 원본 loc(예: 천안, 부산 등)을 검색할 수 있게 유지
             let matchSearch = true;
             if (keyword) {
                 matchSearch = (item.title && item.title.toLowerCase().includes(keyword)) ||
