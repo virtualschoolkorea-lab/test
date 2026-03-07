@@ -571,25 +571,56 @@
         filterGroup.innerHTML = ''; // 초기화
 
         const uniqueLocs = new Set();
+        
+        // 🌟 1. 충북으로 묶을 하위 지역들 사전에 정의
+        const chungbukSubRegions = ['괴산', '음성', '증평', '보은', '옥천', '충주', '제천', '진천', '단양', '영동'];
+
         eventData.forEach(item => {
             if (item.loc && item.loc.trim() !== '') {
-                // 엑셀에 적힌 텍스트 그대로 수집 (중복 자동 제거)
-                uniqueLocs.add(item.loc.trim());
+                const locText = item.loc.trim();
+                
+                // 🌟 2. 엑셀에 적힌 지역이 충북 하위 지역 중 하나라면 '충북'으로 통합
+                if (chungbukSubRegions.includes(locText)) {
+                    uniqueLocs.add('충북');
+                } else {
+                    uniqueLocs.add(locText);
+                }
             }
         });
 
-        // 🌟 맨 왼쪽에 고정할 지역 순서 정의
+        // 맨 왼쪽에 고정할 지역 순서 정의
         const fixedOrder = ['청주', '충북', '대전', '세종', '온라인'];
-        
         const presentFixedLocs = [];
         
-        // 1. 고정할 지역이 엑셀 데이터에 존재하면, 지정한 순서대로 배열에 담고 Set에서는 지움
         fixedOrder.forEach(loc => {
             if (uniqueLocs.has(loc)) {
                 presentFixedLocs.push(loc);
                 uniqueLocs.delete(loc); 
             }
         });
+
+        const sortedOtherLocs = Array.from(uniqueLocs).sort();
+        const finalLocs = [...presentFixedLocs, ...sortedOtherLocs];
+
+        finalLocs.forEach((loc, index) => {
+            const id = `loc-dynamic-${index}`;
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = id;
+            checkbox.value = loc;
+            checkbox.className = 'filter-cb';
+            checkbox.onchange = applyFilters;
+
+            const label = document.createElement('label');
+            label.htmlFor = id;
+            label.className = 'cb-label';
+            label.innerText = loc;
+
+            filterGroup.appendChild(checkbox);
+            filterGroup.appendChild(label);
+        });
+    }
 
         // 2. 우선순위에 없는 나머지 지역들만 가나다순으로 정렬
         const sortedOtherLocs = Array.from(uniqueLocs).sort();
@@ -659,16 +690,25 @@
         let filteredData = eventData.filter(item => {
             const matchTab = item.type === currentTab;
             
-            // 🌟 수정된 지역 매칭 로직
+// 🌟 수정된 지역 매칭 로직 (하위 지역 포함 검색)
             let matchLoc = false;
             if (selectedLocs.length === 0) {
                 matchLoc = true; // 아무것도 선택 안 했으면 모두 보여줌
             } else {
-                // 선택한 버튼의 이름(value)이 엑셀의 지역(loc)과 일치하거나 포함되는지 확인
-                matchLoc = selectedLocs.some(locStr => item.loc && item.loc.includes(locStr));
-            }
+                let expandedLocs = [];
+                const chungbukSubRegions = ['괴산', '음성', '증평', '보은', '옥천', '충주', '제천', '진천', '단양', '영동'];
+                
+                selectedLocs.forEach(loc => {
+                    expandedLocs.push(loc);
+                    // 🌟 '충북' 필터를 선택했다면 검색어 목록에 하위 지역들을 전부 추가
+                    if (loc === '충북') {
+                        expandedLocs.push(...chungbukSubRegions);
+                    }
+                });
 
-            let matchSearch = true;
+                // 확장된 검색어(expandedLocs) 중 하나라도 엑셀 지역(item.loc)에 포함되면 표시
+                matchLoc = expandedLocs.some(locStr => item.loc && item.loc.includes(locStr));
+            }
             if (keyword) {
                 matchSearch = (item.title && item.title.toLowerCase().includes(keyword)) ||
                               (item.place && item.place.toLowerCase().includes(keyword)) ||
