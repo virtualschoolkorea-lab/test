@@ -565,7 +565,7 @@
         });
     }
 
-    // 🌟 엑셀 데이터에서 지역(loc)을 뽑아내어 필터 버튼을 자동 생성하는 함수
+// 🌟 엑셀 데이터에서 지역(loc)을 뽑아내어 필터 버튼을 자동 생성하는 함수
     function generateRegionFilters() {
         const filterGroup = document.getElementById('region-filter-group');
         filterGroup.innerHTML = ''; // 초기화
@@ -578,11 +578,27 @@
             }
         });
 
-        // 가나다순으로 정렬
-        const sortedLocs = Array.from(uniqueLocs).sort();
+        // 🌟 맨 왼쪽에 고정할 지역 순서 정의
+        const fixedOrder = ['청주', '충북', '대전', '세종', '온라인'];
+        
+        const presentFixedLocs = [];
+        
+        // 1. 고정할 지역이 엑셀 데이터에 존재하면, 지정한 순서대로 배열에 담고 Set에서는 지움
+        fixedOrder.forEach(loc => {
+            if (uniqueLocs.has(loc)) {
+                presentFixedLocs.push(loc);
+                uniqueLocs.delete(loc); 
+            }
+        });
+
+        // 2. 우선순위에 없는 나머지 지역들만 가나다순으로 정렬
+        const sortedOtherLocs = Array.from(uniqueLocs).sort();
+
+        // 3. 고정 지역 배열 + 나머지 지역 배열 합치기
+        const finalLocs = [...presentFixedLocs, ...sortedOtherLocs];
 
         // 체크박스와 라벨(버튼) HTML 생성
-        sortedLocs.forEach((loc, index) => {
+        finalLocs.forEach((loc, index) => {
             const id = `loc-dynamic-${index}`;
             
             const checkbox = document.createElement('input');
