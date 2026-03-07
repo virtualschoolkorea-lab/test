@@ -346,24 +346,7 @@
             <div class="tab" onclick="changeTab(this, 'affiliate')">제휴 이벤트</div>
         </div>
 
-        <div class="checkbox-group">
-            <input type="checkbox" id="loc-cj" value="청주" onchange="applyFilters()" class="filter-cb">
-            <label for="loc-cj" class="cb-label">청주</label>
-            
-            <input type="checkbox" id="loc-sj" value="세종" onchange="applyFilters()" class="filter-cb">
-            <label for="loc-sj" class="cb-label">세종</label>
-            
-            <input type="checkbox" id="loc-dj" value="대전" onchange="applyFilters()" class="filter-cb">
-            <label for="loc-dj" class="cb-label">대전</label>
-            
-            <input type="checkbox" id="loc-ca" value="천안" onchange="applyFilters()" class="filter-cb">
-            <label for="loc-ca" class="cb-label">천안</label>
-            
-            <input type="checkbox" id="loc-cb" value="충북" onchange="applyFilters()" class="filter-cb">
-            <label for="loc-cb" class="cb-label">충북 (증평/진천/음성)</label>
-            
-            <input type="checkbox" id="loc-on" value="온라인" onchange="applyFilters()" class="filter-cb">
-            <label for="loc-on" class="cb-label">온라인/비대면</label>
+        <div class="checkbox-group" id="region-filter-group">
         </div>
     </div>
 
@@ -479,6 +462,7 @@
             eventData = parseCSVToJSON(csvText);
             
             processEventDates(); 
+            generateRegionFilters(); // 🌟 동적 필터 생성 호출
             applyFilters();
         } catch (error) {
             console.error("데이터 로딩 실패:", error);
@@ -581,6 +565,43 @@
         });
     }
 
+    // 🌟 엑셀 데이터에서 지역(loc)을 뽑아내어 필터 버튼을 자동 생성하는 함수
+    function generateRegionFilters() {
+        const filterGroup = document.getElementById('region-filter-group');
+        filterGroup.innerHTML = ''; // 초기화
+
+        const uniqueLocs = new Set();
+        eventData.forEach(item => {
+            if (item.loc && item.loc.trim() !== '') {
+                // 엑셀에 적힌 텍스트 그대로 수집 (중복 자동 제거)
+                uniqueLocs.add(item.loc.trim());
+            }
+        });
+
+        // 가나다순으로 정렬
+        const sortedLocs = Array.from(uniqueLocs).sort();
+
+        // 체크박스와 라벨(버튼) HTML 생성
+        sortedLocs.forEach((loc, index) => {
+            const id = `loc-dynamic-${index}`;
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = id;
+            checkbox.value = loc;
+            checkbox.className = 'filter-cb';
+            checkbox.onchange = applyFilters; // 클릭 시 필터링 실행
+
+            const label = document.createElement('label');
+            label.htmlFor = id;
+            label.className = 'cb-label';
+            label.innerText = loc;
+
+            filterGroup.appendChild(checkbox);
+            filterGroup.appendChild(label);
+        });
+    }
+
     function parseDateValue(dateStr) {
         if (!dateStr) return 9999; 
         
@@ -622,17 +643,13 @@
         let filteredData = eventData.filter(item => {
             const matchTab = item.type === currentTab;
             
+            // 🌟 수정된 지역 매칭 로직
             let matchLoc = false;
             if (selectedLocs.length === 0) {
-                matchLoc = true; 
+                matchLoc = true; // 아무것도 선택 안 했으면 모두 보여줌
             } else {
-                let expandedLocs = [];
-                selectedLocs.forEach(loc => {
-                    expandedLocs.push(loc);
-                    if (loc === '충북') expandedLocs.push('증평', '진천', '음성');
-                    if (loc === '온라인') expandedLocs.push('비대면', 'ZOOM');
-                });
-                matchLoc = expandedLocs.some(locStr => item.loc && item.loc.includes(locStr));
+                // 선택한 버튼의 이름(value)이 엑셀의 지역(loc)과 일치하거나 포함되는지 확인
+                matchLoc = selectedLocs.some(locStr => item.loc && item.loc.includes(locStr));
             }
 
             let matchSearch = true;
@@ -724,7 +741,7 @@
         initLastUpdated();
         initVisitCounters();
         
-        // 🌟 수정됨: DOM 로드 완료 후 데이터를 불러옵니다.
+        // DOM 로드 완료 후 데이터를 불러옵니다.
         fetchEventData(); 
     });
 </script>
