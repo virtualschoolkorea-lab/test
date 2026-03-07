@@ -708,7 +708,7 @@
 
                 // 확장된 검색어(expandedLocs) 중 하나라도 엑셀 지역(item.loc)에 포함되면 표시
                 matchLoc = expandedLocs.some(locStr => item.loc && item.loc.includes(locStr));
-            }
+            
             if (keyword) {
                 matchSearch = (item.title && item.title.toLowerCase().includes(keyword)) ||
                               (item.place && item.place.toLowerCase().includes(keyword)) ||
