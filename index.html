@@ -45,7 +45,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
-/* 🌟 헤더 영역 */
+        /* 🌟 헤더 영역 */
         header {
             background-color: var(--primary-color);
             color: white;
@@ -448,10 +448,8 @@
         }
     }
 
-    // 전역 변수로 데이터 선언
     let eventData = [];
 
-    // 구글 시트 데이터 가져오기 및 파싱
     async function fetchEventData() {
         const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQV-02F-qXwS6yLb_XScKqwYj1N0qImwofY2Pyj2tvwnW0i1tl995_BjOfaVHpayppk6YYhqpdLrpa9/pub?output=csv";
         try {
@@ -462,7 +460,7 @@
             eventData = parseCSVToJSON(csvText);
             
             processEventDates(); 
-            generateRegionFilters(); // 🌟 동적 필터 생성 호출
+            generateRegionFilters();
             applyFilters();
         } catch (error) {
             console.error("데이터 로딩 실패:", error);
@@ -470,7 +468,6 @@
         }
     }
 
-    // CSV 문자열을 JSON(배열 객체)으로 변환하는 함수 (따옴표 예외처리 포함)
     function parseCSVToJSON(csv) {
         const rows = [];
         let row = [];
@@ -483,7 +480,7 @@
             
             if (char === '"' && insideQuotes && nextChar === '"') {
                 curr += '"';
-                i++; // 다음 따옴표 건너뛰기
+                i++;
             } else if (char === '"') {
                 insideQuotes = !insideQuotes;
             } else if (char === ',' && !insideQuotes) {
@@ -494,12 +491,11 @@
                 rows.push(row);
                 row = [];
                 curr = '';
-                if (char === '\r') i++; // \n 건너뛰기
+                if (char === '\r') i++;
             } else {
                 curr += char;
             }
         }
-        // 마지막 항목 처리
         if (curr !== '' || row.length > 0) {
             row.push(curr);
             rows.push(row);
@@ -511,7 +507,6 @@
         const data = [];
         
         for (let i = 1; i < rows.length; i++) {
-            // 빈 행 건너뛰기
             if (rows[i].length === 1 && rows[i][0].trim() === '') continue; 
             
             const obj = {};
@@ -520,7 +515,6 @@
                     obj[headers[j]] = rows[i][j] ? rows[i][j].trim() : '';
                 }
             }
-            // 데이터가 있는 경우만 배열에 추가
             if (obj.type || obj.title) data.push(obj);
         }
         return data;
@@ -565,21 +559,21 @@
         });
     }
 
-// 🌟 엑셀 데이터에서 지역(loc)을 뽑아내어 필터 버튼을 자동 생성하는 함수
+    // 🌟 엑셀 데이터에서 지역(loc)을 뽑아내어 필터 버튼을 자동 생성하는 함수
     function generateRegionFilters() {
         const filterGroup = document.getElementById('region-filter-group');
         filterGroup.innerHTML = ''; // 초기화
 
         const uniqueLocs = new Set();
         
-        // 🌟 1. 충북으로 묶을 하위 지역들 사전에 정의
+        // 1. 충북으로 묶을 하위 지역들 사전에 정의
         const chungbukSubRegions = ['괴산', '음성', '증평', '보은', '옥천', '충주', '제천', '진천', '단양', '영동'];
 
         eventData.forEach(item => {
             if (item.loc && item.loc.trim() !== '') {
                 const locText = item.loc.trim();
                 
-                // 🌟 2. 엑셀에 적힌 지역이 충북 하위 지역 중 하나라면 '충북'으로 통합
+                // 2. 엑셀에 적힌 지역이 충북 하위 지역 중 하나라면 '충북'으로 통합
                 if (chungbukSubRegions.includes(locText)) {
                     uniqueLocs.add('충북');
                 } else {
@@ -599,33 +593,10 @@
             }
         });
 
-        const sortedOtherLocs = Array.from(uniqueLocs).sort();
-        const finalLocs = [...presentFixedLocs, ...sortedOtherLocs];
-
-        finalLocs.forEach((loc, index) => {
-            const id = `loc-dynamic-${index}`;
-            
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.id = id;
-            checkbox.value = loc;
-            checkbox.className = 'filter-cb';
-            checkbox.onchange = applyFilters;
-
-            const label = document.createElement('label');
-            label.htmlFor = id;
-            label.className = 'cb-label';
-            label.innerText = loc;
-
-            filterGroup.appendChild(checkbox);
-            filterGroup.appendChild(label);
-        });
-    }
-
-        // 2. 우선순위에 없는 나머지 지역들만 가나다순으로 정렬
+        // 우선순위에 없는 나머지 지역들만 가나다순으로 정렬
         const sortedOtherLocs = Array.from(uniqueLocs).sort();
 
-        // 3. 고정 지역 배열 + 나머지 지역 배열 합치기
+        // 고정 지역 배열 + 나머지 지역 배열 합치기
         const finalLocs = [...presentFixedLocs, ...sortedOtherLocs];
 
         // 체크박스와 라벨(버튼) HTML 생성
@@ -637,7 +608,7 @@
             checkbox.id = id;
             checkbox.value = loc;
             checkbox.className = 'filter-cb';
-            checkbox.onchange = applyFilters; // 클릭 시 필터링 실행
+            checkbox.onchange = applyFilters;
 
             const label = document.createElement('label');
             label.htmlFor = id;
@@ -684,31 +655,31 @@
         const container = document.getElementById('list-container');
         container.innerHTML = '';
 
-        // 배열이 비어있으면 아직 데이터가 안불러진 상태
         if (eventData.length === 0) return;
 
         let filteredData = eventData.filter(item => {
             const matchTab = item.type === currentTab;
             
-// 🌟 수정된 지역 매칭 로직 (하위 지역 포함 검색)
+            // 🌟 수정된 지역 매칭 로직 (하위 지역 포함 검색)
             let matchLoc = false;
             if (selectedLocs.length === 0) {
-                matchLoc = true; // 아무것도 선택 안 했으면 모두 보여줌
+                matchLoc = true; 
             } else {
                 let expandedLocs = [];
                 const chungbukSubRegions = ['괴산', '음성', '증평', '보은', '옥천', '충주', '제천', '진천', '단양', '영동'];
                 
                 selectedLocs.forEach(loc => {
                     expandedLocs.push(loc);
-                    // 🌟 '충북' 필터를 선택했다면 검색어 목록에 하위 지역들을 전부 추가
                     if (loc === '충북') {
                         expandedLocs.push(...chungbukSubRegions);
                     }
                 });
 
-                // 확장된 검색어(expandedLocs) 중 하나라도 엑셀 지역(item.loc)에 포함되면 표시
                 matchLoc = expandedLocs.some(locStr => item.loc && item.loc.includes(locStr));
-            
+            }
+
+            // 🌟 누락되었던 검색어 검사 로직 복구
+            let matchSearch = true;
             if (keyword) {
                 matchSearch = (item.title && item.title.toLowerCase().includes(keyword)) ||
                               (item.place && item.place.toLowerCase().includes(keyword)) ||
@@ -797,7 +768,6 @@
         initLastUpdated();
         initVisitCounters();
         
-        // DOM 로드 완료 후 데이터를 불러옵니다.
         fetchEventData(); 
     });
 </script>
