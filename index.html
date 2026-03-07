@@ -11,7 +11,6 @@
     <meta property="og:image" content="https://heycj.vercel.app/og-image.png"> 
 
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
         :root {
             --primary-color: #4CAF50;
@@ -46,6 +45,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
+/* 🌟 헤더 영역 */
         header {
             background-color: var(--primary-color);
             color: white;
@@ -283,15 +283,6 @@
         
         .title { font-size: 1.05rem; font-weight: 700; margin: 0 0 10px 0; line-height: 1.4; word-break: keep-all; }
         
-        .info-wrapper {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 12px;
-        }
-        .info-text-group {
-            flex: 1;
-        }
         .info-row {
             font-size: 0.85rem;
             color: var(--text-sub);
@@ -302,105 +293,29 @@
         .info-label { font-weight: 500; width: 65px; flex-shrink: 0; color: #555; line-height: 1.4; }
         .info-desc { flex: 1; word-break: keep-all; line-height: 1.4; }
         
-        .info-thumbnail {
-            width: 80px;
-            height: 110px; 
-            flex-shrink: 0;
-            border-radius: 8px;
-            overflow: hidden;
-            position: relative;
-            cursor: pointer;
-            border: 1px solid #eee;
-            background-color: #f9f9f9;
-            transform: translate(-10px, -5px);
-        }
-        .info-thumbnail img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            display: block;
-        }
-        .plus-overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0, 0, 0, 0.25); 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 28px;
-            font-weight: 300;
-            transition: background-color 0.2s;
-        }
-        .info-thumbnail:hover .plus-overlay {
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-
         .btn-link {
             display: block;
             text-align: center;
             background-color: var(--primary-color);
             color: white;
             text-decoration: none;
-            padding: 8px 12px;
+            padding: 12px;
             border-radius: 6px;
             font-size: 0.9rem;
             font-weight: 700;
-            margin-top: 12px;
+            margin-top: 15px;
             transition: background-color 0.2s;
         }
         .btn-link:hover { background-color: #388E3C; }
         .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; }
-
-        .image-modal {
-            display: none; 
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            box-sizing: border-box;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .image-modal.active {
-            display: flex;
-            opacity: 1;
-        }
-        .image-modal img {
-            max-width: 100%;
-            max-height: 90vh;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            transform: scale(0.95);
-            transition: transform 0.3s;
-        }
-        .image-modal.active img {
-            transform: scale(1);
-        }
-        .modal-close-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: white;
-            font-size: 36px;
-            font-weight: 300;
-            cursor: pointer;
-            line-height: 1;
-            z-index: 10000;
-        }
-        .loading-spinner {
-            text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem;
-        }
+        .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <div class="sticky-wrapper">
-        <header id="app-header">
+    <header id="app-header">
             <h1>헤이청주 📢 교육/체험 링크모음</h1>
             <div class="sub-header" id="last-updated-text">최근 업데이트: 계산중...</div>
             
@@ -453,22 +368,11 @@
     </div>
 
     <div class="content" id="list-container">
-        <div class="loading-spinner">데이터를 불러오는 중입니다...⏳</div>
+        <div class="loading-state">데이터를 불러오는 중입니다... ⏳</div>
     </div>
 </div>
 
-<div id="image-modal" class="image-modal" onclick="closeImageModal()">
-    <span class="modal-close-btn">&times;</span>
-    <img id="modal-img" src="" alt="확대된 이미지" onclick="event.stopPropagation()">
-</div>
-
 <script>
-    // 👇👇👇 여기에 2단계에서 복사한 CSV 링크를 붙여넣으세요! 👇👇👇
-    const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQV-02F-qXwS6yLb_XScKqwYj1N0qImwofY2Pyj2tvwnW0i1tl995_BjOfaVHpayppk6YYhqpdLrpa9/pub?output=csv"; 
-    
-    // 이 배열에 구글 시트 데이터가 담기게 됩니다.
-    let eventData = [];
-
     const noticeData = [
         { 
             text: "[⚡내일오픈/마감,긴급정보 실시간 알림 오픈챗 입장하기👆] ", 
@@ -561,45 +465,81 @@
         }
     }
 
-    function openImageModal(imgUrl) {
-        const modal = document.getElementById('image-modal');
-        const modalImg = document.getElementById('modal-img');
-        modalImg.src = imgUrl;
-        modal.style.display = 'flex';
-        setTimeout(() => modal.classList.add('active'), 10);
-    }
+    // 전역 변수로 데이터 선언
+    let eventData = [];
 
-    function closeImageModal() {
-        const modal = document.getElementById('image-modal');
-        modal.classList.remove('active');
-        setTimeout(() => {
-            modal.style.display = 'none';
-            document.getElementById('modal-img').src = '';
-        }, 300);
-    }
-
-    // 🌟 구글 시트에서 데이터를 불러오는 함수
-    function loadDataFromSheet() {
-        if (SHEET_CSV_URL === "여기에_구글시트_CSV_링크를_붙여넣으세요") {
-            document.getElementById('list-container').innerHTML = '<div class="empty-state">⚠️ HTML 코드 상단에 구글 시트 링크를 입력해주세요.</div>';
-            return;
+    // 구글 시트 데이터 가져오기 및 파싱
+    async function fetchEventData() {
+        const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQV-02F-qXwS6yLb_XScKqwYj1N0qImwofY2Pyj2tvwnW0i1tl995_BjOfaVHpayppk6YYhqpdLrpa9/pub?output=csv";
+        try {
+            const response = await fetch(csvUrl);
+            if (!response.ok) throw new Error("네트워크 응답이 올바르지 않습니다.");
+            
+            const csvText = await response.text();
+            eventData = parseCSVToJSON(csvText);
+            
+            processEventDates(); 
+            applyFilters();
+        } catch (error) {
+            console.error("데이터 로딩 실패:", error);
+            document.getElementById('list-container').innerHTML = '<div class="empty-state">행사 정보를 불러오는데 실패했습니다. 새로고침을 해주세요. 😥</div>';
         }
+    }
 
-        Papa.parse(SHEET_CSV_URL, {
-            download: true,
-            header: true,
-            complete: function(results) {
-                // 빈 줄 필터링
-                eventData = results.data.filter(item => item.title && item.title.trim() !== "");
-                
-                processEventDates();
-                applyFilters();
-            },
-            error: function(err) {
-                console.error("데이터 로드 실패:", err);
-                document.getElementById('list-container').innerHTML = '<div class="empty-state">데이터를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.</div>';
+    // CSV 문자열을 JSON(배열 객체)으로 변환하는 함수 (따옴표 예외처리 포함)
+    function parseCSVToJSON(csv) {
+        const rows = [];
+        let row = [];
+        let curr = '';
+        let insideQuotes = false;
+        
+        for (let i = 0; i < csv.length; i++) {
+            const char = csv[i];
+            const nextChar = csv[i + 1];
+            
+            if (char === '"' && insideQuotes && nextChar === '"') {
+                curr += '"';
+                i++; // 다음 따옴표 건너뛰기
+            } else if (char === '"') {
+                insideQuotes = !insideQuotes;
+            } else if (char === ',' && !insideQuotes) {
+                row.push(curr);
+                curr = '';
+            } else if ((char === '\n' || (char === '\r' && nextChar === '\n')) && !insideQuotes) {
+                row.push(curr);
+                rows.push(row);
+                row = [];
+                curr = '';
+                if (char === '\r') i++; // \n 건너뛰기
+            } else {
+                curr += char;
             }
-        });
+        }
+        // 마지막 항목 처리
+        if (curr !== '' || row.length > 0) {
+            row.push(curr);
+            rows.push(row);
+        }
+        
+        if (rows.length < 2) return [];
+        
+        const headers = rows[0].map(h => h.trim());
+        const data = [];
+        
+        for (let i = 1; i < rows.length; i++) {
+            // 빈 행 건너뛰기
+            if (rows[i].length === 1 && rows[i][0].trim() === '') continue; 
+            
+            const obj = {};
+            for (let j = 0; j < headers.length; j++) {
+                if (headers[j]) {
+                    obj[headers[j]] = rows[i][j] ? rows[i][j].trim() : '';
+                }
+            }
+            // 데이터가 있는 경우만 배열에 추가
+            if (obj.type || obj.title) data.push(obj);
+        }
+        return data;
     }
 
     function processEventDates() {
@@ -663,6 +603,7 @@
         element.classList.add('active');
         currentTab = type;
         applyFilters(); 
+        
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -674,6 +615,9 @@
 
         const container = document.getElementById('list-container');
         container.innerHTML = '';
+
+        // 배열이 비어있으면 아직 데이터가 안불러진 상태
+        if (eventData.length === 0) return;
 
         let filteredData = eventData.filter(item => {
             const matchTab = item.type === currentTab;
@@ -688,7 +632,6 @@
                     if (loc === '충북') expandedLocs.push('증평', '진천', '음성');
                     if (loc === '온라인') expandedLocs.push('비대면', 'ZOOM');
                 });
-                // 구글 시트에서 빈칸은 빈 문자열("")로 들어옵니다.
                 matchLoc = expandedLocs.some(locStr => item.loc && item.loc.includes(locStr));
             }
 
@@ -747,14 +690,9 @@
                 `;
             }
 
-            let thumbnailHTML = '';
-            if (item.imgUrl) {
-                thumbnailHTML = `
-                    <div class="info-thumbnail" onclick="openImageModal('${item.imgUrl}')">
-                        <img src="${item.imgUrl}" alt="썸네일">
-                        <div class="plus-overlay">+</div>
-                    </div>
-                `;
+            let linkAttr = `href="${item.link || '#'}"`;
+            if (item.link && item.link.toLowerCase().startsWith('javascript:')) {
+                linkAttr = `href="#" onclick="${item.link.replace('javascript:', '')}"`;
             }
 
             const cardHTML = `
@@ -768,18 +706,11 @@
                             <span class="badge ${costBadgeClass}">${safeCost}</span> 
                         </div>
                     </div>
-                    
-                    <div class="info-wrapper">
-                        <div class="info-text-group">
-                            <h2 class="title">${item.title || ''}</h2>
-                            <div class="info-row"><div class="info-label">장소</div><div class="info-desc">${item.place || ''}</div></div>
-                            <div class="info-row"><div class="info-label">접수기간</div><div class="info-desc" style="${applyTextStyle}">${item.displayText}</div></div>
-                            <div class="info-row"><div class="info-label">운영일정</div><div class="info-desc">${item.date || '해당정보 없음'}</div></div>
-                        </div>
-                        ${thumbnailHTML}
-                    </div>
-                    
-                    <a href="${item.link || '#'}" ${item.type !== 'affiliate' ? 'target="_blank"' : ''} class="btn-link">
+                    <h2 class="title">${item.title || ''}</h2>
+                    <div class="info-row"><div class="info-label">장소</div><div class="info-desc">${item.place || ''}</div></div>
+                    <div class="info-row"><div class="info-label">접수기간</div><div class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</div></div>
+                    <div class="info-row"><div class="info-label">운영일정</div><div class="info-desc">${item.date || '해당정보 없음'}</div></div>
+                    <a ${linkAttr} ${item.type !== 'affiliate' && !item.link?.includes('javascript:') ? 'target="_blank"' : ''} class="btn-link">
                         ${item.type === 'affiliate' ? '제휴 혜택 확인하기 🎁' : '상세보기 및 예약 ↗'}
                     </a>
                 </div>
@@ -792,8 +723,9 @@
         initNotice(); 
         initLastUpdated();
         initVisitCounters();
-        // 🌟 렌더링 대신 데이터 로딩을 가장 먼저 실행
-        loadDataFromSheet(); 
+        
+        // 🌟 수정됨: DOM 로드 완료 후 데이터를 불러옵니다.
+        fetchEventData(); 
     });
 </script>
 
