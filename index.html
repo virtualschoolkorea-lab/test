@@ -488,7 +488,7 @@
             eventData = parseCSVToJSON(csvText);
             
             processEventDates(); 
-            processEventAges(); // 🌟 연령 데이터 분석 함수 실행
+            processEventAges(); // 🌟 엑셀의 ageFilter를 읽어오는 함수
             generateRegionFilters();
             applyFilters();
         } catch (error) {
@@ -588,33 +588,21 @@
         });
     }
 
-    // 🌟 엑셀에 적힌 연령(age) 문구를 분석해서 '미취학/초등/중고등/성인'으로 맵핑하는 함수
+    // 🌟 엑셀에 새로 만든 'ageFilter' 칸의 글자를 그대로 읽어오는 함수로 수정됨
     function processEventAges() {
         eventData.forEach(item => {
-            const ageStr = (item.age || '').toLowerCase();
             const mapped = new Set();
             
-            // 1. 전연령 포함 단어 (모든 연령대 필터에 다 노출)
-            if (ageStr.match(/누구나|가족|전연령|시민|전체|제한없음/)) {
-                mapped.add('미취학').add('초등').add('중고등').add('성인');
-            } else {
-                // 2. 키워드별 연령대 매칭
-                if (ageStr.match(/유아|미취학|영유아|유치원|어린이집|[4-7]세|[4-7]살/)) {
-                    mapped.add('미취학');
-                }
-                if (ageStr.match(/초등|어린이|아동|초[1-6]|[8-9]세|1[0-3]세|[8-9]살|1[0-3]살/)) {
-                    mapped.add('초등');
-                }
-                if (ageStr.match(/중등|고등|청소년|중학생|고등학생|1[4-9]세|1[4-9]살/)) {
-                    mapped.add('중고등');
-                }
-                if (ageStr.match(/성인|일반|대학생|학부모|교사|어르신|노인|시니어|직장인|임산부/)) {
-                    mapped.add('성인');
-                }
+            // 엑셀의 ageFilter 열에 글자가 적혀있다면 콤마(,) 기준으로 쪼개서 담기
+            if (item.ageFilter && item.ageFilter.trim() !== '') {
+                const filters = item.ageFilter.split(',');
+                filters.forEach(f => {
+                    const cleanF = f.trim(); // 띄어쓰기 제거
+                    if (cleanF) mapped.add(cleanF);
+                });
             }
             
-            // 3. 만약 엑셀 칸이 비어있거나 매칭되는 단어가 아예 없는 경우 
-            // -> 필터링에서 사라지지 않게 모든 연령대에 보이도록 기본값 처리
+            // 만약 ageFilter 칸이 비어있다면, 아예 화면에서 사라지면 안 되니까 모든 필터에서 보이게 기본값 설정
             if (mapped.size === 0) {
                 mapped.add('미취학').add('초등').add('중고등').add('성인');
             }
@@ -663,7 +651,7 @@
             checkbox.type = 'checkbox';
             checkbox.id = id;
             checkbox.value = loc;
-            checkbox.className = 'filter-cb loc-cb'; // 🌟 지역 필터용 클래스 (loc-cb) 추가
+            checkbox.className = 'filter-cb loc-cb'; 
             checkbox.onchange = applyFilters;
 
             const label = document.createElement('label');
@@ -703,11 +691,9 @@
     }
 
     function applyFilters() {
-        // 🌟 지역 필터 선택값 가져오기
         const checkedLocBoxes = document.querySelectorAll('.loc-cb:checked');
         const selectedLocs = Array.from(checkedLocBoxes).map(cb => cb.value);
         
-        // 🌟 연령 필터 선택값 가져오기
         const checkedAgeBoxes = document.querySelectorAll('.age-cb:checked');
         const selectedAges = Array.from(checkedAgeBoxes).map(cb => cb.value);
 
@@ -719,10 +705,8 @@
         if (eventData.length === 0) return;
 
         let filteredData = eventData.filter(item => {
-            // 1. 탭 매칭
             const matchTab = item.type === currentTab;
             
-            // 2. 지역 매칭
             let matchLoc = false;
             if (selectedLocs.length === 0) {
                 matchLoc = true; 
@@ -739,16 +723,13 @@
                 matchLoc = expandedLocs.some(locStr => item.loc && item.loc.includes(locStr));
             }
 
-            // 🌟 3. 연령 매칭
             let matchAge = false;
             if (selectedAges.length === 0) {
-                matchAge = true; // 아무 연령 필터도 선택 안했으면 모두 보여줌
+                matchAge = true; 
             } else {
-                // 선택한 연령 중 하나라도 이 카드의 mappedAges에 포함되어 있다면 합격!
                 matchAge = selectedAges.some(age => item.mappedAges && item.mappedAges.includes(age));
             }
 
-            // 4. 검색어 매칭
             let matchSearch = true;
             if (keyword) {
                 matchSearch = (item.title && item.title.toLowerCase().includes(keyword)) ||
@@ -756,7 +737,6 @@
                               (item.loc && item.loc.toLowerCase().includes(keyword));
             }
 
-            // 4가지 조건(탭, 지역, 연령, 검색)을 모두 만족해야 화면에 보임
             return matchTab && matchLoc && matchAge && matchSearch;
         });
 
