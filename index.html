@@ -377,10 +377,10 @@
             let costBadgeClass = 'badge-info'; if (safeCost.includes('무료')) costBadgeClass = 'badge-free'; else if (safeCost.includes('유료')) costBadgeClass = 'badge-paid';
 
             let dateBadges = '';
-            if (item.isTodayClose) dateBadges += `<span class="badge badge-today">오늘마감</span> `;
-            if (item.isTodayOpen) dateBadges += `<span class="badge badge-open">오늘오픈</span> `;
-            if (item.isTomorrowOpen && !item.isTodayOpen) dateBadges += `<span class="badge badge-open" style="background-color:#ff9800;">내일오픈</span> `;
             if (item.isTomorrowClose && !item.isTodayClose) dateBadges += `<span class="badge badge-close">내일마감</span> `;
+            if (item.isTodayOpen) dateBadges += `<span class="badge badge-open">오늘오픈</span> `;
+            if (item.isTodayClose) dateBadges += `<span class="badge badge-today">오늘마감</span> `;
+            if (item.isTomorrowOpen && !item.isTodayOpen) dateBadges += `<span class="badge badge-open" style="background-color:#ff9800;">내일오픈</span> `;
 
             let applyTextStyle = 'color:var(--text-sub);'; if (item.isTodayClose) applyTextStyle = 'color:#E53935; font-weight:700;';
             let cardClass = 'card'; let overlayHTML = '';
