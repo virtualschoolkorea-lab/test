@@ -343,14 +343,13 @@
             width: 100%;
         }
         .btn-group .btn-link {
-            flex: 1; /* 여러 버튼이 있을 경우 반반씩 공간 차지 */
+            flex: 1; 
             margin-top: 0;
             font-size: 0.85rem;
             padding: 8px 4px;
         }
         .btn-link:hover { background-color: #388E3C; }
         
-        /* 🌟 이미지 모달 전용 버튼 색상 변경 (기본색과 동일) */
         .btn-image { background-color: var(--primary-color); }
         .btn-image:hover { background-color: #388E3C; }
 
@@ -522,7 +521,6 @@
         else navigator.clipboard.writeText(window.location.href).then(() => alert('링크가 복사되었습니다!'));
     }
 
-    // 🌟 모달창 열기/닫기 함수
     function openImageModal(imgUrl) {
         document.getElementById('modal-image-content').src = imgUrl;
         document.getElementById('image-modal').style.display = 'flex';
@@ -536,8 +534,10 @@
 
     async function fetchEventData() {
         const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQV-02F-qXwS6yLb_XScKqwYj1N0qImwofY2Pyj2tvwnW0i1tl995_BjOfaVHpayppk6YYhqpdLrpa9/pub?output=csv";
+        // 캐시 무효화를 위해 URL 뒤에 현재 시간(타임스탬프) 추가 (깜빡임 문제 해결)
+        const fetchUrl = csvUrl + "&_t=" + new Date().getTime(); 
         try {
-            const response = await fetch(csvUrl);
+            const response = await fetch(fetchUrl);
             if (!response.ok) throw new Error("네트워크 응답이 올바르지 않습니다.");
             const csvText = await response.text();
             eventData = parseCSVToJSON(csvText);
@@ -549,6 +549,7 @@
         }
     }
 
+    // 🌟 파서 강화: 줄바꿈이나 공백 때문에 열이 밀리거나 헤더를 찾지 못하는 문제 차단
     function parseCSVToJSON(csv) {
         const rows = []; let row = []; let curr = ''; let insideQuotes = false;
         for (let i = 0; i < csv.length; i++) {
@@ -563,12 +564,14 @@
         if (curr !== '' || row.length > 0) { row.push(curr); rows.push(row); }
         if (rows.length < 2) return [];
         
-        const headers = rows[0].map(h => h.trim()); const data = [];
+        // 헤더 공백 및 줄바꿈 완벽 제거
+        const headers = rows[0].map(h => h.trim().replace(/[\r\n]+/g, '')); 
+        const data = [];
         for (let i = 1; i < rows.length; i++) {
             if (rows[i].length === 1 && rows[i][0].trim() === '') continue; 
             const obj = {};
             for (let j = 0; j < headers.length; j++) {
-                if (headers[j]) obj[headers[j]] = rows[i][j] ? rows[i][j].trim() : '';
+                if (headers[j]) obj[headers[j]] = rows[i][j] ? rows[i][j].trim().replace(/[\r\n]+$/, '') : '';
             }
             if (obj.type || obj.title) data.push(obj);
         }
@@ -659,8 +662,9 @@
     let currentTab = 'ongoing'; 
 
     function processNewItems() {
-        // v2 키를 사용하여 이전 데이터 포맷과 꼬이지 않도록 합니다.
-        const knownItemsStr = localStorage.getItem('heycj_known_items_v2'); 
+        // v3 키를 사용하여 로직 리셋. 
+        const storageKey = 'heycj_known_items_v3';
+        const knownItemsStr = localStorage.getItem(storageKey); 
         let knownItems = {};
         const now = Date.now(); 
         const ONE_DAY = 24 * 60 * 60 * 1000; 
@@ -674,28 +678,32 @@
         const currentIds = new Set();
 
         eventData.forEach((item, index) => {
-            item.originalIndex = index; // 엑셀에서의 기존 순서 저장(정렬용)
-            const id = encodeURIComponent((item.title || '').trim() + '|' + (item.type || ''));
+            item.originalIndex = index;
+            
+            // 🌟 띄어쓰기 한 칸 때문에 다른 항목으로 취급되는 것 방지
+            const safeTitle = (item.title || '').replace(/\s+/g, '');
+            const safeType = (item.type || '').trim();
+            const id = encodeURIComponent(`${safeTitle}|${safeType}`);
             currentIds.add(id);
 
             if (isFirstVisit) { 
-                // 최초 방문 시 모든 항목은 이미 있었던 것으로 간주
+                // 첫 방문 시에는 모두 N 배지 숨김 처리
                 knownItems[id] = now - ONE_DAY - 1000; 
                 item.isNew = false; 
                 updated = true; 
             } else if (!knownItems[id]) { 
-                // 새롭게 발견된 항목의 시간 기록
+                // 기존에 없던 "완전 새로운" 항목 발견
                 knownItems[id] = now; 
                 item.isNew = true; 
                 updated = true; 
             } else { 
-                // 기존에 있던 항목이라면 발견된 지 24시간이 지났는지 무조건 계산
+                // 기존에 봤던 항목이면, 처음 본 시간 기준 24시간 이내인지 철저히 계산
                 item.isNew = (now - knownItems[id] < ONE_DAY); 
             }
             item.discoveryTime = knownItems[id];
         });
 
-        // 삭제된 이전 항목 정리
+        // 엑셀에서 지워졌고, 24시간이 넘은 찌꺼기 데이터 청소
         for (let key in knownItems) {
             if (!currentIds.has(key) && (now - knownItems[key] > ONE_DAY)) { 
                 delete knownItems[key]; 
@@ -703,9 +711,8 @@
             }
         }
         
-        // 데이터가 업데이트 되었으면 즉시 로컬스토리지에 저장
         if (updated) {
-            localStorage.setItem('heycj_known_items_v2', JSON.stringify(knownItems));
+            localStorage.setItem(storageKey, JSON.stringify(knownItems));
         }
     }
 
@@ -745,22 +752,17 @@
             return matchTab && matchLoc && matchAge && matchSearch;
         });
 
-        // 🌟 정렬 로직 분기
         if (currentTab === 'ongoing' || keyword) {
-            // 사전예약중: 마감 임박순 정렬
             filteredData.sort((a, b) => {
                 if (a.isTodayClose !== b.isTodayClose) return b.isTodayClose ? 1 : -1;
                 if (a.isTomorrowClose !== b.isTomorrowClose) return b.isTomorrowClose ? 1 : -1;
                 return parseDateValue(a.applyEnd) - parseDateValue(b.applyEnd); 
             });
         } else if (currentTab === 'always' || currentTab === 'affiliate') {
-            // 상시예약 / 제휴 탭: 새롭게 추가된 콘텐츠 최상단 배치
             filteredData.sort((a, b) => {
-                // 1순위: 발견된 시간 최신순 정렬 (최근에 추가된 것일수록 상단)
                 if (b.discoveryTime !== a.discoveryTime) {
                     return b.discoveryTime - a.discoveryTime;
                 }
-                // 2순위: 엑셀에서 가장 아래쪽에 추가된 행이 위로 오도록 내림차순 정렬
                 return b.originalIndex - a.originalIndex;
             });
         }
@@ -782,8 +784,8 @@
 
             let cardClass = 'card'; let overlayHTML = '';
             
-            // 🌟 커밍순 및 마감 상태 오버레이 처리
-            const statusVal = item['커밍순'] ? item['커밍순'].trim() : '';
+            // 🌟 커밍순 및 마감 필터링 완벽 매칭 (보이지 않는 공백 완벽 방어)
+            const statusVal = item['커밍순'] ? item['커밍순'].replace(/\s+/g, '') : '';
             if (statusVal === '커밍순') { 
                 cardClass += ' disabled-card';
                 overlayHTML = `<div class="status-overlay"><div class="status-stamp">COMING SOON</div></div>`;
@@ -797,27 +799,22 @@
 
             let newCardBadge = item.isNew ? `<span class="card-new-badge">N</span>` : '';
 
-            // 🌟 버튼 출력 분기 처리
             let actionButtonsHTML = '';
             if (item.type === 'affiliate') {
                 let buttons = [];
-                // 1. 이미지가 있을 경우 (버튼 추가)
                 if (item['이미지'] && item['이미지'].trim() !== '') {
                     buttons.push(`<button onclick="openImageModal('${item['이미지'].trim()}')" class="btn-link btn-image">이미지 보기 🖼️</button>`);
                 }
-                // 2. 링크가 있을 경우 (기존 버튼 추가)
                 if (item.link && item.link.trim() !== '') {
                     buttons.push(`<a ${linkAttr} ${!item.link.includes('javascript:') ? 'target="_blank"' : ''} class="btn-link">제휴 혜택 확인하기 🎁</a>`);
                 }
                 
-                // 버튼 출력 조합
                 if (buttons.length > 0) {
                     actionButtonsHTML = `<div class="btn-group">${buttons.join('')}</div>`;
                 } else {
                     actionButtonsHTML = `<div style="text-align:center; margin-top:10px; font-size:0.85rem; color:#888;">등록된 혜택 정보가 없습니다.</div>`;
                 }
             } else {
-                // 제휴 탭이 아닌 다른 탭들의 기본 버튼
                 actionButtonsHTML = `<a ${linkAttr} ${!item.link?.includes('javascript:') ? 'target="_blank"' : ''} class="btn-link">상세보기 및 예약 ↗</a>`;
             }
 
