@@ -241,9 +241,7 @@
             if (!response.ok) throw new Error("네트워크 응답이 올바르지 않습니다.");
             const csvText = await response.text();
             eventData = parseCSVToJSON(csvText);
-            
-            // 등록일 기반 N배지 처리 로직 적용
-            processEventDates(); processEventAges(); generateFilters(); processNewBadges(); updateTabNewBadges(); applyFilters();
+            processEventDates(); processEventAges(); generateFilters(); processNewItems(); updateTabNewBadges(); applyFilters();
         } catch (error) { document.getElementById('list-container').innerHTML = '<div class="empty-state">행사 정보를 불러오는데 실패했습니다. 새로고침을 해주세요. 😥</div>'; }
     }
 
@@ -335,32 +333,43 @@
 
     let currentTab = 'ongoing'; 
 
-    // 🌟 복잡한 localStorage 대신 등록일 기준으로만 작동하는 직관적인 함수 🌟
-    function processNewBadges() {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // 시간차이 무시를 위해 0시로 초기화
+    // 날짜 텍스트를 파싱하는 도우미 함수 (구글 시트의 다양한 날짜 형식을 대비)
+    function parseRegDate(dateStr) {
+        if (!dateStr) return 0;
+        // 1. "2024. 3. 10. 15:30" 형태를 "2024/3/10 15:30"으로 변환
+        let cleanStr = dateStr.replace(/\.\s*/g, '/').replace(/\/$/, ''); 
+        // 2. 오전/오후 텍스트 처리
+        cleanStr = cleanStr.replace('오전', 'AM').replace('오후', 'PM');
+        
+        let parsedTime = new Date(cleanStr).getTime();
+        // 파싱 실패시 순수 텍스트로 재시도
+        if(isNaN(parsedTime)) {
+            parsedTime = new Date(dateStr).getTime();
+        }
+        return isNaN(parsedTime) ? 0 : parsedTime;
+    }
 
+    // 🌟 전면 수정된 N 배지 로직 (로컬 스토리지 삭제, 구글 시트 등록일 기준) 🌟
+    function processNewItems() {
+        const now = Date.now(); 
+        const ONE_DAY = 24 * 60 * 60 * 1000; 
+        
         eventData.forEach((item, index) => {
-            item.originalIndex = index; // 정렬을 위해 원본 순서 저장
+            item.originalIndex = index;
             item.isNew = false;
+            
+            // 시트의 '등록일' 열의 데이터를 가져와 밀리초로 변환합니다.
+            // 주의: 시트의 헤더명이 정확히 '등록일' 이어야 합니다. (예: 타임스탬프인 경우 '타임스탬프'로 변경 필요)
+            const regDateMs = parseRegDate(item['등록일']);
 
-            // 시트의 '등록일' 데이터가 있는 경우 (예: 2026-03-10, 2026/03/10 등)
-            if (item['등록일'] && item['등록일'].trim() !== '') {
-                // 날짜 포맷 통일 (., / 등을 -로 변환)
-                let dateStr = item['등록일'].trim().replace(/[\.\/]/g, '-');
-                const regDate = new Date(dateStr);
-                
-                // 정상적인 날짜 형식인지 체크
-                if (!isNaN(regDate.getTime())) {
-                    regDate.setHours(0, 0, 0, 0);
-                    const diffTime = today.getTime() - regDate.getTime();
-                    const diffDays = diffTime / (1000 * 60 * 60 * 24);
-                    
-                    // 등록일이 오늘 기준 3일 이내인 경우에만 N 배지 활성화
-                    if (diffDays >= 0 && diffDays <= 3) {
-                        item.isNew = true;
-                    }
-                }
+            // 등록일이 유효하고, 현재 시각과의 차이가 24시간 이내인 경우 N 부여
+            if (regDateMs > 0 && (now - regDateMs) <= ONE_DAY) {
+                item.isNew = true;
+            }
+
+            // 시트에 N숨김 표시가 'O'이거나 'o'이면 무조건 N 배지를 가립니다. (기존 로직 유지)
+            if (item['N숨김'] === 'O' || item['N숨김'] === 'o') {
+                item.isNew = false;
             }
         });
     }
@@ -391,8 +400,13 @@
             return matchTab && matchLoc && matchAge && matchSearch;
         });
 
+        // 🌟 수정된 정렬 로직 (N 배지가 있는 항목을 1순위로 위로 올림) 🌟
         if (currentTab === 'ongoing' || keyword) {
             filteredData.sort((a, b) => {
+                // 1순위: N 배지가 있는 항목을 무조건 최상단으로
+                if (a.isNew !== b.isNew) return b.isNew ? 1 : -1;
+
+                // 2순위: 원래 있던 오픈/마감 우선순위 규칙
                 const getPriority = (item) => {
                     if (item.isTodayOpen) return 1;
                     if (item.isTodayClose) return 2;
@@ -404,13 +418,15 @@
                 const pB = getPriority(b);
 
                 if (pA !== pB) return pA - pB;
-                if (a.isNew !== b.isNew) return b.isNew ? 1 : -1;
+                
+                // 3순위: 마감일
                 return parseDateValue(a.applyEnd) - parseDateValue(b.applyEnd); 
             });
         } else if (currentTab === 'always' || currentTab === 'affiliate') {
             filteredData.sort((a, b) => { 
-                // 새 글(N 배지)이 먼저 오게 한 뒤 시트의 원본 순서대로 정렬
-                if (a.isNew !== b.isNew) return b.isNew ? 1 : -1; 
+                // 1순위: N 배지가 있는 항목을 무조건 최상단으로
+                if (a.isNew !== b.isNew) return b.isNew ? 1 : -1;
+                // 2순위: 시트에 입력된 원래 순서 (최신순 등)
                 return a.originalIndex - b.originalIndex; 
             });
         }
