@@ -97,7 +97,7 @@
         .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; }
 
         /* 이미지 모달 팝업 스타일 */
-        .img-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
+        .img-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
         .img-modal-overlay.active { display: flex; opacity: 1; }
         .img-modal-content { max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); object-fit: contain; }
         .img-modal-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.8); color: #333; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.5rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
@@ -210,7 +210,7 @@
         if (navigator.share) navigator.share(shareData).catch(console.error); else navigator.clipboard.writeText(window.location.href).then(() => alert('링크가 복사되었습니다!'));
     }
 
-    /* 이미지 모달 띄우기 함수 추가 */
+    /* 이미지 모달 띄우기 함수 */
     function openImageModal(imgUrl) {
         const modal = document.getElementById('imageModal');
         const modalImg = document.getElementById('imageModalImg');
@@ -226,7 +226,6 @@
     /* 필터 스크롤에 따른 그라데이션 가시성 조절 */
     function handleFilterScroll(element) {
         const fade = document.getElementById('filter-fade');
-        // 끝까지 스크롤 되었는지 확인 (여유값 5px)
         if (element.scrollWidth - element.clientWidth <= element.scrollLeft + 5) {
             fade.style.opacity = '0';
         } else {
@@ -324,7 +323,6 @@
             }
         });
 
-        // 렌더링 직후 스크롤 체크
         setTimeout(() => handleFilterScroll(filterGroup), 100);
     }
 
@@ -384,7 +382,6 @@
             return matchTab && matchLoc && matchAge && matchSearch;
         });
 
-        // 🌟 정렬 로직 업데이트: (1)오늘오픈, (2)오늘마감, (3)내일마감 우선순위 적용
         if (currentTab === 'ongoing' || keyword) {
             filteredData.sort((a, b) => {
                 const getPriority = (item) => {
@@ -397,13 +394,8 @@
                 const pA = getPriority(a);
                 const pB = getPriority(b);
 
-                // 우선순위가 다르면 우선순위로 정렬
                 if (pA !== pB) return pA - pB;
-
-                // 우선순위가 같다면 New 뱃지가 있는지 비교
                 if (a.isNew !== b.isNew) return b.isNew ? 1 : -1;
-                
-                // 나머지는 마감일 순
                 return parseDateValue(a.applyEnd) - parseDateValue(b.applyEnd); 
             });
         } else if (currentTab === 'always' || currentTab === 'affiliate') {
@@ -431,26 +423,32 @@
 
             const trackTitle = (item.title || '').replace(/'/g, "\\'"); 
 
-            // 🌟 이미지 확장자 검사 로직 및 상세정보확인 버튼 업데이트
+            // 🌟 이미지 팝업용 정규식 및 조건 완전 강화 🌟
             let btnDetails = '';
             const detailUrl = item.link || item['링크'];
-            
             let isImageUrl = false;
+
             if (detailUrl && detailUrl.trim() !== '') {
                 const lowerUrl = detailUrl.trim().toLowerCase();
-                isImageUrl = lowerUrl.match(/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/) != null;
+                // 정규식: url 어딘가에 확장자가 있고, 그 뒤에 ?나 #이 붙는 경우까지 포괄
+                // 혹은 네이버 블로그/구글드라이브 직접 이미지 주소 같은 전형적인 이미지 호스팅인지 확인
+                isImageUrl = /\.(jpeg|jpg|gif|png|webp)(?:[\?#].*)?$/i.test(lowerUrl) || 
+                             lowerUrl.includes('drive.google.com/uc?') || 
+                             lowerUrl.includes('phinf.pstatic.net');
             }
 
             if (detailUrl && detailUrl.trim() !== '') {
+                const safeDetailUrl = detailUrl.trim().replace(/'/g, "\\'"); // 따옴표로 인한 자바스크립트 오류 방지
                 if (isImageUrl) {
-                    btnDetails = `<button class="btn-link" onclick="openImageModal('${detailUrl.trim()}'); trackEventClick('${trackTitle}', 'detail')">상세정보확인 🔍</button>`;
+                    // type="button" 명시를 통해 새로고침 방지
+                    btnDetails = `<button type="button" class="btn-link" onclick="openImageModal('${safeDetailUrl}'); trackEventClick('${trackTitle}', 'detail')">상세정보확인 🔍</button>`;
                 } else {
                     let detailAttr = `href="${detailUrl.trim()}" target="_blank"`;
                     if (detailUrl.toLowerCase().startsWith('javascript:')) detailAttr = `href="#" onclick="${detailUrl.replace('javascript:', '')}"`;
                     btnDetails = `<a ${detailAttr} class="btn-link" onclick="trackEventClick('${trackTitle}', 'detail')">상세정보확인 🔍</a>`;
                 }
             } else {
-                btnDetails = `<button class="btn-link btn-disabled" onclick="alert('등록된 상세정보 링크가 없습니다.');">상세정보확인 🔍</button>`;
+                btnDetails = `<button type="button" class="btn-link btn-disabled" onclick="alert('등록된 상세정보 링크가 없습니다.');">상세정보확인 🔍</button>`;
             }
 
             let btnApply = '';
@@ -460,7 +458,7 @@
                 if (applyUrl.toLowerCase().startsWith('javascript:')) applyAttr = `href="#" onclick="${applyUrl.replace('javascript:', '')}"`;
                 btnApply = `<a ${applyAttr} class="btn-link" onclick="trackEventClick('${trackTitle}', 'apply')">신청하기 🔗</a>`;
             } else {
-                btnApply = `<button class="btn-link btn-disabled" onclick="alert('별도의 사전예약 링크가 필요 없는 현장접수/자유참여 행사입니다.');">현장접수/예약불필요</button>`;
+                btnApply = `<button type="button" class="btn-link btn-disabled" onclick="alert('별도의 사전예약 링크가 필요 없는 현장접수/자유참여 행사입니다.');">현장접수/예약불필요</button>`;
             }
             
             let actionButtonsHTML = `<div class="btn-group">${btnDetails}${btnApply}</div>`;
