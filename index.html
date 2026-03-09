@@ -13,7 +13,6 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* (스타일은 기존과 동일하며 생략 없이 모두 포함됨) */
         :root {
             --primary-color: #4CAF50;
             --bg-color: #f4f7f6;
@@ -83,20 +82,16 @@
         .info-desc { flex: 1; word-break: keep-all; line-height: 1.4; }
         
         .btn-group { display: flex; gap: 8px; margin-top: 10px; }
-        .btn-link { display: block; text-align: center; background-color: var(--primary-color); color: white; text-decoration: none; padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; font-weight: 700; margin-top: 10px; transition: background-color 0.2s; box-sizing: border-box; border: none; cursor: pointer; font-family: inherit; width: 100%; }
-        .btn-group .btn-link { flex: 1; margin-top: 0; font-size: 0.85rem; padding: 8px 4px; }
+        .btn-link { display: block; text-align: center; background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); text-decoration: none; padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; font-weight: 700; margin-top: 10px; transition: all 0.2s; box-sizing: border-box; cursor: pointer; font-family: inherit; width: 100%; }
+        .btn-group .btn-link { flex: 1; margin-top: 0; font-size: 0.8rem; padding: 8px 2px; }
         .btn-link:hover { background-color: #388E3C; }
-        .btn-image { background-color: #555; }
-        .btn-image:hover { background-color: #333; }
-        .btn-disabled { opacity: 0.5; background-color: #999 !important; cursor: not-allowed; }
+        
+        /* 🌟 수정됨: 비활성화(현장접수) 버튼 스타일 완전히 통일 및 밝은 회색으로 변경 */
+        .btn-disabled { background-color: #f2f2f2 !important; color: #888 !important; border: 1px solid #ddd !important; cursor: default !important; pointer-events: auto; }
+        .btn-disabled:hover { background-color: #f2f2f2 !important; }
 
         .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; }
         .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; }
-
-        .image-modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.4); z-index: 9999; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(2px); }
-        .image-modal-content { position: relative; max-width: 100%; max-height: 90vh; display: flex; flex-direction: column; align-items: center; }
-        .image-modal-content img { max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .image-modal-close { position: absolute; top: -15px; right: -10px; background: #E53935; color: white; border: 2px solid white; width: 32px; height: 32px; border-radius: 50%; font-size: 1.2rem; font-weight: bold; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
@@ -136,13 +131,6 @@
     </div>
 </div>
 
-<div id="image-modal" class="image-modal-overlay" onclick="closeImageModal()">
-    <div class="image-modal-content" onclick="event.stopPropagation()">
-        <div class="image-modal-close" onclick="closeImageModal()">&times;</div>
-        <img id="modal-image-content" src="" alt="상세 이미지">
-    </div>
-</div>
-
 <script>
     const noticeData = [
         { text: "[⚡내일오픈/마감,긴급정보 실시간 알림 오픈챗 입장하기👆] ", link: "https://open.kakao.com/o/gAUqOrai" },
@@ -150,7 +138,7 @@
         { text: "※ 간혹 오타가 발생하므로 신청페이지에서 최종 정보확인하기", link: "" }
     ];
 
-    function initNotice() { /* 기존 로직 동일 */
+    function initNotice() {
         let currentIndex = 0; const noticeLink = document.getElementById('notice-link');
         function updateNotice() {
             noticeLink.style.opacity = '0';
@@ -164,14 +152,14 @@
         updateNotice(); setInterval(updateNotice, 4000); 
     }
 
-    function initLastUpdated() { /* 기존 로직 동일 */
+    function initLastUpdated() {
         const updateElem = document.getElementById('last-updated-text'); const lm = new Date(document.lastModified);
         const y = lm.getFullYear(); const m = lm.getMonth() + 1; const d = lm.getDate();
         const h = String(lm.getHours()).padStart(2, '0'); const min = String(lm.getMinutes()).padStart(2, '0');
         updateElem.innerText = `최근 업데이트: ${y}/${m}/${d} ${h}:${min}`;
     }
 
-    async function initVisitCounters() { /* 방문자 수 카운터 */
+    async function initVisitCounters() {
         const namespace = 'heycheongju_v1'; 
         const kstNow = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
         const yyyy = kstNow.getFullYear(); const mm = String(kstNow.getMonth() + 1).padStart(2, '0'); const dd = String(kstNow.getDate()).padStart(2, '0');
@@ -182,7 +170,6 @@
         } catch (e) { document.getElementById('count-total').innerText = '-'; document.getElementById('count-today').innerText = '-'; }
     }
 
-    // 🌟 추가됨: 한글 제목을 안전한 고유 ID(Hash)로 변환하는 함수
     function getHash(str) {
         if (!str) return 'none';
         let hash = 0;
@@ -193,11 +180,9 @@
         return Math.abs(hash).toString(36);
     }
 
-    // 🌟 추가됨: 개별 행사 버튼 클릭 추적 함수
     function trackEventClick(title, btnType) {
         if (!title) return;
         const hash = getHash(title);
-        // 대시보드에서 조회할 수 있도록 heycj_stats_v1 이라는 새 그룹에 저장
         fetch(`https://api.counterapi.dev/v1/heycj_stats_v1/evt_${hash}_${btnType}/up`).catch(e => console.error(e));
     }
 
@@ -205,15 +190,6 @@
         const shareData = { title: '헤이청주 📢 교육/체험 링크모음', text: '우리 지역 체험 행사 일정을 한눈에 확인하세요!', url: window.location.href };
         if (navigator.share) navigator.share(shareData).catch(console.error); else navigator.clipboard.writeText(window.location.href).then(() => alert('링크가 복사되었습니다!'));
     }
-
-function openImageModal(imgUrl) {
-        // 네이버/다음 등의 외부 링크 차단을 완벽히 우회하기 위해 전용 무료 프록시 서버 사용
-        const proxyUrl = 'https://wsrv.nl/?url=' + encodeURIComponent(imgUrl);
-        
-        document.getElementById('modal-image-content').src = proxyUrl;
-        document.getElementById('image-modal').style.display = 'flex';
-    }    
-    function closeImageModal() { document.getElementById('image-modal').style.display = 'none'; document.getElementById('modal-image-content').src = ''; }
 
     let eventData = [];
 
@@ -257,7 +233,6 @@ function openImageModal(imgUrl) {
             if (item.type === 'affiliate' || item.type === 'always') { item.displayText = item.applyNote; return; }
             item.isTodayOpen = false; item.isTodayClose = false; item.isTomorrowOpen = false; item.isTomorrowClose = false;
             
-            // 🌟 추가됨: 오늘 오픈 식별
             if (item.applyStart && item.applyStart.includes(todayStr)) item.isTodayOpen = true;
             if (item.applyEnd && item.applyEnd.includes(todayStr)) item.isTodayClose = true;
             if (item.applyStart && item.applyStart.includes(tomorrowStr)) item.isTomorrowOpen = true;
@@ -363,11 +338,10 @@ function openImageModal(imgUrl) {
             return matchTab && matchLoc && matchAge && matchSearch;
         });
 
-        // 🌟 수정됨: 1순위 오늘마감, 2순위 오늘오픈, 3순위 내일마감, 4순위 새콘텐츠
         if (currentTab === 'ongoing' || keyword) {
             filteredData.sort((a, b) => {
                 if (a.isTodayClose !== b.isTodayClose) return b.isTodayClose ? 1 : -1;
-                if (a.isTodayOpen !== b.isTodayOpen) return b.isTodayOpen ? 1 : -1; // 🌟 새로 추가된 우선순위
+                if (a.isTodayOpen !== b.isTodayOpen) return b.isTodayOpen ? 1 : -1; 
                 if (a.isTomorrowClose !== b.isTomorrowClose) return b.isTomorrowClose ? 1 : -1;
                 if (a.isNew !== b.isNew) return b.isNew ? 1 : -1;
                 return parseDateValue(a.applyEnd) - parseDateValue(b.applyEnd); 
@@ -383,10 +357,10 @@ function openImageModal(imgUrl) {
             let costBadgeClass = 'badge-info'; if (safeCost.includes('무료')) costBadgeClass = 'badge-free'; else if (safeCost.includes('유료')) costBadgeClass = 'badge-paid';
 
             let dateBadges = '';
-            if (item.isTodayOpen) dateBadges += `<span class="badge badge-open">오늘오픈</span> `;
+            if (item.isTodayOpen) dateBadges += `<span class="badge badge-open">오늘오픈</span> `; 
             if (item.isTodayClose) dateBadges += `<span class="badge badge-today">오늘마감</span> `;
-            if (item.isTomorrowClose && !item.isTodayClose) dateBadges += `<span class="badge badge-close">내일마감</span> `;
             if (item.isTomorrowOpen && !item.isTodayOpen) dateBadges += `<span class="badge badge-open" style="background-color:#ff9800;">내일오픈</span> `;
+            if (item.isTomorrowClose && !item.isTodayClose) dateBadges += `<span class="badge badge-close">내일마감</span> `;
 
             let applyTextStyle = 'color:var(--text-sub);'; if (item.isTodayClose) applyTextStyle = 'color:#E53935; font-weight:700;';
             let cardClass = 'card'; let overlayHTML = '';
@@ -395,26 +369,31 @@ function openImageModal(imgUrl) {
             if (statusVal === '커밍순') { cardClass += ' disabled-card'; overlayHTML = `<div class="status-overlay"><div class="status-stamp">COMING SOON</div></div>`; } 
             else if (statusVal === '마감') { cardClass += ' disabled-card'; overlayHTML = `<div class="status-overlay"><div class="status-stamp closed">마감</div></div>`; }
 
-            let linkAttr = `href="${item.link || '#'}"`; if (item.link && item.link.toLowerCase().startsWith('javascript:')) { linkAttr = `href="#" onclick="${item.link.replace('javascript:', '')}"`; }
-            let newCardBadge = item.isNew ? `<span class="card-new-badge">N</span>` : '';
+            const trackTitle = (item.title || '').replace(/'/g, "\\'"); 
 
-            // 🌟 수정됨: 모든 탭에서 '상세정보확인' & '신청하기' 2개 버튼 공통 사용 및 트래킹 적용
-            let buttons = [];
-            const trackTitle = (item.title || '').replace(/'/g, "\\'"); // 따옴표 안전 처리
-
-            if (item['이미지'] && item['이미지'].trim() !== '') {
-                buttons.push(`<button onclick="trackEventClick('${trackTitle}', 'image'); openImageModal('${item['이미지'].trim()}')" class="btn-link btn-image">상세정보확인🖼️</button>`);
+            // 🌟 수정됨: 상세정보확인 버튼 처리 (link 열 데이터 사용)
+            let btnDetails = '';
+            const detailUrl = item.link || item['링크'];
+            if (detailUrl && detailUrl.trim() !== '') {
+                let detailAttr = `href="${detailUrl.trim()}" target="_blank"`;
+                if (detailUrl.toLowerCase().startsWith('javascript:')) detailAttr = `href="#" onclick="${detailUrl.replace('javascript:', '')}"`;
+                btnDetails = `<a ${detailAttr} class="btn-link" onclick="trackEventClick('${trackTitle}', 'detail')">상세정보확인 🔍</a>`;
             } else {
-                buttons.push(`<button onclick="alert('이 행사는 등록된 상세 이미지가 없습니다.');" class="btn-link btn-image btn-disabled">상세정보확인🖼️</button>`);
+                btnDetails = `<button class="btn-link btn-disabled" onclick="alert('등록된 상세정보 링크가 없습니다.');">상세정보확인 🔍</button>`;
             }
 
-            if (item.link && item.link.trim() !== '') {
-                buttons.push(`<a ${linkAttr} ${!item.link.includes('javascript:') ? 'target="_blank"' : ''} class="btn-link" onclick="trackEventClick('${trackTitle}', 'apply')">신청하기🔗</a>`);
+            // 🌟 수정됨: 신청하기 버튼 처리 (신청링크 열 데이터 사용, 없으면 현장접수 처리)
+            let btnApply = '';
+            const applyUrl = item['신청링크'] || item.applyLink; 
+            if (applyUrl && applyUrl.trim() !== '') {
+                let applyAttr = `href="${applyUrl.trim()}" target="_blank"`;
+                if (applyUrl.toLowerCase().startsWith('javascript:')) applyAttr = `href="#" onclick="${applyUrl.replace('javascript:', '')}"`;
+                btnApply = `<a ${applyAttr} class="btn-link" onclick="trackEventClick('${trackTitle}', 'apply')">신청하기 🔗</a>`;
             } else {
-                buttons.push(`<button onclick="alert('신청 링크가 없습니다.');" class="btn-link btn-disabled">신청하기🔗</button>`);
+                btnApply = `<button class="btn-link btn-disabled" onclick="alert('별도의 사전예약 링크가 필요 없는 현장접수/자유참여 행사입니다.');">현장접수/예약불필요</button>`;
             }
             
-            let actionButtonsHTML = `<div class="btn-group">${buttons.join('')}</div>`;
+            let actionButtonsHTML = `<div class="btn-group">${btnDetails}${btnApply}</div>`;
 
             const cardHTML = `
                 <div class="${cardClass}">
@@ -427,7 +406,7 @@ function openImageModal(imgUrl) {
                             <span class="badge ${costBadgeClass}">${safeCost}</span> 
                         </div>
                     </div>
-                    <h2 class="title">${item.title || ''} ${newCardBadge}</h2>
+                    <h2 class="title">${item.title || ''} ${item.isNew ? `<span class="card-new-badge">N</span>` : ''}</h2>
                     <div class="info-row"><div class="info-label">장소</div><div class="info-desc">${item.place || ''}</div></div>
                     <div class="info-row"><div class="info-label">접수기간</div><div class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</div></div>
                     <div class="info-row"><div class="info-label">운영일정</div><div class="info-desc">${item.date || '해당정보 없음'}</div></div>
