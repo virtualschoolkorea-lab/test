@@ -188,15 +188,19 @@
         } catch (e) { document.getElementById('count-total').innerText = '-'; document.getElementById('count-today').innerText = '-'; }
     }
 
+    // 💡 [수정 1] 대시보드와 동일한 해시 로직 (16진법) 적용
     function getHash(str) {
         if (!str) return 'none'; let hash = 0;
         for (let i = 0; i < str.length; i++) { hash = ((hash << 5) - hash) + str.charCodeAt(i); hash = hash & hash; }
-        return Math.abs(hash).toString(36);
+        return Math.abs(hash).toString(16); 
     }
 
+    // 💡 [수정 2] 대시보드와 동일한 네임스페이스 및 키(Key) 형식 적용
     function trackEventClick(title, btnType) {
         if (!title) return; const hash = getHash(title);
-        fetch(`https://api.counterapi.dev/v1/heycj_stats_v1/evt_${hash}_${btnType}/up`).catch(e => console.error(e));
+        // 대시보드의 namespace는 'heycheongju_clicks_v1', 키 포맷은 '${hash}_${btnType}' 입니다.
+        fetch(`https://api.counterapi.dev/v1/heycheongju_clicks_v1/${hash}_${btnType}/up`)
+            .catch(e => console.error('클릭 통계 기록 실패:', e));
     }
 
     function sharePage() {
@@ -333,22 +337,18 @@
 
     let currentTab = 'ongoing'; 
 
-    // 🌟 1. 브라우저 호환성을 완벽하게 맞춘 날짜 파싱 함수
     function parseRegDate(dateStr) {
         if (!dateStr) return 0;
         let s = String(dateStr).trim();
-
-        // 정규식을 이용해 연, 월, 일, 시, 분을 정확하게 추출 (아이폰/사파리 에러 방지)
         let match = s.match(/(\d{4})[./-]\s*(\d{1,2})[./-]\s*(\d{1,2})(?:[.\s]+(?:오전|오후|AM|PM)?\s*(\d{1,2})[:시]\s*(\d{1,2}))?/i);
 
         if (match) {
             let year = parseInt(match[1], 10);
-            let month = parseInt(match[2], 10) - 1; // 자바스크립트는 월을 0부터 계산하므로 -1
+            let month = parseInt(match[2], 10) - 1;
             let day = parseInt(match[3], 10);
             let hour = match[4] ? parseInt(match[4], 10) : 0;
             let minute = match[5] ? parseInt(match[5], 10) : 0;
 
-            // 오후/AM/PM 12시간제 텍스트 처리
             if (s.includes('오후') || s.toUpperCase().includes('PM')) {
                 if (hour < 12) hour += 12;
             }
@@ -359,12 +359,10 @@
             return new Date(year, month, day, hour, minute).getTime();
         }
 
-        // 추출 실패 시 기본 파싱 시도
         let parsed = new Date(s).getTime();
         return isNaN(parsed) ? 0 : parsed;
     }
 
-    // 🌟 2. 마이너스 시간(미래) 오류를 잡은 N 배지 로직
     function processNewItems() {
         const now = Date.now(); 
         const ONE_DAY = 24 * 60 * 60 * 1000; 
@@ -375,18 +373,13 @@
             
             const regDateMs = parseRegDate(item['등록일']);
 
-            // 등록일이 정상적인 날짜일 경우에만 계산
             if (regDateMs > 0) {
                 const timeDiff = now - regDateMs;
-                
-                // 시간 차이가 과거 24시간 이내(0 ~ 24h)이거나, 
-                // 작성 실수로 미래 시간을 적었을 경우(미래 24시간 이내)에만 N 표시
                 if (timeDiff >= -ONE_DAY && timeDiff <= ONE_DAY) {
                     item.isNew = true;
                 }
             }
 
-            // 시트에 N숨김 표시가 'O'이거나 'o'이면 무조건 N 배지를 가립니다.
             if (item['N숨김'] === 'O' || item['N숨김'] === 'o') {
                 item.isNew = false;
             }
@@ -419,13 +412,10 @@
             return matchTab && matchLoc && matchAge && matchSearch;
         });
 
-        // 🌟 수정된 정렬 로직 (N 배지가 있는 항목을 1순위로 위로 올림) 🌟
         if (currentTab === 'ongoing' || keyword) {
             filteredData.sort((a, b) => {
-                // 1순위: N 배지가 있는 항목을 무조건 최상단으로
                 if (a.isNew !== b.isNew) return b.isNew ? 1 : -1;
 
-                // 2순위: 원래 있던 오픈/마감 우선순위 규칙
                 const getPriority = (item) => {
                     if (item.isTodayOpen) return 1;
                     if (item.isTodayClose) return 2;
@@ -438,14 +428,11 @@
 
                 if (pA !== pB) return pA - pB;
                 
-                // 3순위: 마감일
                 return parseDateValue(a.applyEnd) - parseDateValue(b.applyEnd); 
             });
         } else if (currentTab === 'always' || currentTab === 'affiliate') {
             filteredData.sort((a, b) => { 
-                // 1순위: N 배지가 있는 항목을 무조건 최상단으로
                 if (a.isNew !== b.isNew) return b.isNew ? 1 : -1;
-                // 2순위: 시트에 입력된 원래 순서 (최신순 등)
                 return a.originalIndex - b.originalIndex; 
             });
         }
@@ -458,7 +445,7 @@
 
             let dateBadges = '';
             if (item.isTodayOpen) dateBadges += `<span class="badge badge-open">오늘오픈</span> `; 
-            if (item.isTodayClose) dateBadges += `<span class="badge badge-today">오늘마감</span> `;
+            if (item.isTodayClose) dateBadges += `<span class="badge badge-today">오늘마마감</span> `;
             if (item.isTomorrowOpen && !item.isTodayOpen) dateBadges += `<span class="badge badge-open" style="background-color:#ff9800;">내일오픈</span> `;
             if (item.isTomorrowClose && !item.isTodayClose) dateBadges += `<span class="badge badge-close">내일마감</span> `;
 
@@ -480,9 +467,10 @@
                              lowerUrl.includes('phinf.pstatic.net');
             }
 
+            // 💡 [수정 3] 제목에 홑따옴표(')가 포함될 경우 자바스크립트가 터지는 오류 방지
             if (detailUrl && detailUrl.trim() !== '') {
                 const safeUrl = detailUrl.trim().replace(/"/g, '&quot;');
-                const trackTitle = (item.title || '').replace(/"/g, '&quot;');
+                const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
                 if (isImageUrl) {
                     btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">상세정보확인 🖼️</button>`;
@@ -502,7 +490,8 @@
                 const cleanValue = rawApplyValue.trim();
                 const safeApplyValue = cleanValue.replace(/"/g, '&quot;');
                 const alertSafeValue = cleanValue.replace(/'/g, "\\'").replace(/"/g, '\\"');
-                const trackTitle = (item.title || '').replace(/"/g, '&quot;');
+                // 💡 [수정 3 적용]
+                const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 
                 const isUrl = /^(https?:\/\/|www\.|javascript:)/i.test(cleanValue);
 
