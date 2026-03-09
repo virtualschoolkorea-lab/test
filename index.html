@@ -49,7 +49,6 @@
         .new-badge { display: inline-block; background-color: #E53935; color: white; font-size: 0.6rem; font-weight: 800; padding: 1px 5px; border-radius: 6px; margin-left: 4px; vertical-align: super; }
         .card-new-badge { display: inline-block; background-color: #E53935; color: white; font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 6px; margin-left: 5px; vertical-align: middle; }
 
-        /* 필터 스크롤 및 그라데이션 래퍼 */
         .filter-wrapper { position: relative; background: #fafafa; border-bottom: 1px solid #eee; }
         .checkbox-group { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 4px; padding: 8px 10px; -ms-overflow-style: none; scrollbar-width: none; }
         .checkbox-group::-webkit-scrollbar { display: none; }
@@ -96,19 +95,18 @@
         .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; }
         .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; }
 
-        /* 이미지 모달 팝업 스타일 */
-        .img-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
+        /* 이미지 모달 팝업 스타일 수정 (우선순위 높임) */
+        .img-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; }
         .img-modal-overlay.active { display: flex; opacity: 1; }
-        .img-modal-content { max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); object-fit: contain; }
-        .img-modal-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.8); color: #333; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.5rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
-        .img-modal-close:hover { background: #fff; }
+        .img-modal-content { max-width: 90%; max-height: 85vh; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); object-fit: contain; }
+        .img-modal-close { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.9); color: #111; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 1.5rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <div class="sticky-wrapper">
-    <header id="app-header">
+        <header id="app-header">
             <h1>헤이청주 📢 교육/체험 링크모음</h1>
             <div class="sub-header" id="last-updated-text">최근 업데이트: 계산중...</div>
             <div class="header-action-row">
@@ -145,9 +143,9 @@
     </div>
 </div>
 
-<div class="img-modal-overlay" id="imageModal" onclick="closeImageModal()">
-    <button class="img-modal-close" onclick="closeImageModal()">×</button>
-    <img src="" alt="상세정보 이미지" class="img-modal-content" id="imageModalImg" onclick="event.stopPropagation()">
+<div class="img-modal-overlay" id="imageModal">
+    <button class="img-modal-close" id="closeModalBtn">×</button>
+    <img src="" alt="상세정보 이미지" class="img-modal-content" id="imageModalImg">
 </div>
 
 <script>
@@ -190,18 +188,13 @@
     }
 
     function getHash(str) {
-        if (!str) return 'none';
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            hash = ((hash << 5) - hash) + str.charCodeAt(i);
-            hash = hash & hash;
-        }
+        if (!str) return 'none'; let hash = 0;
+        for (let i = 0; i < str.length; i++) { hash = ((hash << 5) - hash) + str.charCodeAt(i); hash = hash & hash; }
         return Math.abs(hash).toString(36);
     }
 
     function trackEventClick(title, btnType) {
-        if (!title) return;
-        const hash = getHash(title);
+        if (!title) return; const hash = getHash(title);
         fetch(`https://api.counterapi.dev/v1/heycj_stats_v1/evt_${hash}_${btnType}/up`).catch(e => console.error(e));
     }
 
@@ -210,27 +203,34 @@
         if (navigator.share) navigator.share(shareData).catch(console.error); else navigator.clipboard.writeText(window.location.href).then(() => alert('링크가 복사되었습니다!'));
     }
 
-    /* 이미지 모달 띄우기 함수 */
-    function openImageModal(imgUrl) {
-        const modal = document.getElementById('imageModal');
-        const modalImg = document.getElementById('imageModalImg');
-        modalImg.src = imgUrl;
-        modal.classList.add('active');
-    }
+    /* 🌟 안전한 모달 제어 로직 🌟 */
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('imageModalImg');
+    
+    // 모달 닫기 이벤트 (배경 클릭 또는 X 버튼 클릭)
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal || e.target.id === 'closeModalBtn') {
+            modal.classList.remove('active');
+            setTimeout(() => { modalImg.src = ""; }, 200); // 닫힐 때 잔상 제거
+        }
+    });
 
-    function closeImageModal() {
-        const modal = document.getElementById('imageModal');
-        modal.classList.remove('active');
-    }
+    // 동적 버튼 클릭 감지 (이벤트 위임 방식 - 특수문자 에러 원천 차단)
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('btn-img-modal')) {
+            const url = e.target.getAttribute('data-url');
+            const title = e.target.getAttribute('data-title');
+            
+            modalImg.src = url;
+            modal.classList.add('active');
+            trackEventClick(title, 'detail');
+        }
+    });
 
-    /* 필터 스크롤에 따른 그라데이션 가시성 조절 */
     function handleFilterScroll(element) {
         const fade = document.getElementById('filter-fade');
-        if (element.scrollWidth - element.clientWidth <= element.scrollLeft + 5) {
-            fade.style.opacity = '0';
-        } else {
-            fade.style.opacity = '1';
-        }
+        if (element.scrollWidth - element.clientWidth <= element.scrollLeft + 5) fade.style.opacity = '0';
+        else fade.style.opacity = '1';
     }
 
     let eventData = [];
@@ -322,7 +322,6 @@
                 const label = document.createElement('label'); label.htmlFor = id; label.className = 'cb-label'; label.innerText = loc; filterGroup.appendChild(checkbox); filterGroup.appendChild(label);
             }
         });
-
         setTimeout(() => handleFilterScroll(filterGroup), 100);
     }
 
@@ -421,30 +420,29 @@
             if (statusVal === '커밍순') { cardClass += ' disabled-card'; overlayHTML = `<div class="status-overlay"><div class="status-stamp">COMING SOON</div></div>`; } 
             else if (statusVal === '마감') { cardClass += ' disabled-card'; overlayHTML = `<div class="status-overlay"><div class="status-stamp closed">마감</div></div>`; }
 
-            const trackTitle = (item.title || '').replace(/'/g, "\\'"); 
-
-            // 🌟 이미지 팝업용 정규식 및 조건 완전 강화 🌟
             let btnDetails = '';
             const detailUrl = item.link || item['링크'];
+            
+            // 이미지 확장자 조건 (더욱 널널하게 검사)
             let isImageUrl = false;
-
             if (detailUrl && detailUrl.trim() !== '') {
                 const lowerUrl = detailUrl.trim().toLowerCase();
-                // 정규식: url 어딘가에 확장자가 있고, 그 뒤에 ?나 #이 붙는 경우까지 포괄
-                // 혹은 네이버 블로그/구글드라이브 직접 이미지 주소 같은 전형적인 이미지 호스팅인지 확인
                 isImageUrl = /\.(jpeg|jpg|gif|png|webp)(?:[\?#].*)?$/i.test(lowerUrl) || 
                              lowerUrl.includes('drive.google.com/uc?') || 
                              lowerUrl.includes('phinf.pstatic.net');
             }
 
             if (detailUrl && detailUrl.trim() !== '') {
-                const safeDetailUrl = detailUrl.trim().replace(/'/g, "\\'"); // 따옴표로 인한 자바스크립트 오류 방지
+                // 따옴표 에러 방지를 위해 변수에 담기
+                const safeUrl = detailUrl.trim().replace(/"/g, '&quot;');
+                const trackTitle = (item.title || '').replace(/"/g, '&quot;');
+
                 if (isImageUrl) {
-                    // type="button" 명시를 통해 새로고침 방지
-                    btnDetails = `<button type="button" class="btn-link" onclick="openImageModal('${safeDetailUrl}'); trackEventClick('${trackTitle}', 'detail')">상세정보확인 🔍</button>`;
+                    // 이미지로 인식되면 "상세정보확인 🖼️"로 아이콘 변경 및 모달 클래스 적용
+                    btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">상세정보확인 🖼️</button>`;
                 } else {
-                    let detailAttr = `href="${detailUrl.trim()}" target="_blank"`;
-                    if (detailUrl.toLowerCase().startsWith('javascript:')) detailAttr = `href="#" onclick="${detailUrl.replace('javascript:', '')}"`;
+                    let detailAttr = `href="${safeUrl}" target="_blank"`;
+                    if (safeUrl.toLowerCase().startsWith('javascript:')) detailAttr = `href="#" onclick="${safeUrl.replace('javascript:', '')}"`;
                     btnDetails = `<a ${detailAttr} class="btn-link" onclick="trackEventClick('${trackTitle}', 'detail')">상세정보확인 🔍</a>`;
                 }
             } else {
@@ -454,8 +452,10 @@
             let btnApply = '';
             const applyUrl = item['신청링크'] || item.applyLink; 
             if (applyUrl && applyUrl.trim() !== '') {
-                let applyAttr = `href="${applyUrl.trim()}" target="_blank"`;
-                if (applyUrl.toLowerCase().startsWith('javascript:')) applyAttr = `href="#" onclick="${applyUrl.replace('javascript:', '')}"`;
+                const safeApplyUrl = applyUrl.trim().replace(/"/g, '&quot;');
+                const trackTitle = (item.title || '').replace(/"/g, '&quot;');
+                let applyAttr = `href="${safeApplyUrl}" target="_blank"`;
+                if (safeApplyUrl.toLowerCase().startsWith('javascript:')) applyAttr = `href="#" onclick="${safeApplyUrl.replace('javascript:', '')}"`;
                 btnApply = `<a ${applyAttr} class="btn-link" onclick="trackEventClick('${trackTitle}', 'apply')">신청하기 🔗</a>`;
             } else {
                 btnApply = `<button type="button" class="btn-link btn-disabled" onclick="alert('별도의 사전예약 링크가 필요 없는 현장접수/자유참여 행사입니다.');">현장접수/예약불필요</button>`;
