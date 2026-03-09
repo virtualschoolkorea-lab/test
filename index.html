@@ -188,17 +188,14 @@
         } catch (e) { document.getElementById('count-total').innerText = '-'; document.getElementById('count-today').innerText = '-'; }
     }
 
-    // 💡 [수정 1] 대시보드와 동일한 해시 로직 (16진법) 적용
     function getHash(str) {
         if (!str) return 'none'; let hash = 0;
         for (let i = 0; i < str.length; i++) { hash = ((hash << 5) - hash) + str.charCodeAt(i); hash = hash & hash; }
         return Math.abs(hash).toString(16); 
     }
 
-    // 💡 [수정 2] 대시보드와 동일한 네임스페이스 및 키(Key) 형식 적용
     function trackEventClick(title, btnType) {
         if (!title) return; const hash = getHash(title);
-        // 대시보드의 namespace는 'heycheongju_clicks_v1', 키 포맷은 '${hash}_${btnType}' 입니다.
         fetch(`https://api.counterapi.dev/v1/heycheongju_clicks_v1/${hash}_${btnType}/up`)
             .catch(e => console.error('클릭 통계 기록 실패:', e));
     }
@@ -337,51 +334,60 @@
 
     let currentTab = 'ongoing'; 
 
+    // 💡 [수정됨] 어떤 형식의 한국어 구글 시트 날짜가 들어와도 완벽하게 파싱하는 초강력 함수
     function parseRegDate(dateStr) {
-        if (!dateStr) return 0;
+        if (!dateStr || String(dateStr).trim() === '') return 0;
         let s = String(dateStr).trim();
-        let match = s.match(/(\d{4})[./-]\s*(\d{1,2})[./-]\s*(\d{1,2})(?:[.\s]+(?:오전|오후|AM|PM)?\s*(\d{1,2})[:시]\s*(\d{1,2}))?/i);
+
+        // 2024. 03. 10. 오후 2:30:00 같은 한국어 형식을 유연하게 잡아내는 정규식
+        let match = s.match(/(\d{4})[./-]\s*(\d{1,2})[./-]\s*(\d{1,2})(?:[\sT.]+((?:오전|오후|AM|PM)?)\s*(\d{1,2}):(\d{1,2})(?::\d{1,2})?)?/i);
 
         if (match) {
             let year = parseInt(match[1], 10);
-            let month = parseInt(match[2], 10) - 1;
+            let month = parseInt(match[2], 10) - 1; // 자바스크립트는 월을 0부터 시작
             let day = parseInt(match[3], 10);
-            let hour = match[4] ? parseInt(match[4], 10) : 0;
-            let minute = match[5] ? parseInt(match[5], 10) : 0;
 
-            if (s.includes('오후') || s.toUpperCase().includes('PM')) {
+            let ampm = match[4] || '';
+            let hour = match[5] ? parseInt(match[5], 10) : 0;
+            let minute = match[6] ? parseInt(match[6], 10) : 0;
+
+            // 오후/AM/PM 처리 로직
+            if (ampm.includes('오후') || ampm.toUpperCase().includes('PM')) {
                 if (hour < 12) hour += 12;
             }
-            if ((s.includes('오전') || s.toUpperCase().includes('AM')) && hour === 12) {
+            if ((ampm.includes('오전') || ampm.toUpperCase().includes('AM')) && hour === 12) {
                 hour = 0;
             }
 
             return new Date(year, month, day, hour, minute).getTime();
         }
 
-        let parsed = new Date(s).getTime();
+        // 정규식에 안 걸릴 경우 브라우저 기본 파서에 맡김
+        let parsed = new Date(s.replace(/오전/g, 'AM').replace(/오후/g, 'PM')).getTime();
         return isNaN(parsed) ? 0 : parsed;
     }
 
+    // 💡 [수정됨] N숨김 기능을 완전히 삭제하고, 등록일이 없으면 N 배지가 사라지도록 설계
     function processNewItems() {
         const now = Date.now(); 
         const ONE_DAY = 24 * 60 * 60 * 1000; 
         
         eventData.forEach((item, index) => {
             item.originalIndex = index;
-            item.isNew = false;
+            item.isNew = false; // 기본값은 항상 N 끄기
             
+            // 등록일이 빈칸이면 0을 반환하므로 무시됨 (N 안 뜸)
             const regDateMs = parseRegDate(item['등록일']);
 
+            // 등록일이 정상적으로 인식된 경우에만 시간 차이를 계산
             if (regDateMs > 0) {
                 const timeDiff = now - regDateMs;
+                
+                // 등록일로부터 과거나 미래 양방향 24시간 이내면 N 표시 
+                // (미래 시간 허용은 시트에 작성 실수했을 때를 대비한 안전망입니다)
                 if (timeDiff >= -ONE_DAY && timeDiff <= ONE_DAY) {
                     item.isNew = true;
                 }
-            }
-
-            if (item['N숨김'] === 'O' || item['N숨김'] === 'o') {
-                item.isNew = false;
             }
         });
     }
@@ -445,7 +451,7 @@
 
             let dateBadges = '';
             if (item.isTodayOpen) dateBadges += `<span class="badge badge-open">오늘오픈</span> `; 
-            if (item.isTodayClose) dateBadges += `<span class="badge badge-today">오늘마마감</span> `;
+            if (item.isTodayClose) dateBadges += `<span class="badge badge-today">오늘마감</span> `;
             if (item.isTomorrowOpen && !item.isTodayOpen) dateBadges += `<span class="badge badge-open" style="background-color:#ff9800;">내일오픈</span> `;
             if (item.isTomorrowClose && !item.isTodayClose) dateBadges += `<span class="badge badge-close">내일마감</span> `;
 
@@ -467,7 +473,6 @@
                              lowerUrl.includes('phinf.pstatic.net');
             }
 
-            // 💡 [수정 3] 제목에 홑따옴표(')가 포함될 경우 자바스크립트가 터지는 오류 방지
             if (detailUrl && detailUrl.trim() !== '') {
                 const safeUrl = detailUrl.trim().replace(/"/g, '&quot;');
                 const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
@@ -490,7 +495,6 @@
                 const cleanValue = rawApplyValue.trim();
                 const safeApplyValue = cleanValue.replace(/"/g, '&quot;');
                 const alertSafeValue = cleanValue.replace(/'/g, "\\'").replace(/"/g, '\\"');
-                // 💡 [수정 3 적용]
                 const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 
                 const isUrl = /^(https?:\/\/|www\.|javascript:)/i.test(cleanValue);
