@@ -172,7 +172,7 @@
             font-weight: 700;
         }
         
-        /* 탭에 표시되는 N 뱃지 */
+        /* 탭 N 뱃지 */
         .new-badge {
             display: inline-block;
             background-color: #E53935;
@@ -185,7 +185,7 @@
             vertical-align: super;
         }
 
-        /* 개별 행사 카드 제목 옆에 표시되는 N 뱃지 */
+        /* 개별 행사 카드 N 뱃지 */
         .card-new-badge {
             display: inline-block;
             background-color: #E53935;
@@ -312,6 +312,12 @@
         .info-label { font-weight: 500; width: 65px; flex-shrink: 0; color: #555; line-height: 1.4; }
         .info-desc { flex: 1; word-break: keep-all; line-height: 1.4; }
         
+        /* 🌟 버튼 그룹 (나란히 배치) */
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
         .btn-link {
             display: block;
             text-align: center;
@@ -324,10 +330,72 @@
             font-weight: 700;
             margin-top: 10px;
             transition: background-color 0.2s;
+            box-sizing: border-box;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            width: 100%;
+        }
+        .btn-group .btn-link {
+            flex: 1; /* 여러 버튼이 있을 경우 반반씩 공간 차지 */
+            margin-top: 0;
+            font-size: 0.85rem;
+            padding: 8px 4px;
         }
         .btn-link:hover { background-color: #388E3C; }
+        
+        /* 🌟 이미지 모달 전용 버튼 색상 */
+        .btn-image { background-color: #9b59b6; }
+        .btn-image:hover { background-color: #8e44ad; }
+
         .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; }
         .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; }
+
+        /* 🌟 이미지 팝업(모달) 스타일 */
+        .image-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+        .image-modal-content {
+            position: relative;
+            max-width: 100%;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .image-modal-content img {
+            max-width: 100%;
+            max-height: 85vh;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .image-modal-close {
+            position: absolute;
+            top: -15px;
+            right: -10px;
+            background: #E53935;
+            color: white;
+            border: 2px solid white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
@@ -374,6 +442,13 @@
     </div>
 </div>
 
+<div id="image-modal" class="image-modal-overlay" onclick="closeImageModal()">
+    <div class="image-modal-content" onclick="event.stopPropagation()">
+        <div class="image-modal-close" onclick="closeImageModal()">&times;</div>
+        <img id="modal-image-content" src="" alt="상세 이미지">
+    </div>
+</div>
+
 <script>
     const noticeData = [
         { 
@@ -396,71 +471,59 @@
         
         function updateNotice() {
             noticeLink.style.opacity = '0';
-            
             setTimeout(() => {
                 const data = noticeData[currentIndex];
                 noticeLink.innerText = data.text;
-                
                 if (data.link) {
-                    noticeLink.href = data.link;
-                    noticeLink.target = "_blank";
-                    noticeLink.style.cursor = "pointer";
+                    noticeLink.href = data.link; noticeLink.target = "_blank"; noticeLink.style.cursor = "pointer";
                 } else {
-                    noticeLink.removeAttribute('href');
-                    noticeLink.removeAttribute('target');
-                    noticeLink.style.cursor = "default";
+                    noticeLink.removeAttribute('href'); noticeLink.removeAttribute('target'); noticeLink.style.cursor = "default";
                 }
-                
                 noticeLink.style.opacity = '1';
                 currentIndex = (currentIndex + 1) % noticeData.length;
             }, 300);
         }
-
-        updateNotice(); 
-        setInterval(updateNotice, 4000); 
+        updateNotice(); setInterval(updateNotice, 4000); 
     }
 
     function initLastUpdated() {
         const updateElem = document.getElementById('last-updated-text');
         const lm = new Date(document.lastModified);
-        const y = lm.getFullYear();
-        const m = lm.getMonth() + 1;
-        const d = lm.getDate();
-        const h = String(lm.getHours()).padStart(2, '0');
-        const min = String(lm.getMinutes()).padStart(2, '0');
+        const y = lm.getFullYear(); const m = lm.getMonth() + 1; const d = lm.getDate();
+        const h = String(lm.getHours()).padStart(2, '0'); const min = String(lm.getMinutes()).padStart(2, '0');
         updateElem.innerText = `최근 업데이트: ${y}/${m}/${d} ${h}:${min}`;
     }
 
     async function initVisitCounters() {
         const namespace = 'heycheongju_v1'; 
         const kstNow = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
-        const yyyy = kstNow.getFullYear();
-        const mm = String(kstNow.getMonth() + 1).padStart(2, '0');
-        const dd = String(kstNow.getDate()).padStart(2, '0');
+        const yyyy = kstNow.getFullYear(); const mm = String(kstNow.getMonth() + 1).padStart(2, '0'); const dd = String(kstNow.getDate()).padStart(2, '0');
         const todayStr = `${yyyy}${mm}${dd}`; 
 
         try {
             const resTotal = await fetch(`https://api.counterapi.dev/v1/${namespace}/total/up`);
-            const dataTotal = await resTotal.json();
-            document.getElementById('count-total').innerText = dataTotal.count;
-
+            document.getElementById('count-total').innerText = (await resTotal.json()).count;
             const resToday = await fetch(`https://api.counterapi.dev/v1/${namespace}/today_${todayStr}/up`);
-            const dataToday = await resToday.json();
-            document.getElementById('count-today').innerText = dataToday.count;
+            document.getElementById('count-today').innerText = (await resToday.json()).count;
         } catch (e) {
-            document.getElementById('count-total').innerText = '-';
-            document.getElementById('count-today').innerText = '-';
+            document.getElementById('count-total').innerText = '-'; document.getElementById('count-today').innerText = '-';
         }
     }
 
     function sharePage() {
-        const shareData = {
-            title: '헤이청주 📢 교육/체험 링크모음',
-            text: '우리 지역 체험 행사 일정을 한눈에 확인하세요!',
-            url: window.location.href
-        };
+        const shareData = { title: '헤이청주 📢 교육/체험 링크모음', text: '우리 지역 체험 행사 일정을 한눈에 확인하세요!', url: window.location.href };
         if (navigator.share) navigator.share(shareData).catch(console.error);
         else navigator.clipboard.writeText(window.location.href).then(() => alert('링크가 복사되었습니다!'));
+    }
+
+    // 🌟 모달창 열기/닫기 함수
+    function openImageModal(imgUrl) {
+        document.getElementById('modal-image-content').src = imgUrl;
+        document.getElementById('image-modal').style.display = 'flex';
+    }
+    function closeImageModal() {
+        document.getElementById('image-modal').style.display = 'none';
+        document.getElementById('modal-image-content').src = '';
     }
 
     let eventData = [];
@@ -470,18 +533,10 @@
         try {
             const response = await fetch(csvUrl);
             if (!response.ok) throw new Error("네트워크 응답이 올바르지 않습니다.");
-            
             const csvText = await response.text();
             eventData = parseCSVToJSON(csvText);
             
-            processEventDates(); 
-            processEventAges(); 
-            generateFilters(); 
-            
-            // 데이터 처리 후 각 콘텐츠가 등록된지 24시간 이내인지 확인
-            processNewItems();
-            updateTabNewBadges(); 
-            applyFilters();
+            processEventDates(); processEventAges(); generateFilters(); processNewItems(); updateTabNewBadges(); applyFilters();
         } catch (error) {
             console.error("데이터 로딩 실패:", error);
             document.getElementById('list-container').innerHTML = '<div class="empty-state">행사 정보를 불러오는데 실패했습니다. 새로고침을 해주세요. 😥</div>';
@@ -489,51 +544,25 @@
     }
 
     function parseCSVToJSON(csv) {
-        const rows = [];
-        let row = [];
-        let curr = '';
-        let insideQuotes = false;
-        
+        const rows = []; let row = []; let curr = ''; let insideQuotes = false;
         for (let i = 0; i < csv.length; i++) {
-            const char = csv[i];
-            const nextChar = csv[i + 1];
-            
-            if (char === '"' && insideQuotes && nextChar === '"') {
-                curr += '"';
-                i++;
-            } else if (char === '"') {
-                insideQuotes = !insideQuotes;
-            } else if (char === ',' && !insideQuotes) {
-                row.push(curr);
-                curr = '';
-            } else if ((char === '\n' || (char === '\r' && nextChar === '\n')) && !insideQuotes) {
-                row.push(curr);
-                rows.push(row);
-                row = [];
-                curr = '';
-                if (char === '\r') i++;
-            } else {
-                curr += char;
-            }
+            const char = csv[i]; const nextChar = csv[i + 1];
+            if (char === '"' && insideQuotes && nextChar === '"') { curr += '"'; i++; } 
+            else if (char === '"') { insideQuotes = !insideQuotes; } 
+            else if (char === ',' && !insideQuotes) { row.push(curr); curr = ''; } 
+            else if ((char === '\n' || (char === '\r' && nextChar === '\n')) && !insideQuotes) {
+                row.push(curr); rows.push(row); row = []; curr = ''; if (char === '\r') i++;
+            } else { curr += char; }
         }
-        if (curr !== '' || row.length > 0) {
-            row.push(curr);
-            rows.push(row);
-        }
-        
+        if (curr !== '' || row.length > 0) { row.push(curr); rows.push(row); }
         if (rows.length < 2) return [];
         
-        const headers = rows[0].map(h => h.trim());
-        const data = [];
-        
+        const headers = rows[0].map(h => h.trim()); const data = [];
         for (let i = 1; i < rows.length; i++) {
             if (rows[i].length === 1 && rows[i][0].trim() === '') continue; 
-            
             const obj = {};
             for (let j = 0; j < headers.length; j++) {
-                if (headers[j]) {
-                    obj[headers[j]] = rows[i][j] ? rows[i][j].trim() : '';
-                }
+                if (headers[j]) obj[headers[j]] = rows[i][j] ? rows[i][j].trim() : '';
             }
             if (obj.type || obj.title) data.push(obj);
         }
@@ -541,32 +570,19 @@
     }
 
     function processEventDates() {
-        const today = new Date();
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        
-        const todayStr = `${today.getMonth() + 1}/${today.getDate()}`;     
-        const tomorrowStr = `${tomorrow.getMonth() + 1}/${tomorrow.getDate()}`; 
+        const today = new Date(); const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+        const todayStr = `${today.getMonth() + 1}/${today.getDate()}`; const tomorrowStr = `${tomorrow.getMonth() + 1}/${tomorrow.getDate()}`; 
 
         eventData.forEach(item => {
-            if (item.type === 'affiliate' || item.type === 'always') {
-                item.displayText = item.applyNote;
-                return;
-            }
-
-            item.isTodayClose = false;
-            item.isTomorrowOpen = false;
-            item.isTomorrowClose = false;
-
+            if (item.type === 'affiliate' || item.type === 'always') { item.displayText = item.applyNote; return; }
+            item.isTodayClose = false; item.isTomorrowOpen = false; item.isTomorrowClose = false;
             if (item.applyEnd && item.applyEnd.includes(todayStr)) item.isTodayClose = true;
             if (item.applyStart && item.applyStart.includes(tomorrowStr)) item.isTomorrowOpen = true;
             if (item.applyEnd && item.applyEnd.includes(tomorrowStr)) item.isTomorrowClose = true;
-
             let text = '';
             if (item.applyStart && item.applyEnd) text = `${item.applyStart} ~ ${item.applyEnd}`;
             else if (item.applyStart) text = `${item.applyStart} 오픈`;
             else if (item.applyEnd) text = `~ ${item.applyEnd}`;
-
             if (item.applyNote) {
                 if (text) text += ` <span style="font-weight:700; font-size:0.8rem;">[${item.applyNote}]</span>`;
                 else text = `<span style="font-weight:700;">${item.applyNote}</span>`;
@@ -579,10 +595,7 @@
         eventData.forEach(item => {
             const mapped = new Set();
             if (item.ageFilter && item.ageFilter.trim() !== '') {
-                item.ageFilter.split(',').forEach(f => {
-                    const cleanF = f.trim(); 
-                    if (cleanF) mapped.add(cleanF);
-                });
+                item.ageFilter.split(',').forEach(f => { const cleanF = f.trim(); if (cleanF) mapped.add(cleanF); });
             }
             if (mapped.size === 0) mapped.add('미취학').add('초등').add('중고등').add('성인');
             item.mappedAges = Array.from(mapped);
@@ -590,9 +603,7 @@
     }
 
     function generateFilters() {
-        const filterGroup = document.getElementById('combined-filter-group');
-        filterGroup.innerHTML = ''; 
-
+        const filterGroup = document.getElementById('combined-filter-group'); filterGroup.innerHTML = ''; 
         const presentLocs = new Set();
         const fixedLocs = ['청주', '충북', '대전', '세종', '온라인'];
         const chungbukSubRegions = ['괴산', '음성', '증평', '보은', '옥천', '충주', '제천', '진천', '단양', '영동'];
@@ -610,18 +621,13 @@
         const ageFilters = ['미취학', '초등', '중고등', '성인'];
         ageFilters.forEach((age, index) => {
             const id = `age-dynamic-${index}`;
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox'; checkbox.id = id; checkbox.value = age; checkbox.className = 'filter-cb age-cb'; 
-            checkbox.onchange = applyFilters;
-            const label = document.createElement('label');
-            label.htmlFor = id; label.className = 'cb-label age-label'; label.innerText = age;
+            const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.id = id; checkbox.value = age; checkbox.className = 'filter-cb age-cb'; checkbox.onchange = applyFilters;
+            const label = document.createElement('label'); label.htmlFor = id; label.className = 'cb-label age-label'; label.innerText = age;
             filterGroup.appendChild(checkbox); filterGroup.appendChild(label);
         });
 
         if (presentLocs.size > 0) {
-            const divider = document.createElement('span');
-            divider.innerText = '|'; divider.style.color = '#ccc'; divider.style.display = 'flex';
-            divider.style.alignItems = 'center'; divider.style.fontSize = '0.7rem'; divider.style.margin = '0 2px';
+            const divider = document.createElement('span'); divider.innerText = '|'; divider.style.color = '#ccc'; divider.style.display = 'flex'; divider.style.alignItems = 'center'; divider.style.fontSize = '0.7rem'; divider.style.margin = '0 2px';
             filterGroup.appendChild(divider);
         }
 
@@ -629,11 +635,8 @@
         orderedLocs.forEach((loc, index) => {
             if (presentLocs.has(loc)) {
                 const id = `loc-dynamic-${index}`;
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox'; checkbox.id = id; checkbox.value = loc; checkbox.className = 'filter-cb loc-cb'; 
-                checkbox.onchange = applyFilters;
-                const label = document.createElement('label');
-                label.htmlFor = id; label.className = 'cb-label'; label.innerText = loc;
+                const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.id = id; checkbox.value = loc; checkbox.className = 'filter-cb loc-cb'; checkbox.onchange = applyFilters;
+                const label = document.createElement('label'); label.htmlFor = id; label.className = 'cb-label'; label.innerText = loc;
                 filterGroup.appendChild(checkbox); filterGroup.appendChild(label);
             }
         });
@@ -641,110 +644,57 @@
 
     function parseDateValue(dateStr) {
         if (!dateStr) return 9999; 
-        let match = dateStr.match(/(\d{1,2})\/(\d{1,2})/);
-        if (match) return parseInt(match[1]) * 100 + parseInt(match[2]);
-        match = dateStr.match(/(\d{1,2})월\s*(\d{1,2})일/);
-        if (match) return parseInt(match[1]) * 100 + parseInt(match[2]);
-        match = dateStr.match(/(\d{1,2})월/);
-        if (match) return parseInt(match[1]) * 100;
+        let match = dateStr.match(/(\d{1,2})\/(\d{1,2})/); if (match) return parseInt(match[1]) * 100 + parseInt(match[2]);
+        match = dateStr.match(/(\d{1,2})월\s*(\d{1,2})일/); if (match) return parseInt(match[1]) * 100 + parseInt(match[2]);
+        match = dateStr.match(/(\d{1,2})월/); if (match) return parseInt(match[1]) * 100;
         return 9999; 
     }
 
     let currentTab = 'ongoing'; 
 
-    // 🌟 새로운 콘텐츠 판별 시스템 (24시간 유지)
     function processNewItems() {
-        const knownItemsStr = localStorage.getItem('heycj_known_items');
-        let knownItems = {};
-        const now = Date.now();
-        const ONE_DAY = 24 * 60 * 60 * 1000;
-        let updated = false;
-
-        // 사이트 최초 접속자에게는 모든 것에 N 마크가 뜨지 않게 조치
+        const knownItemsStr = localStorage.getItem('heycj_known_items'); let knownItems = {};
+        const now = Date.now(); const ONE_DAY = 24 * 60 * 60 * 1000; let updated = false;
         const isFirstVisit = !knownItemsStr; 
-        if (!isFirstVisit) {
-            try { knownItems = JSON.parse(knownItemsStr); } 
-            catch(e) { knownItems = {}; }
-        }
-
+        if (!isFirstVisit) { try { knownItems = JSON.parse(knownItemsStr); } catch(e) { knownItems = {}; } }
         const currentIds = new Set();
 
         eventData.forEach(item => {
-            // 행사 제목과 탭 정보를 결합해 고유 ID 생성
             const id = encodeURIComponent((item.title || '').trim() + '|' + (item.type || ''));
             currentIds.add(id);
-
-            if (isFirstVisit) {
-                // 최초 접속 시: 24시간이 지난 것으로 처리하여 조용히 저장
-                knownItems[id] = now - ONE_DAY - 1000;
-                item.isNew = false;
-                updated = true;
-            } else if (!knownItems[id]) {
-                // 이전에 본 적 없는 새로운 데이터 (신규 추가됨)
-                knownItems[id] = now;
-                item.isNew = true;
-                updated = true;
-            } else {
-                // 이미 아는 데이터의 경우: 저장된 시점으로부터 24시간 이내인지 확인
-                const age = now - knownItems[id];
-                if (age < ONE_DAY) {
-                    item.isNew = true; // 24시간 안 지났으므로 N 유지
-                } else {
-                    item.isNew = false;
-                }
-            }
+            if (isFirstVisit) { knownItems[id] = now - ONE_DAY - 1000; item.isNew = false; updated = true; } 
+            else if (!knownItems[id]) { knownItems[id] = now; item.isNew = true; updated = true; } 
+            else { item.isNew = (now - knownItems[id] < ONE_DAY); }
         });
 
-        // 엑셀에서 삭제된 오래된 항목 정리
         for (let key in knownItems) {
-            if (!currentIds.has(key) && (now - knownItems[key] > ONE_DAY)) {
-                delete knownItems[key];
-                updated = true;
-            }
+            if (!currentIds.has(key) && (now - knownItems[key] > ONE_DAY)) { delete knownItems[key]; updated = true; }
         }
-
-        if (updated) {
-            localStorage.setItem('heycj_known_items', JSON.stringify(knownItems));
-        }
+        if (updated) localStorage.setItem('heycj_known_items', JSON.stringify(knownItems));
     }
 
-    // 🌟 탭별 N 뱃지 업데이트
     function updateTabNewBadges() {
         const tabs = ['ongoing', 'always', 'affiliate'];
         tabs.forEach(tabType => {
-            // 해당 탭에 isNew(24시간 내 등록된) 데이터가 하나라도 있으면 뱃지 표시
             const hasNew = eventData.some(item => item.type === tabType && item.isNew);
             const tabElement = document.querySelector(`.tab[onclick*="${tabType}"]`);
             if (!tabElement) return;
-
             const existingBadge = tabElement.querySelector('.new-badge');
-            if (hasNew) {
-                if (!existingBadge) tabElement.insertAdjacentHTML('beforeend', '<span class="new-badge">N</span>');
-            } else {
-                if (existingBadge) existingBadge.remove();
-            }
+            if (hasNew) { if (!existingBadge) tabElement.insertAdjacentHTML('beforeend', '<span class="new-badge">N</span>'); } 
+            else { if (existingBadge) existingBadge.remove(); }
         });
     }
 
     function changeTab(element, type) {
-        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-        element.classList.add('active');
-        currentTab = type;
-        
-        // 🌟 이제 탭을 누른다고 N이 지워지지 않습니다! (24시간 후에 자동 소멸)
-        applyFilters(); 
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active')); element.classList.add('active');
+        currentTab = type; applyFilters(); window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function applyFilters() {
-        const checkedLocBoxes = document.querySelectorAll('.loc-cb:checked');
-        const selectedLocs = Array.from(checkedLocBoxes).map(cb => cb.value);
-        const checkedAgeBoxes = document.querySelectorAll('.age-cb:checked');
-        const selectedAges = Array.from(checkedAgeBoxes).map(cb => cb.value);
+        const selectedLocs = Array.from(document.querySelectorAll('.loc-cb:checked')).map(cb => cb.value);
+        const selectedAges = Array.from(document.querySelectorAll('.age-cb:checked')).map(cb => cb.value);
         const keyword = document.getElementById('search-input').value.trim().toLowerCase();
-
-        const container = document.getElementById('list-container');
-        container.innerHTML = '';
+        const container = document.getElementById('list-container'); container.innerHTML = '';
 
         if (eventData.length === 0) return;
 
@@ -754,9 +704,7 @@
             let matchAge = selectedAges.length === 0 ? true : selectedAges.some(age => item.mappedAges && item.mappedAges.includes(age));
             let matchSearch = true;
             if (keyword) {
-                matchSearch = (item.title && item.title.toLowerCase().includes(keyword)) ||
-                              (item.place && item.place.toLowerCase().includes(keyword)) ||
-                              (item.loc && item.loc.toLowerCase().includes(keyword));
+                matchSearch = (item.title && item.title.toLowerCase().includes(keyword)) || (item.place && item.place.toLowerCase().includes(keyword)) || (item.loc && item.loc.toLowerCase().includes(keyword));
             }
             return matchTab && matchLoc && matchAge && matchSearch;
         });
@@ -770,46 +718,55 @@
         }
 
         if (filteredData.length === 0) {
-            container.innerHTML = '<div class="empty-state">해당하는 행사가 없습니다. 조건이나 검색어를 변경해 보세요! 😥</div>';
-            return;
+            container.innerHTML = '<div class="empty-state">해당하는 행사가 없습니다. 조건이나 검색어를 변경해 보세요! 😥</div>'; return;
         }
 
         filteredData.forEach(item => {
-            let safeCost = item.costType || '비용정보 없음';
-            if (safeCost === '해당정보 없음') safeCost = '비용정보 없음';
-            let costBadgeClass = 'badge-info';
-            if (safeCost.includes('무료')) costBadgeClass = 'badge-free';
-            else if (safeCost.includes('유료')) costBadgeClass = 'badge-paid';
+            let safeCost = item.costType || '비용정보 없음'; if (safeCost === '해당정보 없음') safeCost = '비용정보 없음';
+            let costBadgeClass = 'badge-info'; if (safeCost.includes('무료')) costBadgeClass = 'badge-free'; else if (safeCost.includes('유료')) costBadgeClass = 'badge-paid';
 
             let dateBadges = '';
             if (item.isTodayClose) dateBadges += `<span class="badge badge-today">오늘마감</span> `;
             if (item.isTomorrowOpen) dateBadges += `<span class="badge badge-open">내일오픈</span> `;
             if (item.isTomorrowClose) dateBadges += `<span class="badge badge-close">내일마감</span> `;
 
-            let applyTextStyle = 'color:var(--text-sub);';
-            if (item.isTodayClose) applyTextStyle = 'color:#E53935; font-weight:700;';
+            let applyTextStyle = 'color:var(--text-sub);'; if (item.isTodayClose) applyTextStyle = 'color:#E53935; font-weight:700;';
 
-            let cardClass = 'card';
-            let overlayHTML = '';
-            
-            // 🌟 엑셀의 '커밍순' 열 확인 (대소문자 지원: O, Y 둘 다 허용)
+            let cardClass = 'card'; let overlayHTML = '';
             const comingSoonVal = item['커밍순'] ? item['커밍순'].toUpperCase().trim() : '';
             if (comingSoonVal === 'O' || comingSoonVal === 'Y') { 
                 cardClass += ' coming-soon';
-                overlayHTML = `
-                    <div class="coming-soon-overlay">
-                        <div class="coming-soon-stamp">COMING SOON</div>
-                    </div>
-                `;
+                overlayHTML = `<div class="coming-soon-overlay"><div class="coming-soon-stamp">COMING SOON</div></div>`;
             }
 
             let linkAttr = `href="${item.link || '#'}"`;
-            if (item.link && item.link.toLowerCase().startsWith('javascript:')) {
-                linkAttr = `href="#" onclick="${item.link.replace('javascript:', '')}"`;
-            }
+            if (item.link && item.link.toLowerCase().startsWith('javascript:')) { linkAttr = `href="#" onclick="${item.link.replace('javascript:', '')}"`; }
 
-            // 🌟 카드가 24시간 내 등록된 신규 콘텐츠라면 제목 옆에 N 뱃지 추가
             let newCardBadge = item.isNew ? `<span class="card-new-badge">N</span>` : '';
+
+            // 🌟 버튼 출력 분기 처리 (제휴 탭 전용)
+            let actionButtonsHTML = '';
+            if (item.type === 'affiliate') {
+                let buttons = [];
+                // 1. 이미지가 있을 경우 (버튼 추가)
+                if (item['이미지'] && item['이미지'].trim() !== '') {
+                    buttons.push(`<button onclick="openImageModal('${item['이미지'].trim()}')" class="btn-link btn-image">이미지 보기 🖼️</button>`);
+                }
+                // 2. 링크가 있을 경우 (기존 버튼 추가)
+                if (item.link && item.link.trim() !== '') {
+                    buttons.push(`<a ${linkAttr} ${!item.link.includes('javascript:') ? 'target="_blank"' : ''} class="btn-link">제휴 혜택 확인하기 🎁</a>`);
+                }
+                
+                // 버튼 출력 조합
+                if (buttons.length > 0) {
+                    actionButtonsHTML = `<div class="btn-group">${buttons.join('')}</div>`;
+                } else {
+                    actionButtonsHTML = `<div style="text-align:center; margin-top:10px; font-size:0.85rem; color:#888;">등록된 혜택 정보가 없습니다.</div>`;
+                }
+            } else {
+                // 제휴 탭이 아닌 다른 탭들의 기본 버튼
+                actionButtonsHTML = `<a ${linkAttr} ${!item.link?.includes('javascript:') ? 'target="_blank"' : ''} class="btn-link">상세보기 및 예약 ↗</a>`;
+            }
 
             const cardHTML = `
                 <div class="${cardClass}">
@@ -826,9 +783,7 @@
                     <div class="info-row"><div class="info-label">장소</div><div class="info-desc">${item.place || ''}</div></div>
                     <div class="info-row"><div class="info-label">접수기간</div><div class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</div></div>
                     <div class="info-row"><div class="info-label">운영일정</div><div class="info-desc">${item.date || '해당정보 없음'}</div></div>
-                    <a ${linkAttr} ${item.type !== 'affiliate' && !item.link?.includes('javascript:') ? 'target="_blank"' : ''} class="btn-link">
-                        ${item.type === 'affiliate' ? '제휴 혜택 확인하기 🎁' : '상세보기 및 예약 ↗'}
-                    </a>
+                    ${actionButtonsHTML}
                 </div>
             `;
             container.innerHTML += cardHTML;
@@ -836,10 +791,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        initNotice(); 
-        initLastUpdated();
-        initVisitCounters();
-        fetchEventData(); 
+        initNotice(); initLastUpdated(); initVisitCounters(); fetchEventData(); 
     });
 </script>
 
