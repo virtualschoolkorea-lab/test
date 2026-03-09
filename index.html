@@ -152,8 +152,8 @@
     const noticeData = [
         { text: "[⚡내일오픈/마감,긴급정보 실시간 알림 오픈챗 입장하기👆] ", link: "https://open.kakao.com/o/gAUqOrai" },
         { text: "[헤이청주에 ☎️ 협업문의/제안/건의하기] 👆", link: "https://forms.gle/h8KLaLkfsU55aH5T9" },
-        { text: "※ 간혹 오타가 발생하므로 신청페이지에서 최종 정보확인하기", link: "" },
-        { text: "[제휴/이벤트] '우리 아이, 주의력이 부족한가요?' 업로드 완료", link: "" }
+        { text: "📝간혹 오타가 발생하므로 상세정보확인 페이지 반드시 참고", link: "" },
+        { text: "📢[제휴/추가모집] '우리 아이, 주의력이 부족한가요?' Cooming Soon", link: "" }
     ];
 
     function initNotice() {
@@ -241,7 +241,9 @@
             if (!response.ok) throw new Error("네트워크 응답이 올바르지 않습니다.");
             const csvText = await response.text();
             eventData = parseCSVToJSON(csvText);
-            processEventDates(); processEventAges(); generateFilters(); processNewItems(); updateTabNewBadges(); applyFilters();
+            
+            // 등록일 기반 N배지 처리 로직 적용
+            processEventDates(); processEventAges(); generateFilters(); processNewBadges(); updateTabNewBadges(); applyFilters();
         } catch (error) { document.getElementById('list-container').innerHTML = '<div class="empty-state">행사 정보를 불러오는데 실패했습니다. 새로고침을 해주세요. 😥</div>'; }
     }
 
@@ -333,59 +335,34 @@
 
     let currentTab = 'ongoing'; 
 
-function processNewItems() {
-        const storageKey = 'heycj_known_items_v3'; 
-        const knownItemsStr = localStorage.getItem(storageKey); 
-        let knownItems = {}; 
-        const now = Date.now(); 
-        const ONE_DAY = 24 * 60 * 60 * 1000; 
-        let updated = false;
-        
-        if (knownItemsStr) { 
-            try { knownItems = JSON.parse(knownItemsStr); } 
-            catch(e) { knownItems = {}; } 
-        }
+    // 🌟 복잡한 localStorage 대신 등록일 기준으로만 작동하는 직관적인 함수 🌟
+    function processNewBadges() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // 시간차이 무시를 위해 0시로 초기화
 
-        const isFirstVisit = Object.keys(knownItems).length === 0; 
-        const currentIds = new Set();
-        
         eventData.forEach((item, index) => {
-            item.originalIndex = index;
-            const safeTitle = (item.title || '').replace(/\s+/g, ''); 
-            const safeType = (item.type || '').trim(); 
-            const id = encodeURIComponent(`${safeTitle}|${safeType}`);
-            currentIds.add(id);
+            item.originalIndex = index; // 정렬을 위해 원본 순서 저장
+            item.isNew = false;
 
-            if (isFirstVisit) { 
-                knownItems[id] = now - ONE_DAY - 1000; 
-                item.isNew = false; 
-                updated = true; 
-            } 
-            else if (!knownItems[id]) { 
-                knownItems[id] = now; 
-                item.isNew = true; 
-                updated = true; 
-            } 
-            else { 
-                item.isNew = (now - knownItems[id] < ONE_DAY); 
+            // 시트의 '등록일' 데이터가 있는 경우 (예: 2026-03-10, 2026/03/10 등)
+            if (item['등록일'] && item['등록일'].trim() !== '') {
+                // 날짜 포맷 통일 (., / 등을 -로 변환)
+                let dateStr = item['등록일'].trim().replace(/[\.\/]/g, '-');
+                const regDate = new Date(dateStr);
+                
+                // 정상적인 날짜 형식인지 체크
+                if (!isNaN(regDate.getTime())) {
+                    regDate.setHours(0, 0, 0, 0);
+                    const diffTime = today.getTime() - regDate.getTime();
+                    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+                    
+                    // 등록일이 오늘 기준 3일 이내인 경우에만 N 배지 활성화
+                    if (diffDays >= 0 && diffDays <= 3) {
+                        item.isNew = true;
+                    }
+                }
             }
-            
-            // 🌟 이 부분이 추가된 핵심 코드입니다 🌟
-            // 시트에 N숨김 표시가 'O'이거나 'o'이면 무조건 N 배지를 가립니다.
-            if (item['N숨김'] === 'O' || item['N숨김'] === 'o') {
-                item.isNew = false;
-            }
-
-            item.discoveryTime = knownItems[id];
         });
-        
-        for (let key in knownItems) { 
-            if (!currentIds.has(key) && (now - knownItems[key] > ONE_DAY)) { 
-                delete knownItems[key]; 
-                updated = true; 
-            } 
-        }
-        if (updated) { localStorage.setItem(storageKey, JSON.stringify(knownItems)); }
     }
 
     function updateTabNewBadges() {
@@ -431,7 +408,11 @@ function processNewItems() {
                 return parseDateValue(a.applyEnd) - parseDateValue(b.applyEnd); 
             });
         } else if (currentTab === 'always' || currentTab === 'affiliate') {
-            filteredData.sort((a, b) => { if (b.discoveryTime !== a.discoveryTime) { return b.discoveryTime - a.discoveryTime; } return b.originalIndex - a.originalIndex; });
+            filteredData.sort((a, b) => { 
+                // 새 글(N 배지)이 먼저 오게 한 뒤 시트의 원본 순서대로 정렬
+                if (a.isNew !== b.isNew) return b.isNew ? 1 : -1; 
+                return a.originalIndex - b.originalIndex; 
+            });
         }
 
         if (filteredData.length === 0) { container.innerHTML = '<div class="empty-state">해당하는 행사가 없습니다. 조건이나 검색어를 변경해 보세요! 😥</div>'; return; }
@@ -479,7 +460,6 @@ function processNewItems() {
                 btnDetails = `<button type="button" class="btn-link btn-disabled" onclick="alert('등록된 상세정보 링크가 없습니다.');">상세정보확인 🔍</button>`;
             }
 
-            // 🌟 텍스트 직접 기입 가능하도록 수정된 '신청링크' 로직 🌟
             let btnApply = '';
             const rawApplyValue = item['신청링크'] || item.applyLink; 
             
@@ -489,7 +469,6 @@ function processNewItems() {
                 const alertSafeValue = cleanValue.replace(/'/g, "\\'").replace(/"/g, '\\"');
                 const trackTitle = (item.title || '').replace(/"/g, '&quot;');
                 
-                // http, https, www, 혹은 javascript: 로 시작하면 링크로 간주
                 const isUrl = /^(https?:\/\/|www\.|javascript:)/i.test(cleanValue);
 
                 if (isUrl) {
@@ -499,11 +478,9 @@ function processNewItems() {
                     
                     btnApply = `<a ${applyAttr} class="btn-link" onclick="trackEventClick('${trackTitle}', 'apply')">신청하기 🔗</a>`;
                 } else {
-                    // 링크 형태가 아닌 일반 텍스트인 경우 (예: "전화접수", "현장결제")
                     btnApply = `<button type="button" class="btn-link btn-disabled" onclick="alert('${alertSafeValue}');">${safeApplyValue}</button>`;
                 }
             } else {
-                // 완전히 비어있는 경우 기존 기본 텍스트 표시
                 btnApply = `<button type="button" class="btn-link btn-disabled" onclick="alert('별도의 사전예약 링크가 필요 없는 현장접수/자유참여 행사입니다.');">현장접수/예약불필요</button>`;
             }
             
