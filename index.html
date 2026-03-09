@@ -246,35 +246,41 @@
             display: block;
             transition: transform 0.2s;
         }
-        .card:not(.coming-soon):hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        .card:not(.disabled-card):hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
         
-        .card.coming-soon {
+        /* 🌟 상태 오버레이 (커밍순 / 마감) */
+        .card.disabled-card {
             position: relative;
             overflow: hidden;
             pointer-events: none; 
             user-select: none;
         }
-        .coming-soon-overlay {
+        .status-overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0, 0, 0, 0.4); 
+            background-color: rgba(0, 0, 0, 0.45); 
             z-index: 10;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        .coming-soon-stamp {
+        .status-stamp {
             color: #fff;
             border: 3px solid #fff;
             padding: 8px 18px;
             font-size: 1.6rem;
             font-weight: 800;
             letter-spacing: 2px;
-            text-transform: uppercase;
             transform: rotate(-10deg);
             border-radius: 8px;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.3);
             text-align: center;
+        }
+        /* 마감 스타일 */
+        .status-stamp.closed {
+            color: #ff5252;
+            border-color: #ff5252;
+            background: rgba(255, 82, 82, 0.15);
         }
 
         .card-header {
@@ -344,9 +350,9 @@
         }
         .btn-link:hover { background-color: #388E3C; }
         
-        /* 🌟 이미지 모달 전용 버튼 색상 */
-        .btn-image { background-color: #9b59b6; }
-        .btn-image:hover { background-color: #8e44ad; }
+        /* 🌟 이미지 모달 전용 버튼 색상 변경 (기본색과 동일) */
+        .btn-image { background-color: var(--primary-color); }
+        .btn-image:hover { background-color: #388E3C; }
 
         .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; }
         .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; }
@@ -653,24 +659,54 @@
     let currentTab = 'ongoing'; 
 
     function processNewItems() {
-        const knownItemsStr = localStorage.getItem('heycj_known_items'); let knownItems = {};
-        const now = Date.now(); const ONE_DAY = 24 * 60 * 60 * 1000; let updated = false;
-        const isFirstVisit = !knownItemsStr; 
-        if (!isFirstVisit) { try { knownItems = JSON.parse(knownItemsStr); } catch(e) { knownItems = {}; } }
+        // v2 키를 사용하여 이전 데이터 포맷과 꼬이지 않도록 합니다.
+        const knownItemsStr = localStorage.getItem('heycj_known_items_v2'); 
+        let knownItems = {};
+        const now = Date.now(); 
+        const ONE_DAY = 24 * 60 * 60 * 1000; 
+        let updated = false;
+
+        if (knownItemsStr) {
+            try { knownItems = JSON.parse(knownItemsStr); } catch(e) { knownItems = {}; } 
+        }
+
+        const isFirstVisit = Object.keys(knownItems).length === 0;
         const currentIds = new Set();
 
-        eventData.forEach(item => {
+        eventData.forEach((item, index) => {
+            item.originalIndex = index; // 엑셀에서의 기존 순서 저장(정렬용)
             const id = encodeURIComponent((item.title || '').trim() + '|' + (item.type || ''));
             currentIds.add(id);
-            if (isFirstVisit) { knownItems[id] = now - ONE_DAY - 1000; item.isNew = false; updated = true; } 
-            else if (!knownItems[id]) { knownItems[id] = now; item.isNew = true; updated = true; } 
-            else { item.isNew = (now - knownItems[id] < ONE_DAY); }
+
+            if (isFirstVisit) { 
+                // 최초 방문 시 모든 항목은 이미 있었던 것으로 간주
+                knownItems[id] = now - ONE_DAY - 1000; 
+                item.isNew = false; 
+                updated = true; 
+            } else if (!knownItems[id]) { 
+                // 새롭게 발견된 항목의 시간 기록
+                knownItems[id] = now; 
+                item.isNew = true; 
+                updated = true; 
+            } else { 
+                // 기존에 있던 항목이라면 발견된 지 24시간이 지났는지 무조건 계산
+                item.isNew = (now - knownItems[id] < ONE_DAY); 
+            }
+            item.discoveryTime = knownItems[id];
         });
 
+        // 삭제된 이전 항목 정리
         for (let key in knownItems) {
-            if (!currentIds.has(key) && (now - knownItems[key] > ONE_DAY)) { delete knownItems[key]; updated = true; }
+            if (!currentIds.has(key) && (now - knownItems[key] > ONE_DAY)) { 
+                delete knownItems[key]; 
+                updated = true; 
+            }
         }
-        if (updated) localStorage.setItem('heycj_known_items', JSON.stringify(knownItems));
+        
+        // 데이터가 업데이트 되었으면 즉시 로컬스토리지에 저장
+        if (updated) {
+            localStorage.setItem('heycj_known_items_v2', JSON.stringify(knownItems));
+        }
     }
 
     function updateTabNewBadges() {
@@ -709,11 +745,23 @@
             return matchTab && matchLoc && matchAge && matchSearch;
         });
 
+        // 🌟 정렬 로직 분기
         if (currentTab === 'ongoing' || keyword) {
+            // 사전예약중: 마감 임박순 정렬
             filteredData.sort((a, b) => {
                 if (a.isTodayClose !== b.isTodayClose) return b.isTodayClose ? 1 : -1;
                 if (a.isTomorrowClose !== b.isTomorrowClose) return b.isTomorrowClose ? 1 : -1;
                 return parseDateValue(a.applyEnd) - parseDateValue(b.applyEnd); 
+            });
+        } else if (currentTab === 'always' || currentTab === 'affiliate') {
+            // 상시예약 / 제휴 탭: 새롭게 추가된 콘텐츠 최상단 배치
+            filteredData.sort((a, b) => {
+                // 1순위: 발견된 시간 최신순 정렬 (최근에 추가된 것일수록 상단)
+                if (b.discoveryTime !== a.discoveryTime) {
+                    return b.discoveryTime - a.discoveryTime;
+                }
+                // 2순위: 엑셀에서 가장 아래쪽에 추가된 행이 위로 오도록 내림차순 정렬
+                return b.originalIndex - a.originalIndex;
             });
         }
 
@@ -733,10 +781,15 @@
             let applyTextStyle = 'color:var(--text-sub);'; if (item.isTodayClose) applyTextStyle = 'color:#E53935; font-weight:700;';
 
             let cardClass = 'card'; let overlayHTML = '';
-            const comingSoonVal = item['커밍순'] ? item['커밍순'].toUpperCase().trim() : '';
-            if (comingSoonVal === 'O' || comingSoonVal === 'Y') { 
-                cardClass += ' coming-soon';
-                overlayHTML = `<div class="coming-soon-overlay"><div class="coming-soon-stamp">COMING SOON</div></div>`;
+            
+            // 🌟 커밍순 및 마감 상태 오버레이 처리
+            const statusVal = item['커밍순'] ? item['커밍순'].trim() : '';
+            if (statusVal === '커밍순') { 
+                cardClass += ' disabled-card';
+                overlayHTML = `<div class="status-overlay"><div class="status-stamp">COMING SOON</div></div>`;
+            } else if (statusVal === '마감') {
+                cardClass += ' disabled-card';
+                overlayHTML = `<div class="status-overlay"><div class="status-stamp closed">마감</div></div>`;
             }
 
             let linkAttr = `href="${item.link || '#'}"`;
@@ -744,7 +797,7 @@
 
             let newCardBadge = item.isNew ? `<span class="card-new-badge">N</span>` : '';
 
-            // 🌟 버튼 출력 분기 처리 (제휴 탭 전용)
+            // 🌟 버튼 출력 분기 처리
             let actionButtonsHTML = '';
             if (item.type === 'affiliate') {
                 let buttons = [];
