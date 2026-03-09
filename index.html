@@ -95,7 +95,7 @@
         .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; }
         .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; }
 
-        /* 이미지 모달 팝업 스타일 수정 (우선순위 높임) */
+        /* 이미지 모달 팝업 스타일 */
         .img-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; }
         .img-modal-overlay.active { display: flex; opacity: 1; }
         .img-modal-content { max-width: 90%; max-height: 85vh; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); object-fit: contain; }
@@ -203,19 +203,16 @@
         if (navigator.share) navigator.share(shareData).catch(console.error); else navigator.clipboard.writeText(window.location.href).then(() => alert('링크가 복사되었습니다!'));
     }
 
-    /* 🌟 안전한 모달 제어 로직 🌟 */
     const modal = document.getElementById('imageModal');
     const modalImg = document.getElementById('imageModalImg');
     
-    // 모달 닫기 이벤트 (배경 클릭 또는 X 버튼 클릭)
     modal.addEventListener('click', function(e) {
         if (e.target === modal || e.target.id === 'closeModalBtn') {
             modal.classList.remove('active');
-            setTimeout(() => { modalImg.src = ""; }, 200); // 닫힐 때 잔상 제거
+            setTimeout(() => { modalImg.src = ""; }, 200);
         }
     });
 
-    // 동적 버튼 클릭 감지 (이벤트 위임 방식 - 특수문자 에러 원천 차단)
     document.addEventListener('click', function(e) {
         if (e.target && e.target.classList.contains('btn-img-modal')) {
             const url = e.target.getAttribute('data-url');
@@ -423,7 +420,6 @@
             let btnDetails = '';
             const detailUrl = item.link || item['링크'];
             
-            // 이미지 확장자 조건 (더욱 널널하게 검사)
             let isImageUrl = false;
             if (detailUrl && detailUrl.trim() !== '') {
                 const lowerUrl = detailUrl.trim().toLowerCase();
@@ -433,12 +429,10 @@
             }
 
             if (detailUrl && detailUrl.trim() !== '') {
-                // 따옴표 에러 방지를 위해 변수에 담기
                 const safeUrl = detailUrl.trim().replace(/"/g, '&quot;');
                 const trackTitle = (item.title || '').replace(/"/g, '&quot;');
 
                 if (isImageUrl) {
-                    // 이미지로 인식되면 "상세정보확인 🖼️"로 아이콘 변경 및 모달 클래스 적용
                     btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">상세정보확인 🖼️</button>`;
                 } else {
                     let detailAttr = `href="${safeUrl}" target="_blank"`;
@@ -449,15 +443,31 @@
                 btnDetails = `<button type="button" class="btn-link btn-disabled" onclick="alert('등록된 상세정보 링크가 없습니다.');">상세정보확인 🔍</button>`;
             }
 
+            // 🌟 텍스트 직접 기입 가능하도록 수정된 '신청링크' 로직 🌟
             let btnApply = '';
-            const applyUrl = item['신청링크'] || item.applyLink; 
-            if (applyUrl && applyUrl.trim() !== '') {
-                const safeApplyUrl = applyUrl.trim().replace(/"/g, '&quot;');
+            const rawApplyValue = item['신청링크'] || item.applyLink; 
+            
+            if (rawApplyValue && rawApplyValue.trim() !== '') {
+                const cleanValue = rawApplyValue.trim();
+                const safeApplyValue = cleanValue.replace(/"/g, '&quot;');
+                const alertSafeValue = cleanValue.replace(/'/g, "\\'").replace(/"/g, '\\"');
                 const trackTitle = (item.title || '').replace(/"/g, '&quot;');
-                let applyAttr = `href="${safeApplyUrl}" target="_blank"`;
-                if (safeApplyUrl.toLowerCase().startsWith('javascript:')) applyAttr = `href="#" onclick="${safeApplyUrl.replace('javascript:', '')}"`;
-                btnApply = `<a ${applyAttr} class="btn-link" onclick="trackEventClick('${trackTitle}', 'apply')">신청하기 🔗</a>`;
+                
+                // http, https, www, 혹은 javascript: 로 시작하면 링크로 간주
+                const isUrl = /^(https?:\/\/|www\.|javascript:)/i.test(cleanValue);
+
+                if (isUrl) {
+                    let applyAttr = `href="${safeApplyValue}" target="_blank"`;
+                    if (cleanValue.toLowerCase().startsWith('javascript:')) applyAttr = `href="#" onclick="${safeApplyValue.replace('javascript:', '')}"`;
+                    else if (cleanValue.toLowerCase().startsWith('www.')) applyAttr = `href="http://${safeApplyValue}" target="_blank"`;
+                    
+                    btnApply = `<a ${applyAttr} class="btn-link" onclick="trackEventClick('${trackTitle}', 'apply')">신청하기 🔗</a>`;
+                } else {
+                    // 링크 형태가 아닌 일반 텍스트인 경우 (예: "전화접수", "현장결제")
+                    btnApply = `<button type="button" class="btn-link btn-disabled" onclick="alert('${alertSafeValue}');">${safeApplyValue}</button>`;
+                }
             } else {
+                // 완전히 비어있는 경우 기존 기본 텍스트 표시
                 btnApply = `<button type="button" class="btn-link btn-disabled" onclick="alert('별도의 사전예약 링크가 필요 없는 현장접수/자유참여 행사입니다.');">현장접수/예약불필요</button>`;
             }
             
