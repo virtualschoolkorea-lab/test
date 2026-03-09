@@ -333,26 +333,58 @@
 
     let currentTab = 'ongoing'; 
 
-    function processNewItems() {
-        const storageKey = 'heycj_known_items_v3'; const knownItemsStr = localStorage.getItem(storageKey); 
-        let knownItems = {}; const now = Date.now(); const ONE_DAY = 24 * 60 * 60 * 1000; let updated = false;
-        if (knownItemsStr) { try { knownItems = JSON.parse(knownItemsStr); } catch(e) { knownItems = {}; } }
+function processNewItems() {
+        const storageKey = 'heycj_known_items_v3'; 
+        const knownItemsStr = localStorage.getItem(storageKey); 
+        let knownItems = {}; 
+        const now = Date.now(); 
+        const ONE_DAY = 24 * 60 * 60 * 1000; 
+        let updated = false;
+        
+        if (knownItemsStr) { 
+            try { knownItems = JSON.parse(knownItemsStr); } 
+            catch(e) { knownItems = {}; } 
+        }
 
-        const isFirstVisit = Object.keys(knownItems).length === 0; const currentIds = new Set();
+        const isFirstVisit = Object.keys(knownItems).length === 0; 
+        const currentIds = new Set();
+        
         eventData.forEach((item, index) => {
             item.originalIndex = index;
-            const safeTitle = (item.title || '').replace(/\s+/g, ''); const safeType = (item.type || '').trim(); const id = encodeURIComponent(`${safeTitle}|${safeType}`);
+            const safeTitle = (item.title || '').replace(/\s+/g, ''); 
+            const safeType = (item.type || '').trim(); 
+            const id = encodeURIComponent(`${safeTitle}|${safeType}`);
             currentIds.add(id);
+
+            if (isFirstVisit) { 
+                knownItems[id] = now - ONE_DAY - 1000; 
+                item.isNew = false; 
+                updated = true; 
+            } 
+            else if (!knownItems[id]) { 
+                knownItems[id] = now; 
+                item.isNew = true; 
+                updated = true; 
+            } 
+            else { 
+                item.isNew = (now - knownItems[id] < ONE_DAY); 
+            }
             
+            // 🌟 이 부분이 추가된 핵심 코드입니다 🌟
+            // 시트에 N숨김 표시가 'O'이거나 'o'이면 무조건 N 배지를 가립니다.
             if (item['N숨김'] === 'O' || item['N숨김'] === 'o') {
-    item.isNew = false;
-}
-            if (isFirstVisit) { knownItems[id] = now - ONE_DAY - 1000; item.isNew = false; updated = true; } 
-            else if (!knownItems[id]) { knownItems[id] = now; item.isNew = true; updated = true; } 
-            else { item.isNew = (now - knownItems[id] < ONE_DAY); }
+                item.isNew = false;
+            }
+
             item.discoveryTime = knownItems[id];
         });
-        for (let key in knownItems) { if (!currentIds.has(key) && (now - knownItems[key] > ONE_DAY)) { delete knownItems[key]; updated = true; } }
+        
+        for (let key in knownItems) { 
+            if (!currentIds.has(key) && (now - knownItems[key] > ONE_DAY)) { 
+                delete knownItems[key]; 
+                updated = true; 
+            } 
+        }
         if (updated) { localStorage.setItem(storageKey, JSON.stringify(knownItems)); }
     }
 
