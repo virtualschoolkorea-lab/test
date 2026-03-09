@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>헤이청주 - 일정 한눈에 보기</title>
-    
-    <meta name="referrer" content="no-referrer">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="헤이청주 📢 교육/체험 링크모음">
-    <meta property="og:description" content="청주 및 인근 지역의 교육/체험/행사 일정을 한눈에 확인하세요!">
-    <meta property="og:image" content="https://heycj.vercel.app/og-image.png"> 
 
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <meta name="referrer" content="no-referrer" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="헤이청주 📢 교육/체험 링크모음" />
+    <meta property="og:description" content="청주 및 인근 지역의 교육/체험/행사 일정을 한눈에 확인하세요!" />
+    <meta property="og:image" content="https://heycj.vercel.app/og-image.png" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+
     <style>
         :root {
             --primary-color: #4CAF50;
@@ -21,117 +22,525 @@
             --text-sub: #666666;
             --border-color: #e0e0e0;
         }
-        body { font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; display: flex; justify-content: center; }
-        .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; }
-        .sticky-wrapper { position: sticky; top: 0; z-index: 100; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
-        header { background-color: var(--primary-color); color: white; padding: 15px 16px 4px 16px; display: flex; flex-direction: column; }
-        h1 { margin: 0; font-size: 1.5rem; font-weight: 700; text-align: center; }
-        .sub-header { font-size: 0.7rem; opacity: 0.85; margin-top: 4px; text-align: center; }
-        .header-action-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 1px; margin-bottom: 8px; }
-        .header-stats { display: flex; flex-direction: column; font-size: 0.7rem; line-height: 1.3; opacity: 0.95; }
-        .header-stats span { font-weight: 700; color: #fff; margin-left: 5px; }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
 
-        .btn-share { background: rgba(255, 255, 255, 0.25); border: none; color: white; padding: 5px 12px; border-radius: 20px; cursor: pointer; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 5px; transition: background 0.2s; }
-        .btn-share:hover { background: rgba(255, 255, 255, 0.35); }
-        .btn-share svg { width: 14px; height: 14px; fill: currentColor; }
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
 
-        .notice-container { background: rgba(0, 0, 0, 0.15); border-radius: 6px; padding: 6px 10px; text-align: center; font-size: 0.75rem; font-weight: 500; height: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .notice-container a { color: #fff; text-decoration: none; transition: opacity 0.3s ease-in-out; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
-        .search-container { padding: 7px 15px; background-color: #fff; border-bottom: 1px solid var(--border-color); }
-        .search-input { width: 100%; padding: 6px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; outline: none; box-sizing: border-box; background-color: #f9f9f9; transition: all 0.2s; }
-        .search-input:focus { border-color: var(--primary-color); background-color: #fff; box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2); }
+        .sticky-wrapper {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
 
-        .tabs { display: flex; background: white; border-bottom: 1px solid var(--border-color); }
-        .tab { flex: 1; text-align: center; padding: 8px 0; cursor: pointer; font-size: 0.95rem; font-weight: 500; color: var(--text-sub); border-bottom: 3px solid transparent; transition: all 0.2s; }
-        .tab.active { color: var(--primary-color); border-bottom: 3px solid var(--primary-color); font-weight: 700; }
-        .new-badge { display: inline-block; background-color: #E53935; color: white; font-size: 0.6rem; font-weight: 800; padding: 1px 5px; border-radius: 6px; margin-left: 4px; vertical-align: super; }
-        .card-new-badge { display: inline-block; background-color: #E53935; color: white; font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 6px; margin-left: 5px; vertical-align: middle; }
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 16px 4px 16px;
+            display: flex;
+            flex-direction: column;
+        }
 
-        .filter-wrapper { position: relative; background: #fafafa; border-bottom: 1px solid #eee; }
-        .checkbox-group { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 4px; padding: 8px 10px; -ms-overflow-style: none; scrollbar-width: none; }
-        .checkbox-group::-webkit-scrollbar { display: none; }
-        .fade-right { position: absolute; right: 0; top: 0; bottom: 0; width: 35px; background: linear-gradient(to right, rgba(250,250,250,0), rgba(250,250,250,1)); pointer-events: none; transition: opacity 0.3s; }
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+        }
 
-        .filter-cb { display: none; }
-        .cb-label { padding: 3px 8px; background: #fff; border: 1px solid #ddd; border-radius: 14px; font-size: 0.72rem; color: #555; cursor: pointer; transition: all 0.2s; user-select: none; white-space: nowrap; }
-        .filter-cb:checked + .cb-label { background: var(--primary-color); color: #fff; border-color: var(--primary-color); font-weight: 700; box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3); }
-        .filter-cb:checked + .cb-label.age-label { background: #ff9800; border-color: #ff9800; box-shadow: 0 2px 4px rgba(255, 152, 0, 0.3); }
+        .sub-header {
+            font-size: 0.7rem;
+            opacity: 0.85;
+            margin-top: 4px;
+            text-align: center;
+        }
 
-        .content { padding: 15px; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 16px 16px 10px 16px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--border-color); display: block; transition: transform 0.2s; }
-        .card:not(.disabled-card):hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
-        .card.disabled-card { position: relative; overflow: hidden; pointer-events: none; user-select: none; }
-        .status-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.45); z-index: 10; display: flex; align-items: center; justify-content: center; }
-        .status-stamp { color: #fff; border: 3px solid #fff; padding: 8px 18px; font-size: 1.6rem; font-weight: 800; letter-spacing: 2px; transform: rotate(-10deg); border-radius: 8px; background: rgba(0, 0, 0, 0.3); text-align: center; }
-        .status-stamp.closed { color: #ff5252; border-color: #ff5252; background: rgba(255, 82, 82, 0.15); }
+        .header-action-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 1px;
+            margin-bottom: 8px;
+        }
 
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .badges { display: flex; gap: 5px; flex-wrap: wrap; }
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; color: white; }
+        .header-stats {
+            display: flex;
+            flex-direction: column;
+            font-size: 0.7rem;
+            line-height: 1.3;
+            opacity: 0.95;
+        }
+
+        .header-stats span {
+            font-weight: 700;
+            color: #fff;
+            margin-left: 5px;
+        }
+
+        .btn-share {
+            background: rgba(255, 255, 255, 0.25);
+            border: none;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.2s;
+        }
+
+        .btn-share:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .btn-share svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+
+        .notice-container {
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 6px;
+            padding: 6px 10px;
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 500;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .notice-container a {
+            color: #fff;
+            text-decoration: none;
+            transition: opacity 0.3s ease-in-out;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .search-container {
+            padding: 7px 15px;
+            background-color: #fff;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 6px 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            background-color: #fff;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+        }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px 0;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-sub);
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+            font-weight: 700;
+        }
+
+        .new-badge {
+            display: inline-block;
+            background-color: #E53935;
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 800;
+            padding: 1px 5px;
+            border-radius: 6px;
+            margin-left: 4px;
+            vertical-align: super;
+        }
+
+        .card-new-badge {
+            display: inline-block;
+            background-color: #E53935;
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 6px;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+
+        .filter-wrapper {
+            position: relative;
+            background: #fafafa;
+            border-bottom: 1px solid #eee;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 4px;
+            padding: 8px 10px;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .checkbox-group::-webkit-scrollbar {
+            display: none;
+        }
+
+        .fade-right {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 35px;
+            background: linear-gradient(to right, rgba(250,250,250,0), rgba(250,250,250,1));
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .filter-cb {
+            display: none;
+        }
+
+        .cb-label {
+            padding: 3px 8px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 14px;
+            font-size: 0.72rem;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .filter-cb:checked + .cb-label {
+            background: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+            font-weight: 700;
+            box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+        }
+
+        .filter-cb:checked + .cb-label.age-label {
+            background: #ff9800;
+            border-color: #ff9800;
+            box-shadow: 0 2px 4px rgba(255, 152, 0, 0.3);
+        }
+
+        .content {
+            padding: 15px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 16px 16px 10px 16px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            border: 1px solid var(--border-color);
+            display: block;
+            transition: transform 0.2s;
+        }
+
+        .card:not(.disabled-card):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+        .card.disabled-card {
+            position: relative;
+            overflow: hidden;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .status-overlay {
+            position: absolute;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.45);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status-stamp {
+            color: #fff;
+            border: 3px solid #fff;
+            padding: 8px 18px;
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            transform: rotate(-10deg);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .status-stamp.closed {
+            color: #ff5252;
+            border-color: #ff5252;
+            background: rgba(255, 82, 82, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .badges {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: white;
+        }
+
         .badge-loc { background-color: #3498db; }
         .badge-age { background-color: #9b59b6; }
         .badge-free { background-color: #4CAF50; }
         .badge-paid { background-color: #f39c12; }
         .badge-info { background-color: #7f8c8d; }
-        .badge-today { background-color: #E53935; } 
-        .badge-open { background-color: #2ecc71; }  
-        .badge-close { background-color: #F06292; } 
-        
-        .title { font-size: 1.05rem; font-weight: 700; margin: 0 0 10px 0; line-height: 1.4; word-break: keep-all; }
-        .info-row { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 6px; display: flex; align-items: flex-start; }
-        .info-label { font-weight: 500; width: 65px; flex-shrink: 0; color: #555; line-height: 1.4; }
-        .info-desc { flex: 1; word-break: keep-all; line-height: 1.4; }
-        
-        .btn-group { display: flex; gap: 8px; margin-top: 10px; }
-        .btn-link { display: block; text-align: center; background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); text-decoration: none; padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; font-weight: 700; margin-top: 10px; transition: all 0.2s; box-sizing: border-box; cursor: pointer; font-family: inherit; width: 100%; }
-        .btn-group .btn-link { flex: 1; margin-top: 0; font-size: 0.8rem; padding: 8px 2px; }
-        .btn-link:hover { background-color: #388E3C; }
-        
-        .btn-disabled { background-color: #f2f2f2 !important; color: #888 !important; border: 1px solid #ddd !important; cursor: default !important; pointer-events: auto; }
-        .btn-disabled:hover { background-color: #f2f2f2 !important; }
+        .badge-today { background-color: #E53935; }
+        .badge-open { background-color: #2ecc71; }
+        .badge-close { background-color: #F06292; }
 
-        .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; }
-        .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; }
+        .title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            line-height: 1.4;
+            word-break: keep-all;
+        }
 
-        /* 이미지 모달 팝업 스타일 */
-        .img-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; }
-        .img-modal-overlay.active { display: flex; opacity: 1; }
-        .img-modal-content { max-width: 90%; max-height: 85vh; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); object-fit: contain; }
-        .img-modal-close { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.9); color: #111; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 1.5rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .info-row {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .info-label {
+            font-weight: 500;
+            width: 65px;
+            flex-shrink: 0;
+            color: #555;
+            line-height: 1.4;
+        }
+
+        .info-desc {
+            flex: 1;
+            word-break: keep-all;
+            line-height: 1.4;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-link {
+            display: block;
+            text-align: center;
+            background-color: var(--primary-color);
+            color: white;
+            border: 1px solid var(--primary-color);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-top: 10px;
+            transition: all 0.2s;
+            box-sizing: border-box;
+            cursor: pointer;
+            font-family: inherit;
+            width: 100%;
+        }
+
+        .btn-group .btn-link {
+            flex: 1;
+            margin-top: 0;
+            font-size: 0.8rem;
+            padding: 8px 2px;
+        }
+
+        .btn-link:hover {
+            background-color: #388E3C;
+        }
+
+        .btn-disabled {
+            background-color: #f2f2f2 !important;
+            color: #888 !important;
+            border: 1px solid #ddd !important;
+            cursor: default !important;
+            pointer-events: auto;
+        }
+
+        .btn-disabled:hover {
+            background-color: #f2f2f2 !important;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 0;
+            color: #888;
+            font-size: 0.95rem;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--primary-color);
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .img-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .img-modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .img-modal-content {
+            max-width: 90%;
+            max-height: 85vh;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            object-fit: contain;
+        }
+
+        .img-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.9);
+            color: #111;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
-
 <div class="app-container">
     <div class="sticky-wrapper">
         <header id="app-header">
             <h1>헤이청주 📢 교육/체험 링크모음</h1>
             <div class="sub-header" id="last-updated-text">최근 업데이트: 계산중...</div>
+
             <div class="header-action-row">
                 <div class="header-stats">
                     <div>TODAY<span id="count-today">...</span></div>
                     <div>TOTAL<span id="count-total">...</span></div>
                 </div>
+
                 <button class="btn-share" onclick="sharePage()">
-                    <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
+                    <svg viewBox="0 0 24 24">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>
+                    </svg>
                     공유하기
                 </button>
             </div>
+
             <div class="notice-container"><a id="notice-link"></a></div>
         </header>
 
         <div class="search-container">
-            <input type="text" id="search-input" class="search-input" placeholder="검색어를 입력하세요 (예: 도서관, 과학, 공연)" onkeyup="applyFilters()">
+            <input
+                type="text"
+                id="search-input"
+                class="search-input"
+                placeholder="검색어를 입력하세요 (예: 도서관, 과학, 공연)"
+                onkeyup="applyFilters()"
+            />
         </div>
 
         <div class="tabs">
             <div class="tab active" onclick="changeTab(this, 'ongoing')">사전예약 중</div>
-            <div class="tab" onclick="changeTab(this, 'always')">상시예약/현장접수</div>
+            <div class="tab" onclick="changeTab(this, 'always')">상시/현장접수</div>
             <div class="tab" onclick="changeTab(this, 'affiliate')">제휴/이벤트</div>
         </div>
-        
+
         <div class="filter-wrapper">
             <div class="checkbox-group" id="combined-filter-group" onscroll="handleFilterScroll(this)"></div>
             <div class="fade-right" id="filter-fade"></div>
@@ -145,10 +554,14 @@
 
 <div class="img-modal-overlay" id="imageModal">
     <button class="img-modal-close" id="closeModalBtn">×</button>
-    <img src="" alt="상세정보 이미지" class="img-modal-content" id="imageModalImg">
+    <img src="" alt="상세정보 이미지" class="img-modal-content" id="imageModalImg" />
 </div>
 
 <script>
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQV-02F-qXwS6yLb_XScKqwYj1N0qImwofY2Pyj2tvwnW0i1tl995_BjOfaVHpayppk6YYhqpdLrpa9/pub?output=csv";
+    const VISIT_NAMESPACE = "heycheongju_v1";
+    const CLICK_NAMESPACE = "heycheongju_clicks_v1";
+
     const noticeData = [
         { text: "[⚡내일오픈/마감,긴급정보 실시간 알림 오픈챗 입장하기👆] ", link: "https://open.kakao.com/o/gAUqOrai" },
         { text: "[헤이청주에 ☎️ 협업문의/제안/건의하기] 👆", link: "https://forms.gle/h8KLaLkfsU55aH5T9" },
@@ -156,222 +569,433 @@
         { text: "📢[제휴/추가모집] '우리 아이, 주의력이 부족한가요?' Cooming Soon", link: "" }
     ];
 
+    let eventData = [];
+    let currentTab = "ongoing";
+
+    const modal = document.getElementById("imageModal");
+    const modalImg = document.getElementById("imageModalImg");
+
+    function escapeHtml(str) {
+        return String(str || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    function getHash(str) {
+        if (!str) return "none";
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = ((hash << 5) - hash) + str.charCodeAt(i);
+            hash = hash & hash;
+        }
+        return Math.abs(hash).toString(16);
+    }
+
+    function buildEventKey(item) {
+        return [
+            item.title || "",
+            item.place || "",
+            item.loc || "",
+            item.applyStart || "",
+            item.applyEnd || "",
+            item.date || ""
+        ].join("|");
+    }
+
+    function buildCounterName(item, btnType) {
+        const hash = getHash(buildEventKey(item));
+        return `${hash}_${btnType}`;
+    }
+
+    function trackCounterByName(counterName) {
+        if (!counterName) return;
+        const url = `https://api.counterapi.dev/v1/${CLICK_NAMESPACE}/${counterName}/up`;
+
+        fetch(url, {
+            method: "GET",
+            keepalive: true,
+            cache: "no-store"
+        }).catch((e) => {
+            console.error("클릭 통계 기록 실패:", e);
+        });
+    }
+
     function initNotice() {
-        let currentIndex = 0; const noticeLink = document.getElementById('notice-link');
+        let currentIndex = 0;
+        const noticeLink = document.getElementById("notice-link");
+
         function updateNotice() {
-            noticeLink.style.opacity = '0';
+            noticeLink.style.opacity = "0";
             setTimeout(() => {
-                const data = noticeData[currentIndex]; noticeLink.innerText = data.text;
-                if (data.link) { noticeLink.href = data.link; noticeLink.target = "_blank"; noticeLink.style.cursor = "pointer"; } 
-                else { noticeLink.removeAttribute('href'); noticeLink.removeAttribute('target'); noticeLink.style.cursor = "default"; }
-                noticeLink.style.opacity = '1'; currentIndex = (currentIndex + 1) % noticeData.length;
+                const data = noticeData[currentIndex];
+                noticeLink.innerText = data.text;
+                if (data.link) {
+                    noticeLink.href = data.link;
+                    noticeLink.target = "_blank";
+                    noticeLink.rel = "noopener noreferrer";
+                    noticeLink.style.cursor = "pointer";
+                } else {
+                    noticeLink.removeAttribute("href");
+                    noticeLink.removeAttribute("target");
+                    noticeLink.removeAttribute("rel");
+                    noticeLink.style.cursor = "default";
+                }
+                noticeLink.style.opacity = "1";
+                currentIndex = (currentIndex + 1) % noticeData.length;
             }, 300);
         }
-        updateNotice(); setInterval(updateNotice, 4000); 
+
+        updateNotice();
+        setInterval(updateNotice, 4000);
     }
 
     function initLastUpdated() {
-        const updateElem = document.getElementById('last-updated-text'); const lm = new Date(document.lastModified);
-        const y = lm.getFullYear(); const m = lm.getMonth() + 1; const d = lm.getDate();
-        const h = String(lm.getHours()).padStart(2, '0'); const min = String(lm.getMinutes()).padStart(2, '0');
+        const updateElem = document.getElementById("last-updated-text");
+        const lm = new Date(document.lastModified);
+        const y = lm.getFullYear();
+        const m = lm.getMonth() + 1;
+        const d = lm.getDate();
+        const h = String(lm.getHours()).padStart(2, "0");
+        const min = String(lm.getMinutes()).padStart(2, "0");
         updateElem.innerText = `최근 업데이트: ${y}/${m}/${d} ${h}:${min}`;
     }
 
     async function initVisitCounters() {
-        const namespace = 'heycheongju_v1'; 
-        const kstNow = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
-        const yyyy = kstNow.getFullYear(); const mm = String(kstNow.getMonth() + 1).padStart(2, '0'); const dd = String(kstNow.getDate()).padStart(2, '0');
-        const todayStr = `${yyyy}${mm}${dd}`; 
+        const kstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
+        const yyyy = kstNow.getFullYear();
+        const mm = String(kstNow.getMonth() + 1).padStart(2, "0");
+        const dd = String(kstNow.getDate()).padStart(2, "0");
+        const todayStr = `${yyyy}${mm}${dd}`;
+
         try {
-            const resTotal = await fetch(`https://api.counterapi.dev/v1/${namespace}/total/up`); document.getElementById('count-total').innerText = (await resTotal.json()).count;
-            const resToday = await fetch(`https://api.counterapi.dev/v1/${namespace}/today_${todayStr}/up`); document.getElementById('count-today').innerText = (await resToday.json()).count;
-        } catch (e) { document.getElementById('count-total').innerText = '-'; document.getElementById('count-today').innerText = '-'; }
-    }
+            const resTotal = await fetch(`https://api.counterapi.dev/v1/${VISIT_NAMESPACE}/total/up`);
+            document.getElementById("count-total").innerText = (await resTotal.json()).count ?? "-";
 
-    // 💡 [수정 1] 대시보드와 동일한 해시 로직 (16진법) 적용
-    function getHash(str) {
-        if (!str) return 'none'; let hash = 0;
-        for (let i = 0; i < str.length; i++) { hash = ((hash << 5) - hash) + str.charCodeAt(i); hash = hash & hash; }
-        return Math.abs(hash).toString(16); 
-    }
-
-    // 💡 [수정 2] 대시보드와 동일한 네임스페이스 및 키(Key) 형식 적용
-    function trackEventClick(title, btnType) {
-        if (!title) return; const hash = getHash(title);
-        // 대시보드의 namespace는 'heycheongju_clicks_v1', 키 포맷은 '${hash}_${btnType}' 입니다.
-        fetch(`https://api.counterapi.dev/v1/heycheongju_clicks_v1/${hash}_${btnType}/up`)
-            .catch(e => console.error('클릭 통계 기록 실패:', e));
+            const resToday = await fetch(`https://api.counterapi.dev/v1/${VISIT_NAMESPACE}/today_${todayStr}/up`);
+            document.getElementById("count-today").innerText = (await resToday.json()).count ?? "-";
+        } catch (e) {
+            document.getElementById("count-total").innerText = "-";
+            document.getElementById("count-today").innerText = "-";
+        }
     }
 
     function sharePage() {
-        const shareData = { title: '헤이청주 📢 교육/체험 링크모음', text: '우리 지역 체험 행사 일정을 한눈에 확인하세요!', url: window.location.href };
-        if (navigator.share) navigator.share(shareData).catch(console.error); else navigator.clipboard.writeText(window.location.href).then(() => alert('링크가 복사되었습니다!'));
+        const shareData = {
+            title: "헤이청주 📢 교육/체험 링크모음",
+            text: "우리 지역 체험 행사 일정을 한눈에 확인하세요!",
+            url: window.location.href
+        };
+
+        if (navigator.share) {
+            navigator.share(shareData).catch(console.error);
+        } else {
+            navigator.clipboard.writeText(window.location.href)
+                .then(() => alert("링크가 복사되었습니다!"))
+                .catch(() => alert("링크 복사에 실패했습니다."));
+        }
     }
 
-    const modal = document.getElementById('imageModal');
-    const modalImg = document.getElementById('imageModalImg');
-    
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal || e.target.id === 'closeModalBtn') {
-            modal.classList.remove('active');
-            setTimeout(() => { modalImg.src = ""; }, 200);
+    modal.addEventListener("click", function (e) {
+        if (e.target === modal || e.target.id === "closeModalBtn") {
+            modal.classList.remove("active");
+            setTimeout(() => {
+                modalImg.src = "";
+            }, 200);
         }
     });
 
-    document.addEventListener('click', function(e) {
-        if (e.target && e.target.classList.contains('btn-img-modal')) {
-            const url = e.target.getAttribute('data-url');
-            const title = e.target.getAttribute('data-title');
-            
-            modalImg.src = url;
-            modal.classList.add('active');
-            trackEventClick(title, 'detail');
+    document.addEventListener("click", function (e) {
+        const trackBtn = e.target.closest(".track-btn");
+        if (trackBtn) {
+            const counterName = trackBtn.dataset.counterName;
+            if (counterName) trackCounterByName(counterName);
+
+            if (trackBtn.classList.contains("btn-img-modal")) {
+                const url = trackBtn.dataset.url;
+                if (url) {
+                    modalImg.src = url;
+                    modal.classList.add("active");
+                }
+                e.preventDefault();
+                return;
+            }
         }
     });
 
     function handleFilterScroll(element) {
-        const fade = document.getElementById('filter-fade');
-        if (element.scrollWidth - element.clientWidth <= element.scrollLeft + 5) fade.style.opacity = '0';
-        else fade.style.opacity = '1';
+        const fade = document.getElementById("filter-fade");
+        if (element.scrollWidth - element.clientWidth <= element.scrollLeft + 5) {
+            fade.style.opacity = "0";
+        } else {
+            fade.style.opacity = "1";
+        }
     }
 
-    let eventData = [];
-
     async function fetchEventData() {
-        const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQV-02F-qXwS6yLb_XScKqwYj1N0qImwofY2Pyj2tvwnW0i1tl995_BjOfaVHpayppk6YYhqpdLrpa9/pub?output=csv";
-        const fetchUrl = csvUrl + "&_t=" + new Date().getTime(); 
+        const fetchUrl = CSV_URL + "&_t=" + new Date().getTime();
+
         try {
             const response = await fetch(fetchUrl);
             if (!response.ok) throw new Error("네트워크 응답이 올바르지 않습니다.");
+
             const csvText = await response.text();
             eventData = parseCSVToJSON(csvText);
-            processEventDates(); processEventAges(); generateFilters(); processNewItems(); updateTabNewBadges(); applyFilters();
-        } catch (error) { document.getElementById('list-container').innerHTML = '<div class="empty-state">행사 정보를 불러오는데 실패했습니다. 새로고침을 해주세요. 😥</div>'; }
+
+            processEventDates();
+            processEventAges();
+            generateFilters();
+            processNewItems();
+            updateTabNewBadges();
+            applyFilters();
+        } catch (error) {
+            document.getElementById("list-container").innerHTML =
+                '<div class="empty-state">행사 정보를 불러오는데 실패했습니다. 새로고침을 해주세요. 😥</div>';
+        }
     }
 
     function parseCSVToJSON(csv) {
-        const rows = []; let row = []; let curr = ''; let insideQuotes = false;
+        const rows = [];
+        let row = [];
+        let curr = "";
+        let insideQuotes = false;
+
         for (let i = 0; i < csv.length; i++) {
-            const char = csv[i]; const nextChar = csv[i + 1];
-            if (char === '"' && insideQuotes && nextChar === '"') { curr += '"'; i++; } else if (char === '"') { insideQuotes = !insideQuotes; } 
-            else if (char === ',' && !insideQuotes) { row.push(curr); curr = ''; } 
-            else if ((char === '\n' || (char === '\r' && nextChar === '\n')) && !insideQuotes) { row.push(curr); rows.push(row); row = []; curr = ''; if (char === '\r') i++; } 
-            else { curr += char; }
+            const char = csv[i];
+            const nextChar = csv[i + 1];
+
+            if (char === '"' && insideQuotes && nextChar === '"') {
+                curr += '"';
+                i++;
+            } else if (char === '"') {
+                insideQuotes = !insideQuotes;
+            } else if (char === "," && !insideQuotes) {
+                row.push(curr);
+                curr = "";
+            } else if ((char === "\n" || (char === "\r" && nextChar === "\n")) && !insideQuotes) {
+                row.push(curr);
+                rows.push(row);
+                row = [];
+                curr = "";
+                if (char === "\r") i++;
+            } else {
+                curr += char;
+            }
         }
-        if (curr !== '' || row.length > 0) { row.push(curr); rows.push(row); }
+
+        if (curr !== "" || row.length > 0) {
+            row.push(curr);
+            rows.push(row);
+        }
+
         if (rows.length < 2) return [];
-        const headers = rows[0].map(h => h.trim().replace(/[\r\n]+/g, '')); const data = [];
+
+        const headers = rows[0].map(h => h.trim().replace(/[\r\n]+/g, ""));
+        const data = [];
+
         for (let i = 1; i < rows.length; i++) {
-            if (rows[i].length === 1 && rows[i][0].trim() === '') continue; const obj = {};
-            for (let j = 0; j < headers.length; j++) { if (headers[j]) obj[headers[j]] = rows[i][j] ? rows[i][j].trim().replace(/[\r\n]+$/, '') : ''; }
+            if (rows[i].length === 1 && rows[i][0].trim() === "") continue;
+
+            const obj = {};
+            for (let j = 0; j < headers.length; j++) {
+                if (headers[j]) {
+                    obj[headers[j]] = rows[i][j]
+                        ? rows[i][j].trim().replace(/[\r\n]+$/, "")
+                        : "";
+                }
+            }
+
             if (obj.type || obj.title) data.push(obj);
         }
+
         return data;
     }
 
     function processEventDates() {
-        const today = new Date(); const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
-        const todayStr = `${today.getMonth() + 1}/${today.getDate()}`; const tomorrowStr = `${tomorrow.getMonth() + 1}/${tomorrow.getDate()}`; 
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const todayStr = `${today.getMonth() + 1}/${today.getDate()}`;
+        const tomorrowStr = `${tomorrow.getMonth() + 1}/${tomorrow.getDate()}`;
 
         eventData.forEach(item => {
-            if (item.type === 'affiliate' || item.type === 'always') { item.displayText = item.applyNote; return; }
-            item.isTodayOpen = false; item.isTodayClose = false; item.isTomorrowOpen = false; item.isTomorrowClose = false;
-            
+            if (item.type === "affiliate" || item.type === "always") {
+                item.displayText = item.applyNote;
+                return;
+            }
+
+            item.isTodayOpen = false;
+            item.isTodayClose = false;
+            item.isTomorrowOpen = false;
+            item.isTomorrowClose = false;
+
             if (item.applyStart && item.applyStart.includes(todayStr)) item.isTodayOpen = true;
             if (item.applyEnd && item.applyEnd.includes(todayStr)) item.isTodayClose = true;
             if (item.applyStart && item.applyStart.includes(tomorrowStr)) item.isTomorrowOpen = true;
             if (item.applyEnd && item.applyEnd.includes(tomorrowStr)) item.isTomorrowClose = true;
-            
-            let text = '';
+
+            let text = "";
             if (item.applyStart && item.applyEnd) text = `${item.applyStart} ~ ${item.applyEnd}`;
-            else if (item.applyStart) text = `${item.applyStart} 오픈`; else if (item.applyEnd) text = `~ ${item.applyEnd}`;
-            if (item.applyNote) { if (text) text += ` <span style="font-weight:700; font-size:0.8rem;">[${item.applyNote}]</span>`; else text = `<span style="font-weight:700;">${item.applyNote}</span>`; }
-            item.displayText = text || '상시 접수';
+            else if (item.applyStart) text = `${item.applyStart} 오픈`;
+            else if (item.applyEnd) text = `~ ${item.applyEnd}`;
+
+            if (item.applyNote) {
+                if (text) text += ` <span style="font-weight:700; font-size:0.8rem;">[${escapeHtml(item.applyNote)}]</span>`;
+                else text = `<span style="font-weight:700;">${escapeHtml(item.applyNote)}</span>`;
+            }
+
+            item.displayText = text || "상시 접수";
         });
     }
 
     function processEventAges() {
         eventData.forEach(item => {
             const mapped = new Set();
-            if (item.ageFilter && item.ageFilter.trim() !== '') { item.ageFilter.split(',').forEach(f => { const cleanF = f.trim(); if (cleanF) mapped.add(cleanF); }); }
-            if (mapped.size === 0) mapped.add('미취학').add('초등').add('중고등').add('성인');
+
+            if (item.ageFilter && item.ageFilter.trim() !== "") {
+                item.ageFilter.split(",").forEach(f => {
+                    const cleanF = f.trim();
+                    if (cleanF) mapped.add(cleanF);
+                });
+            }
+
+            if (mapped.size === 0) {
+                mapped.add("미취학").add("초등").add("중고등").add("성인");
+            }
+
             item.mappedAges = Array.from(mapped);
         });
     }
 
     function generateFilters() {
-        const filterGroup = document.getElementById('combined-filter-group'); filterGroup.innerHTML = ''; 
-        const presentLocs = new Set(); const fixedLocs = ['청주', '충북', '대전', '세종', '온라인']; const chungbukSubRegions = ['괴산', '음성', '증평', '보은', '옥천', '충주', '제천', '진천', '단양', '영동'];
+        const filterGroup = document.getElementById("combined-filter-group");
+        filterGroup.innerHTML = "";
+
+        const presentLocs = new Set();
+        const fixedLocs = ["청주", "충북", "대전", "세종", "온라인"];
+        const chungbukSubRegions = ["괴산", "음성", "증평", "보은", "옥천", "충주", "제천", "진천", "단양", "영동"];
+
         eventData.forEach(item => {
-            if (item.loc && item.loc.trim() !== '') {
+            if (item.loc && item.loc.trim() !== "") {
                 const locText = item.loc.trim();
-                if (chungbukSubRegions.includes(locText) || locText === '충북') item.mappedLoc = '충북'; else if (fixedLocs.includes(locText)) item.mappedLoc = locText; else item.mappedLoc = '기타';
+                if (chungbukSubRegions.includes(locText) || locText === "충북") item.mappedLoc = "충북";
+                else if (fixedLocs.includes(locText)) item.mappedLoc = locText;
+                else item.mappedLoc = "기타";
                 presentLocs.add(item.mappedLoc);
-            } else item.mappedLoc = null; 
-        });
-
-        const ageFilters = ['미취학', '초등', '중고등', '성인'];
-        ageFilters.forEach((age, index) => {
-            const id = `age-dynamic-${index}`; const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.id = id; checkbox.value = age; checkbox.className = 'filter-cb age-cb'; checkbox.onchange = applyFilters;
-            const label = document.createElement('label'); label.htmlFor = id; label.className = 'cb-label age-label'; label.innerText = age; filterGroup.appendChild(checkbox); filterGroup.appendChild(label);
-        });
-
-        if (presentLocs.size > 0) { const divider = document.createElement('span'); divider.innerText = '|'; divider.style.color = '#ccc'; divider.style.display = 'flex'; divider.style.alignItems = 'center'; divider.style.fontSize = '0.7rem'; divider.style.margin = '0 2px'; filterGroup.appendChild(divider); }
-        const orderedLocs = [...fixedLocs, '기타'];
-        orderedLocs.forEach((loc, index) => {
-            if (presentLocs.has(loc)) {
-                const id = `loc-dynamic-${index}`; const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.id = id; checkbox.value = loc; checkbox.className = 'filter-cb loc-cb'; checkbox.onchange = applyFilters;
-                const label = document.createElement('label'); label.htmlFor = id; label.className = 'cb-label'; label.innerText = loc; filterGroup.appendChild(checkbox); filterGroup.appendChild(label);
+            } else {
+                item.mappedLoc = null;
             }
         });
+
+        const ageFilters = ["미취학", "초등", "중고등", "성인"];
+        ageFilters.forEach((age, index) => {
+            const id = `age-dynamic-${index}`;
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.id = id;
+            checkbox.value = age;
+            checkbox.className = "filter-cb age-cb";
+            checkbox.onchange = applyFilters;
+
+            const label = document.createElement("label");
+            label.htmlFor = id;
+            label.className = "cb-label age-label";
+            label.innerText = age;
+
+            filterGroup.appendChild(checkbox);
+            filterGroup.appendChild(label);
+        });
+
+        if (presentLocs.size > 0) {
+            const divider = document.createElement("span");
+            divider.innerText = "|";
+            divider.style.color = "#ccc";
+            divider.style.display = "flex";
+            divider.style.alignItems = "center";
+            divider.style.fontSize = "0.7rem";
+            divider.style.margin = "0 2px";
+            filterGroup.appendChild(divider);
+        }
+
+        const orderedLocs = [...fixedLocs, "기타"];
+        orderedLocs.forEach((loc, index) => {
+            if (presentLocs.has(loc)) {
+                const id = `loc-dynamic-${index}`;
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.id = id;
+                checkbox.value = loc;
+                checkbox.className = "filter-cb loc-cb";
+                checkbox.onchange = applyFilters;
+
+                const label = document.createElement("label");
+                label.htmlFor = id;
+                label.className = "cb-label";
+                label.innerText = loc;
+
+                filterGroup.appendChild(checkbox);
+                filterGroup.appendChild(label);
+            }
+        });
+
         setTimeout(() => handleFilterScroll(filterGroup), 100);
     }
 
     function parseDateValue(dateStr) {
-        if (!dateStr) return 9999; 
-        let match = dateStr.match(/(\d{1,2})\/(\d{1,2})/); if (match) return parseInt(match[1]) * 100 + parseInt(match[2]);
-        match = dateStr.match(/(\d{1,2})월\s*(\d{1,2})일/); if (match) return parseInt(match[1]) * 100 + parseInt(match[2]);
-        match = dateStr.match(/(\d{1,2})월/); if (match) return parseInt(match[1]) * 100;
-        return 9999; 
-    }
+        if (!dateStr) return 9999;
 
-    let currentTab = 'ongoing'; 
+        let match = dateStr.match(/(\d{1,2})\/(\d{1,2})/);
+        if (match) return parseInt(match[1], 10) * 100 + parseInt(match[2], 10);
+
+        match = dateStr.match(/(\d{1,2})월\s*(\d{1,2})일/);
+        if (match) return parseInt(match[1], 10) * 100 + parseInt(match[2], 10);
+
+        match = dateStr.match(/(\d{1,2})월/);
+        if (match) return parseInt(match[1], 10) * 100;
+
+        return 9999;
+    }
 
     function parseRegDate(dateStr) {
         if (!dateStr) return 0;
-        let s = String(dateStr).trim();
+
+        const s = String(dateStr).trim();
         let match = s.match(/(\d{4})[./-]\s*(\d{1,2})[./-]\s*(\d{1,2})(?:[.\s]+(?:오전|오후|AM|PM)?\s*(\d{1,2})[:시]\s*(\d{1,2}))?/i);
 
         if (match) {
-            let year = parseInt(match[1], 10);
-            let month = parseInt(match[2], 10) - 1;
-            let day = parseInt(match[3], 10);
+            const year = parseInt(match[1], 10);
+            const month = parseInt(match[2], 10) - 1;
+            const day = parseInt(match[3], 10);
             let hour = match[4] ? parseInt(match[4], 10) : 0;
-            let minute = match[5] ? parseInt(match[5], 10) : 0;
+            const minute = match[5] ? parseInt(match[5], 10) : 0;
 
-            if (s.includes('오후') || s.toUpperCase().includes('PM')) {
+            if (s.includes("오후") || s.toUpperCase().includes("PM")) {
                 if (hour < 12) hour += 12;
             }
-            if ((s.includes('오전') || s.toUpperCase().includes('AM')) && hour === 12) {
+
+            if ((s.includes("오전") || s.toUpperCase().includes("AM")) && hour === 12) {
                 hour = 0;
             }
 
             return new Date(year, month, day, hour, minute).getTime();
         }
 
-        let parsed = new Date(s).getTime();
+        const parsed = new Date(s).getTime();
         return isNaN(parsed) ? 0 : parsed;
     }
 
     function processNewItems() {
-        const now = Date.now(); 
-        const ONE_DAY = 24 * 60 * 60 * 1000; 
-        
+        const now = Date.now();
+        const ONE_DAY = 24 * 60 * 60 * 1000;
+
         eventData.forEach((item, index) => {
             item.originalIndex = index;
             item.isNew = false;
-            
-            const regDateMs = parseRegDate(item['등록일']);
+
+            const regDateMs = parseRegDate(item["등록일"]);
 
             if (regDateMs > 0) {
                 const timeDiff = now - regDateMs;
@@ -380,39 +1004,170 @@
                 }
             }
 
-            if (item['N숨김'] === 'O' || item['N숨김'] === 'o') {
+            if (item["N숨김"] === "O" || item["N숨김"] === "o") {
                 item.isNew = false;
             }
         });
     }
 
     function updateTabNewBadges() {
-        const tabs = ['ongoing', 'always', 'affiliate'];
+        const tabs = ["ongoing", "always", "affiliate"];
+
         tabs.forEach(tabType => {
-            const hasNew = eventData.some(item => item.type === tabType && item.isNew); const tabElement = document.querySelector(`.tab[onclick*="${tabType}"]`);
-            if (!tabElement) return; const existingBadge = tabElement.querySelector('.new-badge');
-            if (hasNew) { if (!existingBadge) tabElement.insertAdjacentHTML('beforeend', '<span class="new-badge">N</span>'); } else { if (existingBadge) existingBadge.remove(); }
+            const hasNew = eventData.some(item => item.type === tabType && item.isNew);
+            const tabElement = document.querySelector(`.tab[onclick*="${tabType}"]`);
+            if (!tabElement) return;
+
+            const existingBadge = tabElement.querySelector(".new-badge");
+
+            if (hasNew) {
+                if (!existingBadge) {
+                    tabElement.insertAdjacentHTML("beforeend", '<span class="new-badge">N</span>');
+                }
+            } else {
+                if (existingBadge) existingBadge.remove();
+            }
         });
     }
 
-    function changeTab(element, type) { document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active')); element.classList.add('active'); currentTab = type; applyFilters(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    function changeTab(element, type) {
+        document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+        element.classList.add("active");
+        currentTab = type;
+        applyFilters();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function buildDetailButton(item) {
+        const detailUrl = item.link || item["링크"];
+        const detailCounterName = buildCounterName(item, "detail");
+
+        if (!detailUrl || !detailUrl.trim()) {
+            return `
+                <button type="button" class="btn-link btn-disabled">
+                    상세정보확인 🔍
+                </button>
+            `;
+        }
+
+        const safeUrl = escapeHtml(detailUrl.trim());
+        const safeCounterName = escapeHtml(detailCounterName);
+
+        const lowerUrl = detailUrl.trim().toLowerCase();
+        const isImageUrl =
+            /\.(jpeg|jpg|gif|png|webp)(?:[\?#].*)?$/i.test(lowerUrl) ||
+            lowerUrl.includes("drive.google.com/uc?") ||
+            lowerUrl.includes("phinf.pstatic.net");
+
+        if (isImageUrl) {
+            return `
+                <button
+                    type="button"
+                    class="btn-link btn-img-modal track-btn"
+                    data-url="${safeUrl}"
+                    data-counter-name="${safeCounterName}">
+                    상세정보확인 🖼️
+                </button>
+            `;
+        }
+
+        if (lowerUrl.startsWith("javascript:")) {
+            return `
+                <button
+                    type="button"
+                    class="btn-link btn-disabled">
+                    상세정보확인 🔍
+                </button>
+            `;
+        }
+
+        return `
+            <a
+                href="${safeUrl}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn-link track-btn"
+                data-counter-name="${safeCounterName}">
+                상세정보확인 🔍
+            </a>
+        `;
+    }
+
+    function buildApplyButton(item) {
+        const rawApplyValue = item["신청링크"] || item.applyLink;
+        const applyCounterName = buildCounterName(item, "apply");
+
+        if (!rawApplyValue || !rawApplyValue.trim()) {
+            return `
+                <button
+                    type="button"
+                    class="btn-link btn-disabled"
+                    onclick="alert('별도의 사전예약 링크가 필요 없는 현장접수/자유참여 행사입니다.');">
+                    현장접수/예약불필요
+                </button>
+            `;
+        }
+
+        const cleanValue = rawApplyValue.trim();
+        const safeApplyValue = escapeHtml(cleanValue);
+        const safeCounterName = escapeHtml(applyCounterName);
+        const alertSafeValue = cleanValue.replace(/'/g, "\\'").replace(/"/g, '\\"');
+        const isUrl = /^(https?:\/\/|www\.)/i.test(cleanValue);
+
+        if (isUrl) {
+            const href = cleanValue.toLowerCase().startsWith("www.")
+                ? `http://${cleanValue}`
+                : cleanValue;
+
+            return `
+                <a
+                    href="${escapeHtml(href)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="btn-link track-btn"
+                    data-counter-name="${safeCounterName}">
+                    예약하기 🔗
+                </a>
+            `;
+        }
+
+        return `
+            <button
+                type="button"
+                class="btn-link btn-disabled"
+                onclick="alert('${alertSafeValue}');">
+                ${safeApplyValue}
+            </button>
+        `;
+    }
 
     function applyFilters() {
-        const selectedLocs = Array.from(document.querySelectorAll('.loc-cb:checked')).map(cb => cb.value); const selectedAges = Array.from(document.querySelectorAll('.age-cb:checked')).map(cb => cb.value);
-        const keyword = document.getElementById('search-input').value.trim().toLowerCase(); const container = document.getElementById('list-container'); container.innerHTML = '';
+        const selectedLocs = Array.from(document.querySelectorAll(".loc-cb:checked")).map(cb => cb.value);
+        const selectedAges = Array.from(document.querySelectorAll(".age-cb:checked")).map(cb => cb.value);
+        const keyword = document.getElementById("search-input").value.trim().toLowerCase();
+        const container = document.getElementById("list-container");
+
+        container.innerHTML = "";
 
         if (eventData.length === 0) return;
 
         let filteredData = eventData.filter(item => {
             const matchTab = keyword ? true : (item.type === currentTab);
-            let matchLoc = selectedLocs.length === 0 ? true : selectedLocs.some(loc => item.mappedLoc === loc);
-            let matchAge = selectedAges.length === 0 ? true : selectedAges.some(age => item.mappedAges && item.mappedAges.includes(age));
+            const matchLoc = selectedLocs.length === 0 ? true : selectedLocs.some(loc => item.mappedLoc === loc);
+            const matchAge = selectedAges.length === 0 ? true : selectedAges.some(age => item.mappedAges && item.mappedAges.includes(age));
+
             let matchSearch = true;
-            if (keyword) { matchSearch = (item.title && item.title.toLowerCase().includes(keyword)) || (item.place && item.place.toLowerCase().includes(keyword)) || (item.loc && item.loc.toLowerCase().includes(keyword)); }
+            if (keyword) {
+                matchSearch =
+                    (item.title && item.title.toLowerCase().includes(keyword)) ||
+                    (item.place && item.place.toLowerCase().includes(keyword)) ||
+                    (item.loc && item.loc.toLowerCase().includes(keyword));
+            }
+
             return matchTab && matchLoc && matchAge && matchSearch;
         });
 
-        if (currentTab === 'ongoing' || keyword) {
+        if (currentTab === "ongoing" || keyword) {
             filteredData.sort((a, b) => {
                 if (a.isNew !== b.isNew) return b.isNew ? 1 : -1;
 
@@ -427,88 +1182,53 @@
                 const pB = getPriority(b);
 
                 if (pA !== pB) return pA - pB;
-                
-                return parseDateValue(a.applyEnd) - parseDateValue(b.applyEnd); 
+
+                return parseDateValue(a.applyEnd) - parseDateValue(b.applyEnd);
             });
-        } else if (currentTab === 'always' || currentTab === 'affiliate') {
-            filteredData.sort((a, b) => { 
+        } else if (currentTab === "always" || currentTab === "affiliate") {
+            filteredData.sort((a, b) => {
                 if (a.isNew !== b.isNew) return b.isNew ? 1 : -1;
-                return a.originalIndex - b.originalIndex; 
+                return a.originalIndex - b.originalIndex;
             });
         }
 
-        if (filteredData.length === 0) { container.innerHTML = '<div class="empty-state">해당하는 행사가 없습니다. 조건이나 검색어를 변경해 보세요! 😥</div>'; return; }
+        if (filteredData.length === 0) {
+            container.innerHTML = '<div class="empty-state">해당하는 행사가 없습니다. 조건이나 검색어를 변경해 보세요! 😥</div>';
+            return;
+        }
 
         filteredData.forEach(item => {
-            let safeCost = item.costType || '비용정보 없음'; if (safeCost === '해당정보 없음') safeCost = '비용정보 없음';
-            let costBadgeClass = 'badge-info'; if (safeCost.includes('무료')) costBadgeClass = 'badge-free'; else if (safeCost.includes('유료')) costBadgeClass = 'badge-paid';
+            let safeCost = item.costType || "비용정보 없음";
+            if (safeCost === "해당정보 없음") safeCost = "비용정보 없음";
 
-            let dateBadges = '';
-            if (item.isTodayOpen) dateBadges += `<span class="badge badge-open">오늘오픈</span> `; 
+            let costBadgeClass = "badge-info";
+            if (safeCost.includes("무료")) costBadgeClass = "badge-free";
+            else if (safeCost.includes("유료")) costBadgeClass = "badge-paid";
+
+            let dateBadges = "";
+            if (item.isTodayOpen) dateBadges += `<span class="badge badge-open">오늘오픈</span> `;
             if (item.isTodayClose) dateBadges += `<span class="badge badge-today">오늘마감</span> `;
             if (item.isTomorrowOpen && !item.isTodayOpen) dateBadges += `<span class="badge badge-open" style="background-color:#ff9800;">내일오픈</span> `;
             if (item.isTomorrowClose && !item.isTodayClose) dateBadges += `<span class="badge badge-close">내일마감</span> `;
 
-            let applyTextStyle = 'color:var(--text-sub);'; if (item.isTodayClose) applyTextStyle = 'color:#E53935; font-weight:700;';
-            let cardClass = 'card'; let overlayHTML = '';
-            
-            const statusVal = item['커밍순'] ? item['커밍순'].replace(/\s+/g, '') : '';
-            if (statusVal === '커밍순') { cardClass += ' disabled-card'; overlayHTML = `<div class="status-overlay"><div class="status-stamp">COMING SOON</div></div>`; } 
-            else if (statusVal === '마감') { cardClass += ' disabled-card'; overlayHTML = `<div class="status-overlay"><div class="status-stamp closed">마감</div></div>`; }
+            let applyTextStyle = "color:var(--text-sub);";
+            if (item.isTodayClose) applyTextStyle = "color:#E53935; font-weight:700;";
 
-            let btnDetails = '';
-            const detailUrl = item.link || item['링크'];
-            
-            let isImageUrl = false;
-            if (detailUrl && detailUrl.trim() !== '') {
-                const lowerUrl = detailUrl.trim().toLowerCase();
-                isImageUrl = /\.(jpeg|jpg|gif|png|webp)(?:[\?#].*)?$/i.test(lowerUrl) || 
-                             lowerUrl.includes('drive.google.com/uc?') || 
-                             lowerUrl.includes('phinf.pstatic.net');
+            let cardClass = "card";
+            let overlayHTML = "";
+
+            const statusVal = item["커밍순"] ? item["커밍순"].replace(/\s+/g, "") : "";
+            if (statusVal === "커밍순") {
+                cardClass += " disabled-card";
+                overlayHTML = `<div class="status-overlay"><div class="status-stamp">COMING SOON</div></div>`;
+            } else if (statusVal === "마감") {
+                cardClass += " disabled-card";
+                overlayHTML = `<div class="status-overlay"><div class="status-stamp closed">마감</div></div>`;
             }
 
-            // 💡 [수정 3] 제목에 홑따옴표(')가 포함될 경우 자바스크립트가 터지는 오류 방지
-            if (detailUrl && detailUrl.trim() !== '') {
-                const safeUrl = detailUrl.trim().replace(/"/g, '&quot;');
-                const trackTitle = (item.title || '').replace(/"/g, '&quot;');
-
-                if (isImageUrl) {
-                    btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">상세정보확인 🖼️</button>`;
-                } else {
-                    let detailAttr = `href="${safeUrl}" target="_blank"`;
-                    if (safeUrl.toLowerCase().startsWith('javascript:')) detailAttr = `href="#" onclick="${safeUrl.replace('javascript:', '')}"`;
-                    btnDetails = `<a ${detailAttr} class="btn-link" onclick="trackEventClick('${trackTitle}', 'detail')">상세정보확인 🔍</a>`;
-                }
-            } else {
-                btnDetails = `<button type="button" class="btn-link btn-disabled" onclick="alert('등록된 상세정보 링크가 없습니다.');">상세정보확인 🔍</button>`;
-            }
-
-            let btnApply = '';
-            const rawApplyValue = item['신청링크'] || item.applyLink; 
-            
-            if (rawApplyValue && rawApplyValue.trim() !== '') {
-                const cleanValue = rawApplyValue.trim();
-                const safeApplyValue = cleanValue.replace(/"/g, '&quot;');
-                const alertSafeValue = cleanValue.replace(/'/g, "\\'").replace(/"/g, '\\"');
-                // 💡 [수정 3 적용]
-        const rawTitle = item.title || '';
-        const jsSafeTitle = rawTitle.replace(/\\/g, '\\\\').replace(/'/g, "\\'");                
-                const isUrl = /^(https?:\/\/|www\.|javascript:)/i.test(cleanValue);
-
-                if (isUrl) {
-                    let applyAttr = `href="${safeApplyValue}" target="_blank"`;
-                    if (cleanValue.toLowerCase().startsWith('javascript:')) applyAttr = `href="#" onclick="${safeApplyValue.replace('javascript:', '')}"`;
-                    else if (cleanValue.toLowerCase().startsWith('www.')) applyAttr = `href="http://${safeApplyValue}" target="_blank"`;
-                    
-                    btnApply = `<a ${applyAttr} class="btn-link" onclick="trackEventClick('${jsSafeTitle}', 'apply')">예약하기 🔗</a>`;
-                } else {
-                    btnApply = `<button type="button" class="btn-link btn-disabled" onclick="alert('${alertSafeValue}');">${safeApplyValue}</button>`;
-                }
-            } else {
-                btnApply = `<button type="button" class="btn-link btn-disabled" onclick="alert('별도의 사전예약 링크가 필요 없는 현장접수/자유참여 행사입니다.');">현장접수/예약불필요</button>`;
-            }
-            
-            let actionButtonsHTML = `<div class="btn-group">${btnDetails}${btnApply}</div>`;
+            const btnDetails = buildDetailButton(item);
+            const btnApply = buildApplyButton(item);
+            const actionButtonsHTML = `<div class="btn-group">${btnDetails}${btnApply}</div>`;
 
             const cardHTML = `
                 <div class="${cardClass}">
@@ -516,23 +1236,46 @@
                     <div class="card-header">
                         <div class="badges">
                             ${dateBadges}
-                            <span class="badge badge-loc">${item.loc || ''}</span>
-                            <span class="badge badge-age">${item.age || ''}</span>
-                            <span class="badge ${costBadgeClass}">${safeCost}</span> 
+                            <span class="badge badge-loc">${escapeHtml(item.loc || "")}</span>
+                            <span class="badge badge-age">${escapeHtml(item.age || "")}</span>
+                            <span class="badge ${costBadgeClass}">${escapeHtml(safeCost)}</span>
                         </div>
                     </div>
-                    <h2 class="title">${item.title || ''} ${item.isNew ? `<span class="card-new-badge">N</span>` : ''}</h2>
-                    <div class="info-row"><div class="info-label">장소</div><div class="info-desc">${item.place || ''}</div></div>
-                    <div class="info-row"><div class="info-label">접수기간</div><div class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</div></div>
-                    <div class="info-row"><div class="info-label">운영일정</div><div class="info-desc">${item.date || '해당정보 없음'}</div></div>
+
+                    <h2 class="title">
+                        ${escapeHtml(item.title || "")}
+                        ${item.isNew ? `<span class="card-new-badge">N</span>` : ""}
+                    </h2>
+
+                    <div class="info-row">
+                        <div class="info-label">장소</div>
+                        <div class="info-desc">${escapeHtml(item.place || "")}</div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">접수기간</div>
+                        <div class="info-desc" style="${applyTextStyle}">${item.displayText || ""}</div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">운영일정</div>
+                        <div class="info-desc">${escapeHtml(item.date || "해당정보 없음")}</div>
+                    </div>
+
                     ${actionButtonsHTML}
                 </div>
             `;
+
             container.innerHTML += cardHTML;
         });
     }
 
-    document.addEventListener('DOMContentLoaded', () => { initNotice(); initLastUpdated(); initVisitCounters(); fetchEventData(); });
+    document.addEventListener("DOMContentLoaded", () => {
+        initNotice();
+        initLastUpdated();
+        initVisitCounters();
+        fetchEventData();
+    });
 </script>
 </body>
 </html>
