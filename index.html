@@ -803,10 +803,10 @@
             if (item.type === 'affiliate') {
                 let buttons = [];
                 if (item['이미지'] && item['이미지'].trim() !== '') {
-                    buttons.push(`<button onclick="openImageModal('${item['이미지'].trim()}')" class="btn-link btn-image">이미지 보기 🖼️</button>`);
+                    buttons.push(`<button onclick="openImageModal('${item['이미지'].trim()}')" class="btn-link btn-image">상세정보 🖼️</button>`);
                 }
                 if (item.link && item.link.trim() !== '') {
-                    buttons.push(`<a ${linkAttr} ${!item.link.includes('javascript:') ? 'target="_blank"' : ''} class="btn-link">제휴 혜택 확인하기 🎁</a>`);
+                    buttons.push(`<a ${linkAttr} ${!item.link.includes('javascript:') ? 'target="_blank"' : ''} class="btn-link">신청링크 🎁</a>`);
                 }
                 
                 if (buttons.length > 0) {
