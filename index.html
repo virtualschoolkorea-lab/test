@@ -1,18 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-
-    
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>헤이청주 - 일정 한눈에 보기</title>
     
     <meta name="referrer" content="no-referrer">
-    
-    <meta property="og:type" content="website">
-    <title>헤이청주 - 일정 한눈에 보기</title>
-    
     <meta property="og:type" content="website">
     <meta property="og:title" content="헤이청주 📢 교육/체험 링크모음">
     <meta property="og:description" content="청주 및 인근 지역의 교육/체험/행사 일정을 한눈에 확인하세요!">
@@ -364,17 +357,17 @@
         .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; }
         .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; }
 
-        /* 🌟 이미지 팝업(모달) 스타일 */
+        /* 🌟 이미지 팝업(모달) 스타일 - 변경됨 (더 옅게) */
         .image-modal-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0, 0, 0, 0.85);
+            background-color: rgba(0, 0, 0, 0.4); /* 기존 0.85에서 0.4로 변경하여 배경이 보이도록 수정 */
             z-index: 9999;
             justify-content: center;
             align-items: center;
             padding: 20px;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(2px); /* 블러 처리도 살짝 줄임 */
         }
         .image-modal-content {
             position: relative;
@@ -523,6 +516,12 @@
         }
     }
 
+    // 🌟 추가됨: 특정 버튼 클릭 수를 카운팅하는 함수
+    function trackButtonClick(btnType) {
+        const namespace = 'heycheongju_v1';
+        fetch(`https://api.counterapi.dev/v1/${namespace}/click_${btnType}/up`).catch(e => console.error(e));
+    }
+
     function sharePage() {
         const shareData = { title: '헤이청주 📢 교육/체험 링크모음', text: '우리 지역 체험 행사 일정을 한눈에 확인하세요!', url: window.location.href };
         if (navigator.share) navigator.share(shareData).catch(console.error);
@@ -557,7 +556,6 @@
         }
     }
 
-    // 🌟 파서 강화: 줄바꿈이나 공백 때문에 열이 밀리거나 헤더를 찾지 못하는 문제 차단
     function parseCSVToJSON(csv) {
         const rows = []; let row = []; let curr = ''; let insideQuotes = false;
         for (let i = 0; i < csv.length; i++) {
@@ -670,7 +668,6 @@
     let currentTab = 'ongoing'; 
 
     function processNewItems() {
-        // v3 키를 사용하여 로직 리셋. 
         const storageKey = 'heycj_known_items_v3';
         const knownItemsStr = localStorage.getItem(storageKey); 
         let knownItems = {};
@@ -688,30 +685,25 @@
         eventData.forEach((item, index) => {
             item.originalIndex = index;
             
-            // 🌟 띄어쓰기 한 칸 때문에 다른 항목으로 취급되는 것 방지
             const safeTitle = (item.title || '').replace(/\s+/g, '');
             const safeType = (item.type || '').trim();
             const id = encodeURIComponent(`${safeTitle}|${safeType}`);
             currentIds.add(id);
 
             if (isFirstVisit) { 
-                // 첫 방문 시에는 모두 N 배지 숨김 처리
                 knownItems[id] = now - ONE_DAY - 1000; 
                 item.isNew = false; 
                 updated = true; 
             } else if (!knownItems[id]) { 
-                // 기존에 없던 "완전 새로운" 항목 발견
                 knownItems[id] = now; 
                 item.isNew = true; 
                 updated = true; 
             } else { 
-                // 기존에 봤던 항목이면, 처음 본 시간 기준 24시간 이내인지 철저히 계산
                 item.isNew = (now - knownItems[id] < ONE_DAY); 
             }
             item.discoveryTime = knownItems[id];
         });
 
-        // 엑셀에서 지워졌고, 24시간이 넘은 찌꺼기 데이터 청소
         for (let key in knownItems) {
             if (!currentIds.has(key) && (now - knownItems[key] > ONE_DAY)) { 
                 delete knownItems[key]; 
@@ -760,10 +752,12 @@
             return matchTab && matchLoc && matchAge && matchSearch;
         });
 
+        // 🌟 정렬 로직 수정됨 (오늘마감 > 내일마감 > N뱃지(새 콘텐츠) > 마감일)
         if (currentTab === 'ongoing' || keyword) {
             filteredData.sort((a, b) => {
                 if (a.isTodayClose !== b.isTodayClose) return b.isTodayClose ? 1 : -1;
                 if (a.isTomorrowClose !== b.isTomorrowClose) return b.isTomorrowClose ? 1 : -1;
+                if (a.isNew !== b.isNew) return b.isNew ? 1 : -1; // 새 콘텐츠(N) 우선 정렬 추가
                 return parseDateValue(a.applyEnd) - parseDateValue(b.applyEnd); 
             });
         } else if (currentTab === 'always' || currentTab === 'affiliate') {
@@ -792,7 +786,6 @@
 
             let cardClass = 'card'; let overlayHTML = '';
             
-            // 🌟 커밍순 및 마감 필터링 완벽 매칭 (보이지 않는 공백 완벽 방어)
             const statusVal = item['커밍순'] ? item['커밍순'].replace(/\s+/g, '') : '';
             if (statusVal === '커밍순') { 
                 cardClass += ' disabled-card';
@@ -810,11 +803,13 @@
             let actionButtonsHTML = '';
             if (item.type === 'affiliate') {
                 let buttons = [];
+                // 🌟 상세정보확인 버튼에 클릭 트래킹(image_btn) 추가
                 if (item['이미지'] && item['이미지'].trim() !== '') {
-                    buttons.push(`<button onclick="openImageModal('${item['이미지'].trim()}')" class="btn-link btn-image">상세정보 확인하기</button>`);
+                    buttons.push(`<button onclick="trackButtonClick('image_btn'); openImageModal('${item['이미지'].trim()}')" class="btn-link btn-image">상세정보확인🖼️</button>`);
                 }
+                // 🌟 신청하기 버튼에 클릭 트래킹(apply_btn) 추가
                 if (item.link && item.link.trim() !== '') {
-                    buttons.push(`<a ${linkAttr} ${!item.link.includes('javascript:') ? 'target="_blank"' : ''} class="btn-link">신청하기</a>`);
+                    buttons.push(`<a ${linkAttr} ${!item.link.includes('javascript:') ? 'target="_blank"' : ''} class="btn-link" onclick="trackButtonClick('apply_btn')">신청하기🔗</a>`);
                 }
                 
                 if (buttons.length > 0) {
