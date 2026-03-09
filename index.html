@@ -7,7 +7,7 @@
     
     <meta property="og:type" content="website">
     <meta property="og:title" content="헤이청주 📢 교육/체험 링크모음">
-    <meta property="og:description" content="청주 및 인근 지역의 교육, 체험, 문화 행사 일정을 한눈에 확인하세요!">
+    <meta property="og:description" content="청주 및 인근 지역의 교육/체험/행사 일정을 한눈에 확인하세요!">
     <meta property="og:image" content="https://heycj.vercel.app/og-image.png"> 
 
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
@@ -169,7 +169,7 @@
         .tab {
             flex: 1;
             text-align: center;
-            padding: 10px 0;
+            padding: 8px 0;
             cursor: pointer;
             font-size: 0.95rem;
             font-weight: 500;
@@ -182,30 +182,24 @@
             border-bottom: 3px solid var(--primary-color);
             font-weight: 700;
         }
+        
+        /* 🌟 새로 추가된 N 뱃지 스타일 */
+        .new-badge {
+            display: inline-block;
+            background-color: #E53935;
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 800;
+            padding: 1px 5px;
+            border-radius: 6px;
+            margin-left: 4px;
+            vertical-align: super;
+        }
 
         /* 🌟 가로폭 절약을 위해 gap과 padding 미세 조정 */
-/* 👇 여기서부터 새로 추가하는 안개 효과 코드 👇 */
-        .filter-wrapper {
-            position: relative;
-            width: 100%;
-        }
-
-        .filter-wrapper::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            width: 40px; 
-            background: linear-gradient(to right, rgba(250, 250, 250, 0), rgba(250, 250, 250, 1));
-            pointer-events: none; 
-        }
-        /* 👆 여기까지 새로 추가 👆 */
-
-        /* 🌟 가로폭 절약을 위해 gap과 padding 미세 조정 */
-        .checkbox-group {
-            display: flex;
-            flex-wrap: nowrap;
+        .checkbox-group {
+            display: flex;
+            flex-wrap: nowrap;
             overflow-x: auto;
             gap: 4px; 
             padding: 8px 10px; 
@@ -308,7 +302,6 @@
         .badge-today { background-color: #E53935; } 
         .badge-open { background-color: #ff9800; }  
         .badge-close { background-color: #F06292; } 
-        .badge-affiliate { background-color: #673AB7; } 
         
         .title { font-size: 1.05rem; font-weight: 700; margin: 0 0 10px 0; line-height: 1.4; word-break: keep-all; }
         
@@ -366,20 +359,18 @@
         </header>
 
         <div class="search-container">
-            <input type="text" id="search-input" class="search-input" placeholder="검색어를 입력하세요 (예: 도서관, 과학)" onkeyup="applyFilters()">
+            <input type="text" id="search-input" class="search-input" placeholder="검색어를 입력하세요 (예: 도서관, 과학, 공연)" onkeyup="applyFilters()">
         </div>
 
-<div class="tabs">
-            <div class="tab active" onclick="changeTab(this, 'ongoing')">사전예약 중</div>
-            <div class="tab" onclick="changeTab(this, 'always')">상시예약/현장접수</div>
-            <div class="tab" onclick="changeTab(this, 'affiliate')">제휴 이벤트</div>
-        </div>
-
-        <div class="filter-wrapper">
-            <div class="checkbox-group" id="combined-filter-group">
-            </div>
+        <div class="tabs">
+            <div class="tab active" onclick="changeTab(this, 'ongoing')">사전예약 중</div>
+            <div class="tab" onclick="changeTab(this, 'always')">상시예약/현장접수</div>
+            <div class="tab" onclick="changeTab(this, 'affiliate')">제휴/이벤트</div>
         </div>
-            </div>
+
+        <div class="checkbox-group" id="combined-filter-group">
+            </div>
+    </div>
 
     <div class="content" id="list-container">
         <div class="loading-state">데이터를 불러오는 중입니다... ⏳</div>
@@ -492,7 +483,10 @@
             
             processEventDates(); 
             processEventAges(); 
-            generateFilters(); // 🌟 함수명 변경 (지역+연령 동시 생성)
+            generateFilters(); 
+            
+            // 🌟 N 뱃지 업데이트 호출
+            updateTabNewBadges();
             applyFilters();
         } catch (error) {
             console.error("데이터 로딩 실패:", error);
@@ -611,91 +605,84 @@
         });
     }
 
-// 🌟 지역 필터와 연령 필터를 한 줄에 모두 렌더링하는 함수
-    function generateFilters() {
-        const filterGroup = document.getElementById('combined-filter-group');
-        filterGroup.innerHTML = ''; 
+    function generateFilters() {
+        const filterGroup = document.getElementById('combined-filter-group');
+        filterGroup.innerHTML = ''; 
 
-        // 1. 지역 데이터를 분석하여 mappedLoc 에 저장 (이 부분은 그대로 유지)
-        const presentLocs = new Set();
-        const fixedLocs = ['청주', '충북', '대전', '세종', '온라인'];
-        const chungbukSubRegions = ['괴산', '음성', '증평', '보은', '옥천', '충주', '제천', '진천', '단양', '영동'];
+        const presentLocs = new Set();
+        const fixedLocs = ['청주', '충북', '대전', '세종', '온라인'];
+        const chungbukSubRegions = ['괴산', '음성', '증평', '보은', '옥천', '충주', '제천', '진천', '단양', '영동'];
 
-        eventData.forEach(item => {
-            if (item.loc && item.loc.trim() !== '') {
-                const locText = item.loc.trim();
-                
-                if (chungbukSubRegions.includes(locText) || locText === '충북') {
-                    item.mappedLoc = '충북';
-                } else if (fixedLocs.includes(locText)) {
-                    item.mappedLoc = locText;
-                } else {
-                    item.mappedLoc = '기타';
-                }
-                presentLocs.add(item.mappedLoc);
-            } else {
-                item.mappedLoc = null; 
-            }
-        });
+        eventData.forEach(item => {
+            if (item.loc && item.loc.trim() !== '') {
+                const locText = item.loc.trim();
+                
+                if (chungbukSubRegions.includes(locText) || locText === '충북') {
+                    item.mappedLoc = '충북';
+                } else if (fixedLocs.includes(locText)) {
+                    item.mappedLoc = locText;
+                } else {
+                    item.mappedLoc = '기타';
+                }
+                presentLocs.add(item.mappedLoc);
+            } else {
+                item.mappedLoc = null; 
+            }
+        });
 
-        // 👇 여기서부터 순서가 변경되었습니다! 👇
+        const ageFilters = ['미취학', '초등', '중고등', '성인'];
+        ageFilters.forEach((age, index) => {
+            const id = `age-dynamic-${index}`;
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = id;
+            checkbox.value = age;
+            checkbox.className = 'filter-cb age-cb'; 
+            checkbox.onchange = applyFilters;
 
-        // 2. 연령 버튼 렌더링 (가장 먼저 그려서 왼쪽에 배치)
-        const ageFilters = ['미취학', '초등', '중고등', '성인'];
-        ageFilters.forEach((age, index) => {
-            const id = `age-dynamic-${index}`;
-            
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.id = id;
-            checkbox.value = age;
-            checkbox.className = 'filter-cb age-cb'; 
-            checkbox.onchange = applyFilters;
+            const label = document.createElement('label');
+            label.htmlFor = id;
+            label.className = 'cb-label age-label';
+            label.innerText = age;
 
-            const label = document.createElement('label');
-            label.htmlFor = id;
-            label.className = 'cb-label age-label';
-            label.innerText = age;
+            filterGroup.appendChild(checkbox);
+            filterGroup.appendChild(label);
+        });
 
-            filterGroup.appendChild(checkbox);
-            filterGroup.appendChild(label);
-        });
+        if (presentLocs.size > 0) {
+            const divider = document.createElement('span');
+            divider.innerText = '|';
+            divider.style.color = '#ccc';
+            divider.style.display = 'flex';
+            divider.style.alignItems = 'center';
+            divider.style.fontSize = '0.7rem';
+            divider.style.margin = '0 2px';
+            filterGroup.appendChild(divider);
+        }
 
-        // 3. 연령과 지역을 구분하는 시각적 분리선 추가 (| 기호)
-        if (presentLocs.size > 0) {
-            const divider = document.createElement('span');
-            divider.innerText = '|';
-            divider.style.color = '#ccc';
-            divider.style.display = 'flex';
-            divider.style.alignItems = 'center';
-            divider.style.fontSize = '0.7rem';
-            divider.style.margin = '0 2px';
-            filterGroup.appendChild(divider);
-        }
+        const orderedLocs = [...fixedLocs, '기타'];
+        orderedLocs.forEach((loc, index) => {
+            if (presentLocs.has(loc)) {
+                const id = `loc-dynamic-${index}`;
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = id;
+                checkbox.value = loc;
+                checkbox.className = 'filter-cb loc-cb'; 
+                checkbox.onchange = applyFilters;
 
-        // 4. 지역 버튼 렌더링 (연령 다음, 즉 오른쪽에 배치)
-        const orderedLocs = [...fixedLocs, '기타'];
-        orderedLocs.forEach((loc, index) => {
-            if (presentLocs.has(loc)) {
-                const id = `loc-dynamic-${index}`;
-                
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.id = id;
-                checkbox.value = loc;
-                checkbox.className = 'filter-cb loc-cb'; 
-                checkbox.onchange = applyFilters;
+                const label = document.createElement('label');
+                label.htmlFor = id;
+                label.className = 'cb-label';
+                label.innerText = loc;
 
-                const label = document.createElement('label');
-                label.htmlFor = id;
-                label.className = 'cb-label';
-                label.innerText = loc;
-
-                filterGroup.appendChild(checkbox);
-                filterGroup.appendChild(label);
-            }
-        });
-    }
+                filterGroup.appendChild(checkbox);
+                filterGroup.appendChild(label);
+            }
+        });
+    }
 
     function parseDateValue(dateStr) {
         if (!dateStr) return 9999; 
@@ -714,12 +701,51 @@
 
     let currentTab = 'ongoing'; 
 
+    // 🌟 새로운 데이터 개수를 감지하여 N 뱃지 추가
+    function updateTabNewBadges() {
+        const tabs = ['ongoing', 'always', 'affiliate'];
+        tabs.forEach(tabType => {
+            const itemsInTab = eventData.filter(item => item.type === tabType);
+            const currentCount = itemsInTab.length;
+            // 로컬스토리지에서 이전 개수 로드 (없으면 0)
+            const lastSeenCount = parseInt(localStorage.getItem('heycj_count_' + tabType) || '0', 10);
+
+            const tabElement = document.querySelector(`.tab[onclick*="${tabType}"]`);
+            if (!tabElement) return;
+            
+            // 현재 개수가 예전보다 많으면 N 뱃지 추가
+            if (currentCount > lastSeenCount) {
+                if (!tabElement.querySelector('.new-badge')) {
+                    tabElement.insertAdjacentHTML('beforeend', '<span class="new-badge">N</span>');
+                }
+            } else {
+                // 개수가 줄었거나 같으면 최신 개수로 동기화 (오래된 데이터 삭제 시 대비)
+                localStorage.setItem('heycj_count_' + tabType, currentCount);
+            }
+        });
+
+        // 현재 보고 있는 활성화 탭은 바로 '읽음' 처리
+        const activeItems = eventData.filter(item => item.type === currentTab);
+        localStorage.setItem('heycj_count_' + currentTab, activeItems.length);
+        const activeTabElement = document.querySelector(`.tab.active`);
+        if (activeTabElement) {
+            const activeBadge = activeTabElement.querySelector('.new-badge');
+            if (activeBadge) activeBadge.remove();
+        }
+    }
+
     function changeTab(element, type) {
         document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
         element.classList.add('active');
         currentTab = type;
-        applyFilters(); 
         
+        // 🌟 탭 이동 시 해당 탭 데이터 개수를 로컬스토리지에 저장하고 뱃지 지우기
+        const itemsInTab = eventData.filter(item => item.type === type);
+        localStorage.setItem('heycj_count_' + type, itemsInTab.length);
+        const badge = element.querySelector('.new-badge');
+        if (badge) badge.remove();
+
+        applyFilters(); 
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -738,9 +764,9 @@
         if (eventData.length === 0) return;
 
         let filteredData = eventData.filter(item => {
-            const matchTab = item.type === currentTab;
+            // 🌟 검색어가 있으면 탭 상관없이 무조건 포함, 검색어가 없을 때만 현재 탭과 일치하는지 확인
+            const matchTab = keyword ? true : (item.type === currentTab);
             
-            // 🌟 지역 필터 로직: 사전에 분류해둔 mappedLoc으로 깔끔하게 매칭
             let matchLoc = false;
             if (selectedLocs.length === 0) {
                 matchLoc = true; 
@@ -755,7 +781,6 @@
                 matchAge = selectedAges.some(age => item.mappedAges && item.mappedAges.includes(age));
             }
 
-            // 검색어 매칭 시에는 엑셀 원본 loc(예: 천안, 부산 등)을 검색할 수 있게 유지
             let matchSearch = true;
             if (keyword) {
                 matchSearch = (item.title && item.title.toLowerCase().includes(keyword)) ||
@@ -766,7 +791,8 @@
             return matchTab && matchLoc && matchAge && matchSearch;
         });
 
-        if (currentTab === 'ongoing') {
+        if (currentTab === 'ongoing' || keyword) {
+            // 🌟 검색 중일 때도 날짜 순서대로 보여주도록 정렬 로직 확장
             filteredData.sort((a, b) => {
                 if (a.isTodayClose !== b.isTodayClose) return b.isTodayClose ? 1 : -1;
                 if (a.isTomorrowClose !== b.isTomorrowClose) return b.isTomorrowClose ? 1 : -1;
@@ -792,7 +818,7 @@
             else if (safeCost.includes('유료')) costBadgeClass = 'badge-paid';
 
             let dateBadges = '';
-            if (item.type === 'affiliate') dateBadges += `<span class="badge badge-affiliate">제휴이벤트</span> `;
+            // 🌟 제휴이벤트 보라색 뱃지 생성 코드 제거됨
             if (item.isTodayClose) dateBadges += `<span class="badge badge-today">오늘마감</span> `;
             if (item.isTomorrowOpen) dateBadges += `<span class="badge badge-open">내일오픈</span> `;
             if (item.isTomorrowClose) dateBadges += `<span class="badge badge-close">내일마감</span> `;
@@ -851,4 +877,3 @@
 
 </body>
 </html>
-
