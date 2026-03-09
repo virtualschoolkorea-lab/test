@@ -343,7 +343,10 @@
             item.originalIndex = index;
             const safeTitle = (item.title || '').replace(/\s+/g, ''); const safeType = (item.type || '').trim(); const id = encodeURIComponent(`${safeTitle}|${safeType}`);
             currentIds.add(id);
-
+            
+            if (item['N숨김'] === 'O' || item['N숨김'] === 'o') {
+    item.isNew = false;
+}
             if (isFirstVisit) { knownItems[id] = now - ONE_DAY - 1000; item.isNew = false; updated = true; } 
             else if (!knownItems[id]) { knownItems[id] = now; item.isNew = true; updated = true; } 
             else { item.isNew = (now - knownItems[id] < ONE_DAY); }
