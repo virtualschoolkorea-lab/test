@@ -333,23 +333,38 @@
 
     let currentTab = 'ongoing'; 
 
-    // 날짜 텍스트를 파싱하는 도우미 함수 (구글 시트의 다양한 날짜 형식을 대비)
+    // 🌟 1. 브라우저 호환성을 완벽하게 맞춘 날짜 파싱 함수
     function parseRegDate(dateStr) {
         if (!dateStr) return 0;
-        // 1. "2024. 3. 10. 15:30" 형태를 "2024/3/10 15:30"으로 변환
-        let cleanStr = dateStr.replace(/\.\s*/g, '/').replace(/\/$/, ''); 
-        // 2. 오전/오후 텍스트 처리
-        cleanStr = cleanStr.replace('오전', 'AM').replace('오후', 'PM');
-        
-        let parsedTime = new Date(cleanStr).getTime();
-        // 파싱 실패시 순수 텍스트로 재시도
-        if(isNaN(parsedTime)) {
-            parsedTime = new Date(dateStr).getTime();
+        let s = String(dateStr).trim();
+
+        // 정규식을 이용해 연, 월, 일, 시, 분을 정확하게 추출 (아이폰/사파리 에러 방지)
+        let match = s.match(/(\d{4})[./-]\s*(\d{1,2})[./-]\s*(\d{1,2})(?:[.\s]+(?:오전|오후|AM|PM)?\s*(\d{1,2})[:시]\s*(\d{1,2}))?/i);
+
+        if (match) {
+            let year = parseInt(match[1], 10);
+            let month = parseInt(match[2], 10) - 1; // 자바스크립트는 월을 0부터 계산하므로 -1
+            let day = parseInt(match[3], 10);
+            let hour = match[4] ? parseInt(match[4], 10) : 0;
+            let minute = match[5] ? parseInt(match[5], 10) : 0;
+
+            // 오후/AM/PM 12시간제 텍스트 처리
+            if (s.includes('오후') || s.toUpperCase().includes('PM')) {
+                if (hour < 12) hour += 12;
+            }
+            if ((s.includes('오전') || s.toUpperCase().includes('AM')) && hour === 12) {
+                hour = 0;
+            }
+
+            return new Date(year, month, day, hour, minute).getTime();
         }
-        return isNaN(parsedTime) ? 0 : parsedTime;
+
+        // 추출 실패 시 기본 파싱 시도
+        let parsed = new Date(s).getTime();
+        return isNaN(parsed) ? 0 : parsed;
     }
 
-    // 🌟 전면 수정된 N 배지 로직 (로컬 스토리지 삭제, 구글 시트 등록일 기준) 🌟
+    // 🌟 2. 마이너스 시간(미래) 오류를 잡은 N 배지 로직
     function processNewItems() {
         const now = Date.now(); 
         const ONE_DAY = 24 * 60 * 60 * 1000; 
@@ -358,16 +373,20 @@
             item.originalIndex = index;
             item.isNew = false;
             
-            // 시트의 '등록일' 열의 데이터를 가져와 밀리초로 변환합니다.
-            // 주의: 시트의 헤더명이 정확히 '등록일' 이어야 합니다. (예: 타임스탬프인 경우 '타임스탬프'로 변경 필요)
             const regDateMs = parseRegDate(item['등록일']);
 
-            // 등록일이 유효하고, 현재 시각과의 차이가 24시간 이내인 경우 N 부여
-            if (regDateMs > 0 && (now - regDateMs) <= ONE_DAY) {
-                item.isNew = true;
+            // 등록일이 정상적인 날짜일 경우에만 계산
+            if (regDateMs > 0) {
+                const timeDiff = now - regDateMs;
+                
+                // 시간 차이가 과거 24시간 이내(0 ~ 24h)이거나, 
+                // 작성 실수로 미래 시간을 적었을 경우(미래 24시간 이내)에만 N 표시
+                if (timeDiff >= -ONE_DAY && timeDiff <= ONE_DAY) {
+                    item.isNew = true;
+                }
             }
 
-            // 시트에 N숨김 표시가 'O'이거나 'o'이면 무조건 N 배지를 가립니다. (기존 로직 유지)
+            // 시트에 N숨김 표시가 'O'이거나 'o'이면 무조건 N 배지를 가립니다.
             if (item['N숨김'] === 'O' || item['N숨김'] === 'o') {
                 item.isNew = false;
             }
