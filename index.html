@@ -22,7 +22,7 @@
             --border-color: #e0e0e0;
         }
         body { font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; display: flex; justify-content: center; }
-        .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; }
         .sticky-wrapper { position: sticky; top: 0; z-index: 100; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
         header { background-color: var(--primary-color); color: white; padding: 15px 16px 4px 16px; display: flex; flex-direction: column; }
@@ -49,8 +49,12 @@
         .new-badge { display: inline-block; background-color: #E53935; color: white; font-size: 0.6rem; font-weight: 800; padding: 1px 5px; border-radius: 6px; margin-left: 4px; vertical-align: super; }
         .card-new-badge { display: inline-block; background-color: #E53935; color: white; font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 6px; margin-left: 5px; vertical-align: middle; }
 
-        .checkbox-group { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 4px; padding: 8px 10px; background: #fafafa; -ms-overflow-style: none; scrollbar-width: none; }
+        /* 필터 스크롤 및 그라데이션 래퍼 */
+        .filter-wrapper { position: relative; background: #fafafa; border-bottom: 1px solid #eee; }
+        .checkbox-group { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 4px; padding: 8px 10px; -ms-overflow-style: none; scrollbar-width: none; }
         .checkbox-group::-webkit-scrollbar { display: none; }
+        .fade-right { position: absolute; right: 0; top: 0; bottom: 0; width: 35px; background: linear-gradient(to right, rgba(250,250,250,0), rgba(250,250,250,1)); pointer-events: none; transition: opacity 0.3s; }
+
         .filter-cb { display: none; }
         .cb-label { padding: 3px 8px; background: #fff; border: 1px solid #ddd; border-radius: 14px; font-size: 0.72rem; color: #555; cursor: pointer; transition: all 0.2s; user-select: none; white-space: nowrap; }
         .filter-cb:checked + .cb-label { background: var(--primary-color); color: #fff; border-color: var(--primary-color); font-weight: 700; box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3); }
@@ -86,12 +90,18 @@
         .btn-group .btn-link { flex: 1; margin-top: 0; font-size: 0.8rem; padding: 8px 2px; }
         .btn-link:hover { background-color: #388E3C; }
         
-        /* 🌟 수정됨: 비활성화(현장접수) 버튼 스타일 완전히 통일 및 밝은 회색으로 변경 */
         .btn-disabled { background-color: #f2f2f2 !important; color: #888 !important; border: 1px solid #ddd !important; cursor: default !important; pointer-events: auto; }
         .btn-disabled:hover { background-color: #f2f2f2 !important; }
 
         .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; }
         .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; }
+
+        /* 이미지 모달 팝업 스타일 */
+        .img-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
+        .img-modal-overlay.active { display: flex; opacity: 1; }
+        .img-modal-content { max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); object-fit: contain; }
+        .img-modal-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.8); color: #333; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.5rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+        .img-modal-close:hover { background: #fff; }
     </style>
 </head>
 <body>
@@ -123,12 +133,21 @@
             <div class="tab" onclick="changeTab(this, 'always')">상시예약/현장접수</div>
             <div class="tab" onclick="changeTab(this, 'affiliate')">제휴/이벤트</div>
         </div>
-        <div class="checkbox-group" id="combined-filter-group"></div>
+        
+        <div class="filter-wrapper">
+            <div class="checkbox-group" id="combined-filter-group" onscroll="handleFilterScroll(this)"></div>
+            <div class="fade-right" id="filter-fade"></div>
+        </div>
     </div>
 
     <div class="content" id="list-container">
         <div class="loading-state">데이터를 불러오는 중입니다... ⏳</div>
     </div>
+</div>
+
+<div class="img-modal-overlay" id="imageModal" onclick="closeImageModal()">
+    <button class="img-modal-close" onclick="closeImageModal()">×</button>
+    <img src="" alt="상세정보 이미지" class="img-modal-content" id="imageModalImg" onclick="event.stopPropagation()">
 </div>
 
 <script>
@@ -189,6 +208,30 @@
     function sharePage() {
         const shareData = { title: '헤이청주 📢 교육/체험 링크모음', text: '우리 지역 체험 행사 일정을 한눈에 확인하세요!', url: window.location.href };
         if (navigator.share) navigator.share(shareData).catch(console.error); else navigator.clipboard.writeText(window.location.href).then(() => alert('링크가 복사되었습니다!'));
+    }
+
+    /* 이미지 모달 띄우기 함수 추가 */
+    function openImageModal(imgUrl) {
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('imageModalImg');
+        modalImg.src = imgUrl;
+        modal.classList.add('active');
+    }
+
+    function closeImageModal() {
+        const modal = document.getElementById('imageModal');
+        modal.classList.remove('active');
+    }
+
+    /* 필터 스크롤에 따른 그라데이션 가시성 조절 */
+    function handleFilterScroll(element) {
+        const fade = document.getElementById('filter-fade');
+        // 끝까지 스크롤 되었는지 확인 (여유값 5px)
+        if (element.scrollWidth - element.clientWidth <= element.scrollLeft + 5) {
+            fade.style.opacity = '0';
+        } else {
+            fade.style.opacity = '1';
+        }
     }
 
     let eventData = [];
@@ -280,6 +323,9 @@
                 const label = document.createElement('label'); label.htmlFor = id; label.className = 'cb-label'; label.innerText = loc; filterGroup.appendChild(checkbox); filterGroup.appendChild(label);
             }
         });
+
+        // 렌더링 직후 스크롤 체크
+        setTimeout(() => handleFilterScroll(filterGroup), 100);
     }
 
     function parseDateValue(dateStr) {
@@ -338,12 +384,26 @@
             return matchTab && matchLoc && matchAge && matchSearch;
         });
 
+        // 🌟 정렬 로직 업데이트: (1)오늘오픈, (2)오늘마감, (3)내일마감 우선순위 적용
         if (currentTab === 'ongoing' || keyword) {
             filteredData.sort((a, b) => {
-                if (a.isTodayClose !== b.isTodayClose) return b.isTodayClose ? 1 : -1;
-                if (a.isTodayOpen !== b.isTodayOpen) return b.isTodayOpen ? 1 : -1; 
-                if (a.isTomorrowClose !== b.isTomorrowClose) return b.isTomorrowClose ? 1 : -1;
+                const getPriority = (item) => {
+                    if (item.isTodayOpen) return 1;
+                    if (item.isTodayClose) return 2;
+                    if (item.isTomorrowClose) return 3;
+                    return 4;
+                };
+
+                const pA = getPriority(a);
+                const pB = getPriority(b);
+
+                // 우선순위가 다르면 우선순위로 정렬
+                if (pA !== pB) return pA - pB;
+
+                // 우선순위가 같다면 New 뱃지가 있는지 비교
                 if (a.isNew !== b.isNew) return b.isNew ? 1 : -1;
+                
+                // 나머지는 마감일 순
                 return parseDateValue(a.applyEnd) - parseDateValue(b.applyEnd); 
             });
         } else if (currentTab === 'always' || currentTab === 'affiliate') {
@@ -371,18 +431,28 @@
 
             const trackTitle = (item.title || '').replace(/'/g, "\\'"); 
 
-            // 🌟 수정됨: 상세정보확인 버튼 처리 (link 열 데이터 사용)
+            // 🌟 이미지 확장자 검사 로직 및 상세정보확인 버튼 업데이트
             let btnDetails = '';
             const detailUrl = item.link || item['링크'];
+            
+            let isImageUrl = false;
             if (detailUrl && detailUrl.trim() !== '') {
-                let detailAttr = `href="${detailUrl.trim()}" target="_blank"`;
-                if (detailUrl.toLowerCase().startsWith('javascript:')) detailAttr = `href="#" onclick="${detailUrl.replace('javascript:', '')}"`;
-                btnDetails = `<a ${detailAttr} class="btn-link" onclick="trackEventClick('${trackTitle}', 'detail')">상세정보확인 🔍</a>`;
+                const lowerUrl = detailUrl.trim().toLowerCase();
+                isImageUrl = lowerUrl.match(/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/) != null;
+            }
+
+            if (detailUrl && detailUrl.trim() !== '') {
+                if (isImageUrl) {
+                    btnDetails = `<button class="btn-link" onclick="openImageModal('${detailUrl.trim()}'); trackEventClick('${trackTitle}', 'detail')">상세정보확인 🔍</button>`;
+                } else {
+                    let detailAttr = `href="${detailUrl.trim()}" target="_blank"`;
+                    if (detailUrl.toLowerCase().startsWith('javascript:')) detailAttr = `href="#" onclick="${detailUrl.replace('javascript:', '')}"`;
+                    btnDetails = `<a ${detailAttr} class="btn-link" onclick="trackEventClick('${trackTitle}', 'detail')">상세정보확인 🔍</a>`;
+                }
             } else {
                 btnDetails = `<button class="btn-link btn-disabled" onclick="alert('등록된 상세정보 링크가 없습니다.');">상세정보확인 🔍</button>`;
             }
 
-            // 🌟 수정됨: 신청하기 버튼 처리 (신청링크 열 데이터 사용, 없으면 현장접수 처리)
             let btnApply = '';
             const applyUrl = item['신청링크'] || item.applyLink; 
             if (applyUrl && applyUrl.trim() !== '') {
