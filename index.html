@@ -136,11 +136,11 @@
             <input type="text" id="search-input" class="search-input" placeholder="검색어를 입력하세요 (예: 도서관, 과학, 공연)" onkeyup="applyFilters()">
         </div>
 
-        <div class="tabs">
-            <div class="tab active" onclick="changeTab(this, 'ongoing')">사전예약 중</div>
-            <div class="tab" onclick="changeTab(this, 'always')">상시/현장접수</div>
-            <div class="tab" onclick="changeTab(this, 'affiliate')">제휴/이벤트</div>
-        </div>
+    <div class="tabs">
+        <div class="tab" onclick="changeTab(this, 'ongoing')">사전예약 중</div>
+        <div class="tab" onclick="changeTab(this, 'always')">상시/현장접수</div>
+        <div class="tab active" onclick="changeTab(this, 'affiliate')">제휴/이벤트</div>
+    </div>
         
         <div class="filter-wrapper">
             <div class="checkbox-group" id="combined-filter-group" onscroll="handleFilterScroll(this)"></div>
@@ -163,7 +163,7 @@
         { text: "[⚡내일오픈/마감,긴급정보 실시간 알림 오픈챗 입장하기👆] ", link: "https://open.kakao.com/o/gAUqOrai" },
         { text: "[헤이청주에 ☎️ 협업문의/제안/건의하기] 👆", link: "https://forms.gle/h8KLaLkfsU55aH5T9" },
         { text: "📝간혹 오타가 발생하므로 상세정보확인 페이지 반드시 참고", link: "" },
-        { text: "📢[제휴/추가모집] '우리 아이, 주의력이 부족한가요?' Cooming Soon", link: "" }
+        { text: "📢[제휴/이벤트 새소식] 총 80만원 상당의 혜택 확인하러가기 👇 ", link: "" }
     ];
 
     function initNotice() {
@@ -360,7 +360,7 @@
         return 9999; 
     }
 
-    let currentTab = 'ongoing'; 
+    let currentTab = 'affiliate'; 
 
     function parseRegDate(dateStr) {
         if (!dateStr) return 0;
@@ -566,3 +566,4 @@
 </script>
 </body>
 </html>
+
