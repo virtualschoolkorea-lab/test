@@ -86,9 +86,7 @@
             .app-container { max-width: 1000px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; }
             header { border-radius: 16px 16px 0 0; padding: 20px 24px 10px 24px; }
             .sticky-wrapper { border-radius: 16px 16px 0 0; }
-            /* gap 증가 및 align-items 수정으로 겹침 방지 */
             #list-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 24px; align-items: stretch; }
-            /* 카드가 내용에 맞게 자연스럽게 늘어나도록 변경 */
             .card { margin-bottom: 0; height: auto; display: flex; flex-direction: column; }
             .card-title-row { margin-top: auto; padding-top: 10px; }
         }
@@ -118,7 +116,6 @@
         .card-action-area { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-left: 10px; flex-shrink: 0; }
         .card-action-top { display: flex; align-items: center; gap: 10px; }
         
-        /* 하트(찜) 영역 CSS 업데이트 */
         .btn-like { background: none; border: none; padding: 2px; cursor: pointer; color: #aaa; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 3px; font-size: 0.75rem; font-weight: 500; font-family: inherit;}
         .btn-like:hover { transform: scale(1.05); }
         .btn-like.liked { color: #E53935; }
@@ -241,7 +238,7 @@
 <script>
     // 카카오 SDK 초기화
     try {
-        Kakao.init('여기에_카카오_자바스크립트_키를_입력하세요'); 
+        Kakao.init('9e15976baaa60ecc531d234dcbaf301e'); 
     } catch (e) {
         console.log("카카오 키가 아직 설정되지 않았습니다.");
     }
@@ -305,25 +302,36 @@
         } catch (e) { document.getElementById('count-total').innerText = '-'; document.getElementById('count-today').innerText = '-'; }
     }
 
+    // [수정됨] 에러 처리 추가: 데이터가 없으면 '0'으로 표기
     async function fetchCardViewCount(eventId) {
+        const countElem = document.getElementById(`view-count-${eventId}`);
+        if (!countElem) return;
         try {
             const safeId = encodeURIComponent(eventId);
             const res = await fetch(`https://api.counterapi.dev/v1/heycheongju_v1/event_${safeId}`);
-            const data = await res.json();
-            const countElem = document.getElementById(`view-count-${eventId}`);
-            if (countElem) countElem.innerText = data.count || 0;
-        } catch (e) {}
+            if (res.ok) {
+                const data = await res.json();
+                countElem.innerText = data.count || 0;
+            } else {
+                countElem.innerText = '0';
+            }
+        } catch (e) { countElem.innerText = '0'; }
     }
 
-    // 하트(찜) 카운트를 불러오는 함수 추가
+    // [수정됨] 에러 처리 추가: 데이터가 없으면 '0'으로 표기
     async function fetchCardLikeCount(eventId) {
+        const countElem = document.getElementById(`like-count-${eventId}`);
+        if (!countElem) return;
         try {
             const safeId = encodeURIComponent(eventId);
             const res = await fetch(`https://api.counterapi.dev/v1/heycheongju_like_v1/event_${safeId}`);
-            const data = await res.json();
-            const countElem = document.getElementById(`like-count-${eventId}`);
-            if (countElem) countElem.innerText = data.count || 0;
-        } catch (e) {}
+            if (res.ok) {
+                const data = await res.json();
+                countElem.innerText = data.count || 0;
+            } else {
+                countElem.innerText = '0';
+            }
+        } catch (e) { countElem.innerText = '0'; }
     }
 
     function trackEventAndOpen(e, url, title, btnType) {
@@ -359,39 +367,37 @@
         catch (e) { return []; }
     }
     
-    // 찜하기 버튼 토글 (UI 즉시 반영 및 API 연동)
+    // [수정됨] 찜하기 누를 때 숫자 꼬임 방지
     function toggleLike(e, eventId) {
         e.stopPropagation(); 
         let likes = getLikedEvents();
         const btn = e.currentTarget;
         const countSpan = document.getElementById(`like-count-${eventId}`);
         
+        let currentCount = 0;
+        if (countSpan && !isNaN(parseInt(countSpan.innerText))) {
+            currentCount = parseInt(countSpan.innerText);
+        }
+
         if (likes.includes(eventId)) {
             // 찜 취소
             likes = likes.filter(id => id !== eventId);
             btn.classList.remove('liked');
-            // UI 즉시 반영 (숫자 감소)
-            if (countSpan && countSpan.innerText !== '-' && parseInt(countSpan.innerText) > 0) {
-                countSpan.innerText = parseInt(countSpan.innerText) - 1;
-            }
+            if (countSpan && currentCount > 0) countSpan.innerText = currentCount - 1;
         } else {
             // 찜하기
             likes.push(eventId);
             btn.classList.add('liked');
-            // UI 즉시 반영 (숫자 증가)
-            if (countSpan && countSpan.innerText !== '-') {
-                countSpan.innerText = parseInt(countSpan.innerText) + 1;
-            } else if (countSpan) {
-                countSpan.innerText = 1;
-            }
+            if (countSpan) countSpan.innerText = currentCount + 1;
+            
             // 누적 하트 서버에 업데이트 (백그라운드)
             try {
                 const safeId = encodeURIComponent(eventId);
                 fetch(`https://api.counterapi.dev/v1/heycheongju_like_v1/event_${safeId}/up`)
                     .then(res => res.json())
                     .then(data => {
-                        if (countSpan) countSpan.innerText = data.count;
-                    });
+                        if (countSpan && data.count !== undefined) countSpan.innerText = data.count;
+                    }).catch(err => {});
             } catch(e) {}
         }
         localStorage.setItem('heycheongju_likes', JSON.stringify(likes));
@@ -624,7 +630,6 @@
 
         const likedEvents = getLikedEvents();
         
-        // 💡 렌더링 최적화: 버퍼에 HTML 저장 후 한 번에 반영
         let htmlBuffer = '';
 
         filteredData.forEach(item => {
@@ -645,6 +650,7 @@
             const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
             const isLiked = likedEvents.includes(eventUniqueId);
 
+            // 로딩 중일 때는 기본으로 0이 아닌 '-'로 시작하도록 세팅 (이후 fetch 완료시 업데이트)
             const cardHTML = `
                 <div class="${cardClass}" id="card-${eventUniqueId}" onclick="openEventPopup('${eventUniqueId}')">
                     ${overlayHTML}
@@ -683,11 +689,13 @@
         // 한 번에 DOM에 삽입
         container.innerHTML = htmlBuffer;
 
-        // 삽입 완료 후 비동기로 조회수와 하트 누적 수를 가져옵니다
-        filteredData.forEach(item => {
+        // [수정됨] Rate Limit(호출 초과) 방지를 위해 0.05초 간격으로 순차적 호출 진행
+        filteredData.forEach((item, index) => {
             const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
-            fetchCardViewCount(eventUniqueId);
-            fetchCardLikeCount(eventUniqueId);
+            setTimeout(() => {
+                fetchCardViewCount(eventUniqueId);
+                fetchCardLikeCount(eventUniqueId);
+            }, index * 50); 
         });
     }
 
