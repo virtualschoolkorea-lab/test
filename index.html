@@ -70,14 +70,16 @@
         .filter-cb:checked + .cb-label.age-label { background: #ff9800; border-color: #ff9800; box-shadow: 0 2px 4px rgba(255, 152, 0, 0.3); }
 
         .content { padding: 15px; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 16px 16px 10px 16px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--border-color); display: block; transition: transform 0.2s; cursor: pointer; }
+        
+        /* 카드 기본 스타일 */
+        .card { background: var(--card-bg); border-radius: 12px; padding: 16px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--border-color); display: block; transition: transform 0.2s; cursor: pointer; }
         .card:not(.disabled-card):hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
         .card.disabled-card { position: relative; overflow: hidden; pointer-events: none; user-select: none; }
         .status-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.45); z-index: 10; display: flex; align-items: center; justify-content: center; }
         .status-stamp { color: #fff; border: 3px solid #fff; padding: 8px 18px; font-size: 1.6rem; font-weight: 800; letter-spacing: 2px; transform: rotate(-10deg); border-radius: 8px; background: rgba(0, 0, 0, 0.3); text-align: center; }
         .status-stamp.closed { color: #ff5252; border-color: #ff5252; background: rgba(255, 82, 82, 0.15); }
 
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .badges { display: flex; gap: 5px; flex-wrap: wrap; }
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; color: white; }
         .badge-loc { background-color: #3498db; }
@@ -89,9 +91,13 @@
         .badge-open { background-color: #2ecc71; }  
         .badge-close { background-color: #F06292; } 
         
-        .title { font-size: 1.05rem; font-weight: 700; margin: 0 0 10px 0; line-height: 1.4; word-break: keep-all; }
-        .info-row { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 6px; display: flex; align-items: flex-start; }
-        .info-label { font-weight: 500; width: 65px; flex-shrink: 0; color: #555; line-height: 1.4; }
+        /* 추가된 카드 텍스트 레이아웃 */
+        .card-title-row { display: flex; justify-content: space-between; align-items: center; }
+        .card-title-row .title { font-size: 1.05rem; font-weight: 700; margin: 0; line-height: 1.4; word-break: keep-all; flex: 1; }
+        .card-more-text { font-size: 0.85rem; color: #999; font-weight: 600; white-space: nowrap; margin-left: 12px; }
+
+        .info-row { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 8px; display: flex; align-items: flex-start; }
+        .info-label { font-weight: 600; width: 60px; flex-shrink: 0; color: #555; line-height: 1.4; }
         .info-desc { flex: 1; word-break: keep-all; line-height: 1.4; }
         
         .btn-group { display: flex; gap: 8px; margin-top: 10px; }
@@ -116,9 +122,19 @@
         .event-modal-overlay.active { display: flex; opacity: 1; }
         .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: 85vh; border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px; }
         .event-modal-overlay.active .event-modal-content-box { transform: translateY(0); }
-        .event-modal-header { padding: 20px 20px 10px 20px; position: relative; border-bottom: 1px solid #eee; }
-        .event-modal-title { font-size: 1.2rem; font-weight: 700; line-height: 1.4; word-break: keep-all; padding-right: 30px; margin: 0; }
-        .event-modal-close-btn { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.8rem; line-height: 1; cursor: pointer; color: #888; }
+        .event-modal-header { padding: 16px 20px; position: relative; border-bottom: 1px solid #eee; display: flex; align-items: center; }
+        
+        /* 팝업 헤더 제목: 한줄로 줄이기 */
+        .event-modal-title { font-size: 1.1rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 70px; margin: 0; line-height: 1.5; flex: 1;}
+        
+        /* 공유 및 닫기 버튼 */
+        .event-modal-share-btn { position: absolute; top: 50%; right: 48px; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #666; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s; padding: 4px; }
+        .event-modal-share-btn:hover { background: #f0f0f0; }
+        .event-modal-share-btn svg { width: 100%; height: 100%; fill: currentColor; }
+        
+        .event-modal-close-btn { position: absolute; top: 50%; right: 12px; transform: translateY(-50%); background: none; border: none; font-size: 1.8rem; line-height: 1; cursor: pointer; color: #888; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s; }
+        .event-modal-close-btn:hover { background: #f0f0f0; }
+
         .event-modal-body { padding: 20px; overflow-y: auto; flex: 1; }
         .event-modal-footer { padding: 15px 20px; border-top: 1px solid #eee; background: #fafafa; display: flex; gap: 10px; }
         .event-modal-footer .btn-link { flex: 1; margin: 0; padding: 12px 0; font-size: 1rem; }
@@ -138,7 +154,7 @@
                 </div>
                 <button class="btn-share" onclick="sharePage()">
                     <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
-                    공유하기
+                    전체 공유하기
                 </button>
             </div>
             <div class="notice-container"><a id="notice-link"></a></div>
@@ -173,8 +189,11 @@
 <div class="event-modal-overlay" id="eventModal" onclick="closeEventPopup(event)">
     <div class="event-modal-content-box" onclick="event.stopPropagation()">
         <div class="event-modal-header">
-            <button class="event-modal-close-btn" onclick="closeEventPopup()">×</button>
             <h2 class="event-modal-title" id="popupTitle">제목</h2>
+            <button class="event-modal-share-btn" id="popupShareBtn">
+                <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
+            </button>
+            <button class="event-modal-close-btn" onclick="closeEventPopup()">×</button>
         </div>
         <div class="event-modal-body" id="popupBody">
             </div>
@@ -255,6 +274,23 @@
         if (navigator.share) navigator.share(shareData).catch(console.error); else navigator.clipboard.writeText(window.location.href).then(() => alert('링크가 복사되었습니다!'));
     }
 
+    // 팝업 개별 공유 기능
+    function sharePopupLink(eventId) {
+        const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
+        const shareUrl = window.location.origin + window.location.pathname + '?id=' + eventId;
+        const shareData = { 
+            title: item ? item.title : '헤이청주 일정 공유', 
+            text: '이 행사 어때요? 일정을 확인해보세요!', 
+            url: shareUrl 
+        };
+        
+        if (navigator.share) {
+            navigator.share(shareData).catch(console.error); 
+        } else {
+            navigator.clipboard.writeText(shareUrl).then(() => alert('팝업 링크가 복사되었습니다!\n원하는 곳에 붙여넣기 해주세요.'));
+        }
+    }
+
     // 이미지 모달 팝업 제어
     const imgModal = document.getElementById('imageModal');
     const modalImg = document.getElementById('imageModalImg');
@@ -295,11 +331,18 @@
             eventData = parseCSVToJSON(csvText);
             processEventDates(); processEventAges(); generateFilters(); processNewItems(); updateTabNewBadges(); applyFilters();
 
-            // 주소창의 파라미터를 읽어와 특정 팝업을 바로 띄움
+            // 주소창의 파라미터를 읽어와 특정 팝업을 바로 띄움 + 스크롤 이동
             const urlParams = new URLSearchParams(window.location.search);
-            const eventId = urlParams.get('id') || urlParams.get('event'); // ?id=값 지원
+            const eventId = urlParams.get('id') || urlParams.get('event');
             if (eventId !== null) {
-                openEventPopup(eventId);
+                // DOM 렌더링 후 원활한 스크롤 이동을 위해 약간의 지연 처리
+                setTimeout(() => {
+                    const targetCard = document.getElementById('card-' + eventId);
+                    if (targetCard) {
+                        targetCard.scrollIntoView({ behavior: 'auto', block: 'center' });
+                    }
+                    openEventPopup(eventId);
+                }, 100);
             }
 
         } catch (error) { document.getElementById('list-container').innerHTML = '<div class="empty-state">행사 정보를 불러오는데 실패했습니다. 새로고침을 해주세요. 😥</div>'; }
@@ -503,9 +546,7 @@
             if (item.isTomorrowOpen && !item.isTodayOpen) dateBadges += `<span class="badge badge-open" style="background-color:#ff9800;">내일오픈</span> `;
             if (item.isTomorrowClose && !item.isTodayClose) dateBadges += `<span class="badge badge-close">내일마감</span> `;
 
-            let applyTextStyle = 'color:var(--text-sub);'; if (item.isTodayClose) applyTextStyle = 'color:#E53935; font-weight:700;';
             let cardClass = 'card'; let overlayHTML = '';
-            
             const statusVal = item['커밍순'] ? item['커밍순'].replace(/\s+/g, '') : '';
             if (statusVal === '커밍순') { cardClass += ' disabled-card'; overlayHTML = `<div class="status-overlay"><div class="status-stamp">COMING SOON</div></div>`; } 
             else if (statusVal === '마감') { cardClass += ' disabled-card'; overlayHTML = `<div class="status-overlay"><div class="status-stamp closed">마감</div></div>`; }
@@ -513,8 +554,9 @@
             // 구글시트의 'ID'열(없으면 '고유번호', 둘다 없으면 기존 originalIndex 사용) 추출
             const eventUniqueId = item['ID'] || item['id'] || item['고유번호'] || item.originalIndex;
 
+            // 상세정보 제거하고 배지와 제목, +더보기만 출력하는 카드 디자인으로 변경됨 (id 부여)
             const cardHTML = `
-                <div class="${cardClass}" onclick="openEventPopup('${eventUniqueId}')">
+                <div class="${cardClass}" id="card-${eventUniqueId}" onclick="openEventPopup('${eventUniqueId}')">
                     ${overlayHTML}
                     <div class="card-header">
                         <div class="badges">
@@ -524,37 +566,40 @@
                             <span class="badge ${costBadgeClass}">${safeCost}</span> 
                         </div>
                     </div>
-                    <h2 class="title">${item.title || ''} ${item.isNew ? `<span class="card-new-badge">N</span>` : ''}</h2>
-                    <div class="info-row"><div class="info-label">장소</div><div class="info-desc">${item.place || ''}</div></div>
-                    <div class="info-row"><div class="info-label">접수기간</div><div class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</div></div>
-                    <div class="info-row"><div class="info-label">운영일정</div><div class="info-desc">${item.date || '해당정보 없음'}</div></div>
-                    <div style="text-align: right; font-size: 0.8rem; color: var(--primary-color); font-weight: bold; margin-top: 10px;">자세히 보기 & 신청하기 👉</div>
+                    <div class="card-title-row">
+                        <h2 class="title">${item.title || ''} ${item.isNew ? `<span class="card-new-badge">N</span>` : ''}</h2>
+                        <div class="card-more-text">+ 더보기</div>
+                    </div>
                 </div>
             `;
             container.innerHTML += cardHTML;
         });
     }
 
-    // [신규] 이벤트 팝업 열기 함수
+    // 이벤트 팝업 열기 함수
     function openEventPopup(eventId) {
-        // ID 또는 기존 인덱스로 데이터 찾기
         const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
         if (!item) return;
 
+        // 팝업 헤더 제목 삽입 (길면 말줄임 처리됨)
         document.getElementById('popupTitle').innerHTML = `${item.title || ''} ${item.isNew ? `<span class="card-new-badge">N</span>` : ''}`;
         
+        // 헤더 우측 공유 버튼 클릭 이벤트 할당
+        document.getElementById('popupShareBtn').setAttribute('onclick', `sharePopupLink('${eventId}')`);
+
         let applyTextStyle = 'color:var(--text-sub);'; 
         if (item.isTodayClose) applyTextStyle = 'color:#E53935; font-weight:700;';
 
+        // 항목명 변경: 접수기간 -> 접수, 운영일정 -> 일정
         document.getElementById('popupBody').innerHTML = `
             <div class="info-row"><div class="info-label">장소</div><div class="info-desc">${item.place || '정보 없음'}</div></div>
             <div class="info-row"><div class="info-label">비용</div><div class="info-desc">${item.costType || '정보 없음'}</div></div>
-            <div class="info-row"><div class="info-label">접수기간</div><div class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</div></div>
-            <div class="info-row"><div class="info-label">운영일정</div><div class="info-desc">${item.date || '해당정보 없음'}</div></div>
+            <div class="info-row"><div class="info-label">접수</div><div class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</div></div>
+            <div class="info-row"><div class="info-label">일정</div><div class="info-desc">${item.date || '해당정보 없음'}</div></div>
             ${item.applyNote ? `<div class="info-row"><div class="info-label">참고사항</div><div class="info-desc" style="font-weight:bold; color:var(--text-main);">${item.applyNote}</div></div>` : ''}
         `;
 
-        // 상세보기 버튼 (팝업 안으로 이동)
+        // 버튼명 변경: '관련 사이트'
         let btnDetails = '';
         const detailUrl = item.link || item['링크'];
         let isImageUrl = false;
@@ -567,15 +612,15 @@
             const safeUrl = detailUrl.trim().replace(/"/g, '&quot;');
             const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
             if (isImageUrl) {
-                btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">상세확인 🖼️</button>`;
+                btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">관련 사이트 🖼️</button>`;
             } else {
-                btnDetails = `<a href="${safeUrl}" onclick="trackEventAndOpen(event, '${safeUrl}', '${trackTitle}', 'detail')" class="btn-link">상세확인 🔍</a>`;
+                btnDetails = `<a href="${safeUrl}" onclick="trackEventAndOpen(event, '${safeUrl}', '${trackTitle}', 'detail')" class="btn-link">관련 사이트 🔗</a>`;
             }
         } else {
-            btnDetails = `<button type="button" class="btn-link btn-disabled" onclick="alert('등록된 상세정보 링크가 없습니다.');">상세확인 불가</button>`;
+            btnDetails = `<button type="button" class="btn-link btn-disabled" onclick="alert('등록된 상세정보 링크가 없습니다.');">사이트 정보 없음</button>`;
         }
 
-        // 신청하기 버튼 (팝업 안으로 이동)
+        // 예약 버튼
         let btnApply = '';
         const rawApplyValue = item['신청링크'] || item.applyLink; 
         if (rawApplyValue && rawApplyValue.trim() !== '') {
@@ -603,12 +648,10 @@
         history.pushState({ eventPopup: true }, '', '?id=' + eventId);
     }
 
-    // [신규] 이벤트 팝업 닫기 함수
+    // 이벤트 팝업 닫기 함수
     function closeEventPopup(e) {
-        // 배경을 클릭하거나 X 버튼을 누른 경우에만 닫힘
         if (e && e.target !== e.currentTarget && !e.target.classList.contains('event-modal-close-btn')) return;
         document.getElementById('eventModal').classList.remove('active');
-        // 뒤로가기 처럼 주소창 복원
         history.pushState(null, '', window.location.pathname);
     }
 
