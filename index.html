@@ -39,13 +39,13 @@
         body { font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; display: flex; justify-content: center; }
         .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; }
         
-        .sticky-wrapper { position: sticky; top: 0; z-index: 100; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: inherit; }
+        /* 🌟 팝업 시 배너 활성화를 위해 z-index 대폭 상향 (99999) 🌟 */
+        .sticky-wrapper { position: sticky; top: 0; z-index: 99999; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: inherit; }
 
         header { background-color: var(--primary-color); color: white; padding: 12px 16px 8px 16px; display: flex; flex-direction: column; border-radius: inherit; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
 
         h1 { margin: 0 0 6px 0; font-size: 1.25rem; font-weight: 700; text-align: center; line-height: 1.2; }
         
-        /* 🌟 간격 축소 🌟 */
         .sub-header { font-size: 0.65rem; opacity: 0.85; margin: 0 0 4px 0; text-align: center; line-height: 1; } 
         .header-action-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 0px; margin-bottom: 2px; }
         
@@ -62,7 +62,6 @@
         .notice-container { background: rgba(0, 0, 0, 0.15); border-radius: 6px; padding: 4px 8px; text-align: center; font-size: 0.7rem; font-weight: 500; height: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 5px; }
         .notice-container a { color: #fff; text-decoration: none; transition: opacity 0.3s ease-in-out; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
 
-        /* 🌟 배너 디자인 (헤더 아래로 이동) 🌟 */
         .promo-area-wrap {
             width: 100%;
             height: 40px; 
@@ -147,15 +146,18 @@
         .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; grid-column: 1 / -1; }
         .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; grid-column: 1 / -1; }
 
-        .img-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+        /* 🌟 이미지 확대 모달 최상단 배치 🌟 */
+        .img-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 100005; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
         .img-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
         .img-modal-content { max-width: 90%; max-height: calc(100vh - 80px); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); object-fit: contain; }
         .img-modal-close { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.9); color: #111; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 1.5rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
 
+        /* 🌟 팝업창 오버레이는 99998로 낮춰 상단바 뒤로 가게 설정 🌟 */
         .event-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding-bottom: 20px; box-sizing: border-box; }
         .event-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
         
-        .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: calc(100vh - 70px); border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px; }
+        /* 모달박스가 상단 고정 헤더 영역을 덮지 않도록 최대 높이 조정 */
+        .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: calc(100vh - 260px); border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px; }
         .event-modal-overlay.active .event-modal-content-box { transform: translateY(0); }
 
         @media (min-width: 768px) {
@@ -166,7 +168,7 @@
 
         .event-modal-header { padding: 16px 20px; position: relative; border-bottom: 1px solid #eee; display: flex; align-items: center; }
         
-        .event-modal-title { font-size: 1.1rem; font-weight: 700; padding-right: 70px; margin: 0; line-height: 1.4; flex: 1; word-break: keep-all; }
+        .event-modal-title { font-size: 1.15rem; font-weight: 700; padding-right: 70px; margin: 0; line-height: 1.4; flex: 1; word-break: keep-all; }
         
         .event-modal-share-btn { position: absolute; top: 50%; right: 48px; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #666; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s; padding: 4px; }
         .event-modal-share-btn:hover { background: #f0f0f0; }
@@ -180,22 +182,52 @@
         .popup-img-container { width: 100%; margin-bottom: 15px; border-radius: 8px; overflow: hidden; text-align: center; background-color: #f9f9f9; }
         .popup-img-container img { max-width: 100%; height: auto; display: block; margin: 0 auto; }
 
-        /* 🌟 팝업창 가시성 개선 (태그 스타일) 🌟 */
-        .info-row { font-size: 0.95rem; color: var(--text-sub); margin-bottom: 12px; display: flex; align-items: flex-start; }
+        /* 🌟 팝업창 내부 상세 정보 리스트 대폭 디자인 개선 🌟 */
+        .popup-info-wrapper {
+            background: #fdfdfd;
+            border: 1px solid #eaeaea;
+            border-radius: 12px;
+            padding: 18px 16px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.01);
+        }
+        .info-row { 
+            display: flex; 
+            align-items: flex-start; 
+            margin-bottom: 14px; 
+            padding-bottom: 14px; 
+            border-bottom: 1px dashed #ddd; 
+        }
+        .info-row:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
         .info-label { 
             font-weight: 700; 
-            width: 50px; 
+            width: 65px; 
             flex-shrink: 0; 
-            color: var(--primary-color); 
-            background-color: rgba(76, 175, 80, 0.1); 
-            padding: 4px 6px; 
+            color: #fff; 
+            background-color: var(--primary-color); 
+            padding: 5px 6px; 
             border-radius: 6px; 
             text-align: center; 
             margin-right: 12px; 
             font-size: 0.8rem; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             letter-spacing: -0.5px;
         }
-        .info-desc { flex: 1; word-break: keep-all; line-height: 1.5; padding-top: 2px; color: #333; }
+        .info-label.tip-label {
+            background-color: #ff9800;
+        }
+        .info-desc { 
+            flex: 1; 
+            word-break: keep-all; 
+            line-height: 1.5; 
+            padding-top: 2px; 
+            color: #222; 
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
 
         .event-modal-footer { padding: 15px 20px; border-top: 1px solid #eee; background: #fafafa; display: flex; gap: 10px; }
         .btn-link { display: block; text-align: center; background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); text-decoration: none; padding: 12px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; transition: all 0.2s; box-sizing: border-box; cursor: pointer; font-family: inherit; width: 100%; flex: 1; margin: 0; }
@@ -231,7 +263,7 @@
 
         <div class="promo-area-wrap" id="main-promo-wrap">
             <a href="https://open.kakao.com/o/gAUqOrai" target="_blank" style="display:block; width:100%; height:100%;">
-                <img src="https://postfiles.pstatic.net/MjAyNjAzMTVfMjgg/MDAxNzczNTc4Mjk4MTIy.iJj44KlgK0bdQZPof5e5TPK45W2ydTgYQguXB2GUDKwg.8rugBlvMlT7yQ7lboSQS7Wu2de7kCS_Dcz364e234A8g.PNG/%EC%A0%9C%EB%AA%A9%EC%9D%84_%EC%9E%85%EB%A0%A5%ED%95%B4%EC%A3%BC%EC%84%B8%EC%9A%94._(3).png?type=w773" alt="상단 배너" style="width:100%; height:100%; object-fit:cover;" />
+                <img src="https://postfiles.pstatic.net/MjAyNjAzMTVfMjY2/MDAxNzczNTc4Nzg2Mzc2.h9rLpbeh1rWUistHqXJAOy547IYlm6gaua04ANxTgB4g.Uxz_ZQIlh3H0WuGyYyw5ky2Kt-vuaonw-o3DRnn3qwsg.PNG/%EC%A0%9C%EB%AA%A9%EC%9D%84_%EC%9E%85%EB%A0%A5%ED%95%B4%EC%A3%BC%EC%84%B8%EC%9A%94._(4).png?type=w773" alt="상단 배너" style="width:100%; height:100%; object-fit:cover;" />
             </a>
         </div>
 
@@ -276,7 +308,7 @@
 </div>
 
 <script>
-    // 파이어베이스 설정 (기존 설정 유지)
+    // 파이어베이스 설정
     const firebaseConfig = {
       apiKey: "AIzaSyBZg-wKztuG-Ak7-WqWSAYe9UIj874fYAY",
       authDomain: "heycj-55b6a.firebaseapp.com",
@@ -915,14 +947,16 @@
             `;
         }
 
-        // 🌟 팝업창 UI 개선 (태그 형식으로 정리) 🌟
+        // 🌟 가시성 대폭 개선된 팝업 정보창 🌟
         document.getElementById('popupBody').innerHTML = `
             ${popupImgHtml}
-            <div class="info-row"><div class="info-label">장소</div><div class="info-desc">${item.place || '정보 없음'}</div></div>
-            <div class="info-row"><div class="info-label">비용</div><div class="info-desc">${item.costType || '정보 없음'}</div></div>
-            <div class="info-row"><div class="info-label">접수</div><div class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</div></div>
-            <div class="info-row"><div class="info-label">일정</div><div class="info-desc">${item.date || '해당정보 없음'}</div></div>
-            ${item.applyNote ? `<div class="info-row"><div class="info-label">꿀팁</div><div class="info-desc" style="font-weight:bold; color:var(--text-main);">${item.applyNote}</div></div>` : ''}
+            <div class="popup-info-wrapper">
+                <div class="info-row"><div class="info-label">📍 장소</div><div class="info-desc">${item.place || '정보 없음'}</div></div>
+                <div class="info-row"><div class="info-label">💰 비용</div><div class="info-desc">${item.costType || '정보 없음'}</div></div>
+                <div class="info-row"><div class="info-label">📝 접수</div><div class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</div></div>
+                <div class="info-row"><div class="info-label">🗓️ 일정</div><div class="info-desc">${item.date || '해당정보 없음'}</div></div>
+                ${item.applyNote ? `<div class="info-row"><div class="info-label tip-label">💡 꿀팁</div><div class="info-desc" style="font-weight:bold; color:var(--text-main);">${item.applyNote}</div></div>` : ''}
+            </div>
         `;
 
         let btnDetails = '';
@@ -941,7 +975,6 @@
             const safeUrl = detailUrl.trim().replace(/"/g, '&quot;');
             const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
             
-            // 🌟 아이콘 및 텍스트 변경 🌟
             if (isImageUrl) {
                 btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">상세정보보기 🖼️</button>`;
             } else {
