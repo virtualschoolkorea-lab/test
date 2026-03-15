@@ -76,11 +76,11 @@
 
         @media (min-width: 768px) {
             body { padding: 20px 0; background-color: #e9ecef; }
-            /* 전체 가로 폭 확대 */
+            /* 전체 가로 폭 1080px 확대 */
             .app-container { max-width: 1080px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; }
             header { border-radius: 16px 16px 0 0; padding: 20px 24px 10px 24px; }
             .sticky-wrapper { border-radius: 16px 16px 0 0; }
-            /* 3열 레이아웃 강제 및 세로 간격(gap) 축소 */
+            /* 3열 레이아웃, 간격 좁게 설정 */
             #list-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 20px; align-items: stretch; }
             .card { margin-bottom: 0; height: auto; display: flex; flex-direction: column; }
             .card-title-row { margin-top: auto; padding-top: 10px; }
@@ -126,6 +126,8 @@
 
         .event-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding-bottom: 20px; box-sizing: border-box; }
         .event-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
+        
+        /* event.stopPropagation을 지우더라도 박스를 클릭했을때 닫히지 않도록 유지됨 */
         .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: 85vh; border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px; }
         .event-modal-overlay.active .event-modal-content-box { transform: translateY(0); }
 
@@ -208,7 +210,7 @@
 </div>
 
 <div class="event-modal-overlay" id="eventModal" onclick="closeEventPopup(event)">
-    <div class="event-modal-content-box" onclick="event.stopPropagation()">
+    <div class="event-modal-content-box">
         <div class="event-modal-header">
             <h2 class="event-modal-title" id="popupTitle">제목</h2>
             <button class="event-modal-share-btn" id="popupShareBtn">
@@ -222,7 +224,10 @@
 </div>
 
 <script>
-    // 공통 Today 날짜 포맷 함수
+    // 🔴 중요: 여기에 배포하신 구글 앱스 스크립트 웹 앱 URL을 붙여넣어 주세요!
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbw72Ogn0sa6NFbU-qfUwf97xoWve9qoy35sEQsD3BszKHGtZDGi5u50YAoO0ZqrlzGzDg/exec";
+
+    // 날짜 구하기 공통 함수 (예: "20260315")
     function getTodayStr() {
         const kstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
         const yyyy = kstNow.getFullYear();
@@ -275,85 +280,46 @@
         updateElem.innerText = `최근 업데이트: ${y}/${m}/${d} ${h}:${min}`;
     }
 
+    // ★ 구글 시트 기반 메인 방문자 측정
     async function initVisitCounters() {
-        const namespace = 'heycheongju_v1';
         const todayStr = getTodayStr();
-
         try {
-            const resTotal = await fetch(`https://api.counterapi.dev/v1/${namespace}/total/up`, { cache: 'no-store' });
-            const totalJson = await resTotal.json();
-            document.getElementById('count-total').innerText = getCounterNumber(totalJson);
+            // Total 카운트 올리기
+            fetch(`${GAS_URL}?action=up&key=total`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('count-total').innerText = data.count || 0;
+                });
 
-            const resToday = await fetch(`https://api.counterapi.dev/v1/${namespace}/today_${todayStr}/up`, { cache: 'no-store' });
-            const todayJson = await resToday.json();
-            document.getElementById('count-today').innerText = getCounterNumber(todayJson);
+            // Today 카운트 올리기
+            fetch(`${GAS_URL}?action=up&key=${todayStr}_total`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('count-today').innerText = data.count || 0;
+                });
         } catch (e) {
-            document.getElementById('count-total').innerText = '-';
-            document.getElementById('count-today').innerText = '-';
+            console.log("메인 방문자 카운트 에러", e);
         }
     }
 
-    function getCounterNumber(payload) {
-        if (payload == null) return 0;
-        if (typeof payload === 'number') return payload;
-        if (typeof payload.value === 'number') return payload.value;
-        if (typeof payload.count === 'number') return payload.count;
-        if (payload.data) {
-            if (typeof payload.data.value === 'number') return payload.data.value;
-            if (typeof payload.data.count === 'number') return payload.data.count;
-        }
-        if (typeof payload.value === 'string' && !isNaN(Number(payload.value))) return Number(payload.value);
-        if (typeof payload.count === 'string' && !isNaN(Number(payload.count))) return Number(payload.count);
-        return 0;
-    }
-
-    async function readCounterValue(namespace, name) {
-        const url = `https://api.counterapi.dev/v1/${namespace}/${encodeURIComponent(name)}?_t=${Date.now()}`;
-        const res = await fetch(url, { method: 'GET', cache: 'no-store' });
-        if (!res.ok) throw new Error(`Counter GET failed: ${res.status}`);
-        const json = await res.json();
-        return getCounterNumber(json);
-    }
-
-    async function upCounterValue(namespace, name) {
-        const url = `https://api.counterapi.dev/v1/${namespace}/${encodeURIComponent(name)}/up?_t=${Date.now()}`;
-        const res = await fetch(url, { method: 'GET', cache: 'no-store' });
-        if (!res.ok) throw new Error(`Counter UP failed: ${res.status}`);
-        const json = await res.json();
-        return getCounterNumber(json);
-    }
-
-    let viewFetchToken = 0;
-
+    // ★ 메인 페이지 로딩 시 1번의 호출로 조회수 가져오기
     async function fetchAllViewCountsSequentially(dataArray) {
-        const namespace = 'heycheongju_v1';
         const todayStr = getTodayStr();
-        const myToken = ++viewFetchToken;
+        try {
+            const res = await fetch(`${GAS_URL}?action=getAll&date=${todayStr}`);
+            const viewsData = await res.json(); 
 
-        for (const item of dataArray) {
-            if (myToken !== viewFetchToken) return;
-
-            const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
-            const countElem = document.getElementById(`view-count-${eventUniqueId}`);
-            if (!countElem) continue;
-
-            try {
-                // Today 뷰수로 측정하여 로드
-                const count = await readCounterValue(namespace, `event_${eventUniqueId}_today_${todayStr}`);
-                if (myToken !== viewFetchToken) return;
-
-                const latestElem = document.getElementById(`view-count-${eventUniqueId}`);
-                if (latestElem) {
-                    latestElem.innerText = String(count);
+            dataArray.forEach(item => {
+                const eventId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
+                const key = `${todayStr}_${eventId}`;
+                const countElem = document.getElementById(`view-count-${eventId}`);
+                
+                if (countElem) {
+                    countElem.innerText = viewsData[key] || 0;
                 }
-            } catch (e) {
-                const latestElem = document.getElementById(`view-count-${eventUniqueId}`);
-                if (latestElem) {
-                    latestElem.innerText = '0';
-                }
-            }
-
-            await new Promise(resolve => setTimeout(resolve, 120));
+            });
+        } catch (e) {
+            console.error("조회수 로드 에러:", e);
         }
     }
 
@@ -410,10 +376,12 @@
         }
     });
 
+    // ★ 이벤트 위임 개선: closest()를 활용해 버튼 안의 글자나 아이콘을 눌러도 정상 동작
     document.addEventListener('click', function(e) {
-        if (e.target && e.target.classList.contains('btn-img-modal')) {
-            const url = e.target.getAttribute('data-url');
-            const title = e.target.getAttribute('data-title');
+        const btn = e.target.closest('.btn-img-modal');
+        if (btn) {
+            const url = btn.getAttribute('data-url');
+            const title = btn.getAttribute('data-title');
             modalImg.src = url;
             imgModal.classList.add('active');
             trackEventClick(title, 'detail');
@@ -838,6 +806,7 @@
 
         container.innerHTML = htmlBuffer;
 
+        // 구글 앱스 스크립트 기반 조회수 로딩 호출
         fetchAllViewCountsSequentially(filteredData);
     }
 
@@ -845,12 +814,18 @@
         const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
         if (!item) return;
 
+        // ★ 이벤트 조회수 증가 로직 (구글 앱스 스크립트 연동)
         try {
             const todayStr = getTodayStr();
-            // 팝업 클릭 시 팝업 주소 기반으로 Today 뷰수 증가
-            const newCount = await upCounterValue('heycheongju_v1', `event_${eventId}_today_${todayStr}`);
-            const countElem = document.getElementById(`view-count-${eventId}`);
-            if (countElem) countElem.innerText = String(newCount);
+            const eventKey = `${todayStr}_${eventId}`;
+            
+            // fetch로 요청만 보내서 조회수 올리기 (사용자 경험을 위해 비동기로 작동)
+            fetch(`${GAS_URL}?action=up&key=${eventKey}`)
+                .then(res => res.json())
+                .then(data => {
+                    const countElem = document.getElementById(`view-count-${eventId}`);
+                    if (countElem) countElem.innerText = data.count || 0;
+                });
         } catch (e) {
             console.log('조회수 카운트 에러', e);
         }
@@ -935,7 +910,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         initNotice();
         initLastUpdated();
-        initVisitCounters();
+        initVisitCounters(); // GAS 기반 방문자 수 초기화
         fetchEventData();
     });
 </script>
