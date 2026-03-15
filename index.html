@@ -36,44 +36,18 @@
             --text-sub: #666666;
             --border-color: #e0e0e0;
         }
-        body { font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; display: flex; justify-content: center; padding-top: 40px; }
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; display: flex; justify-content: center; }
         .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; }
         
-        .promo-area-wrap {
-            position: fixed;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 500px;
-            height: 40px; 
-            z-index: 100000;
-            background-color: #fff;
-            padding: 3px 10px;
-            box-sizing: border-box;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .promo-area-wrap img {
-            max-width: 100%;
-            max-height: 100%;
-            border-radius: 4px;
-            display: block;
-            margin: 0 auto;
-        }
-
-        .sticky-wrapper { position: sticky; top: 40px; z-index: 100; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: inherit; }
+        .sticky-wrapper { position: sticky; top: 0; z-index: 100; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: inherit; }
 
         header { background-color: var(--primary-color); color: white; padding: 12px 16px 8px 16px; display: flex; flex-direction: column; border-radius: inherit; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
 
         h1 { margin: 0 0 6px 0; font-size: 1.25rem; font-weight: 700; text-align: center; line-height: 1.2; }
-        .sub-header { font-size: 0.65rem; opacity: 0.85; margin: 0 0 8px 0; text-align: center; line-height: 1; } 
-
-        /* 🌟 공유버튼 하단 라인 정렬 및 여백 축소 🌟 */
-        .header-action-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 2px; margin-bottom: 5px; }
+        
+        /* 🌟 간격 축소 🌟 */
+        .sub-header { font-size: 0.65rem; opacity: 0.85; margin: 0 0 4px 0; text-align: center; line-height: 1; } 
+        .header-action-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 0px; margin-bottom: 2px; }
         
         .header-stats { display: flex; flex-direction: row; gap: 12px; font-size: 0.65rem; line-height: 1; opacity: 0.95; align-items: flex-end; margin-bottom: 2px; }
         .header-stats div { display: flex; align-items: baseline; }
@@ -85,8 +59,28 @@
         .btn-share:hover { background: rgba(255, 255, 255, 0.35); }
         .btn-share svg { width: 10px; height: 10px; fill: currentColor; }
 
-        .notice-container { background: rgba(0, 0, 0, 0.15); border-radius: 6px; padding: 4px 8px; text-align: center; font-size: 0.7rem; font-weight: 500; height: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .notice-container { background: rgba(0, 0, 0, 0.15); border-radius: 6px; padding: 4px 8px; text-align: center; font-size: 0.7rem; font-weight: 500; height: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 5px; }
         .notice-container a { color: #fff; text-decoration: none; transition: opacity 0.3s ease-in-out; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
+
+        /* 🌟 배너 디자인 (헤더 아래로 이동) 🌟 */
+        .promo-area-wrap {
+            width: 100%;
+            height: 40px; 
+            background-color: #fff;
+            padding: 4px 10px;
+            box-sizing: border-box;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .promo-area-wrap img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 4px;
+            display: block;
+            margin: 0 auto;
+        }
 
         .search-container { padding: 6px 15px; background-color: #fff; border-bottom: 1px solid var(--border-color); }
         .search-input { width: 100%; padding: 6px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.85rem; outline: none; box-sizing: border-box; background-color: #f9f9f9; transition: all 0.2s; }
@@ -111,10 +105,8 @@
         .content { padding: 15px; }
 
         @media (min-width: 768px) {
-            body { padding-top: 54px; padding-bottom: 20px; background-color: #e9ecef; }
-            .promo-area-wrap { max-width: 1080px; height: 54px; }
-            .sticky-wrapper { top: 54px; }
-            
+            body { padding-top: 20px; padding-bottom: 20px; background-color: #e9ecef; }
+            .promo-area-wrap { height: 50px; }
             .app-container { max-width: 1080px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; }
             header { border-radius: 16px 16px 0 0; padding: 15px 24px 10px 24px; }
             .sticky-wrapper { border-radius: 16px 16px 0 0; }
@@ -174,7 +166,6 @@
 
         .event-modal-header { padding: 16px 20px; position: relative; border-bottom: 1px solid #eee; display: flex; align-items: center; }
         
-        /* 🌟 팝업 제목 생략 없이 여러 줄 출력되도록 수정 🌟 */
         .event-modal-title { font-size: 1.1rem; font-weight: 700; padding-right: 70px; margin: 0; line-height: 1.4; flex: 1; word-break: keep-all; }
         
         .event-modal-share-btn { position: absolute; top: 50%; right: 48px; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #666; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s; padding: 4px; }
@@ -189,9 +180,22 @@
         .popup-img-container { width: 100%; margin-bottom: 15px; border-radius: 8px; overflow: hidden; text-align: center; background-color: #f9f9f9; }
         .popup-img-container img { max-width: 100%; height: auto; display: block; margin: 0 auto; }
 
-        .info-row { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 8px; display: flex; align-items: flex-start; }
-        .info-label { font-weight: 600; width: 60px; flex-shrink: 0; color: #555; line-height: 1.4; }
-        .info-desc { flex: 1; word-break: keep-all; line-height: 1.4; }
+        /* 🌟 팝업창 가시성 개선 (태그 스타일) 🌟 */
+        .info-row { font-size: 0.95rem; color: var(--text-sub); margin-bottom: 12px; display: flex; align-items: flex-start; }
+        .info-label { 
+            font-weight: 700; 
+            width: 50px; 
+            flex-shrink: 0; 
+            color: var(--primary-color); 
+            background-color: rgba(76, 175, 80, 0.1); 
+            padding: 4px 6px; 
+            border-radius: 6px; 
+            text-align: center; 
+            margin-right: 12px; 
+            font-size: 0.8rem; 
+            letter-spacing: -0.5px;
+        }
+        .info-desc { flex: 1; word-break: keep-all; line-height: 1.5; padding-top: 2px; color: #333; }
 
         .event-modal-footer { padding: 15px 20px; border-top: 1px solid #eee; background: #fafafa; display: flex; gap: 10px; }
         .btn-link { display: block; text-align: center; background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); text-decoration: none; padding: 12px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; transition: all 0.2s; box-sizing: border-box; cursor: pointer; font-family: inherit; width: 100%; flex: 1; margin: 0; }
@@ -201,12 +205,6 @@
     </style>
 </head>
 <body>
-
-<div class="promo-area-wrap" id="main-promo-wrap">
-    <a href="https://open.kakao.com/o/gAUqOrai" target="_blank" style="display:block; width:100%; height:100%;">
-        <img src="https://postfiles.pstatic.net/MjAyNjAzMTVfMjAg/MDAxNzczNTYwODk5Mzc3.2jH1gOMPG1xXBHUw-YXiaUU_sZ9T5ZrOfGGy0EtlANIg.jPsRtljkL9r-mFAclLCqmsG-MA_i_0ecX6h4QoKSoPkg.PNG/%EC%A0%9C%EB%AA%A9%EC%9D%84_%EC%9E%85%EB%A0%A5%ED%95%B4%EC%A3%BC%EC%84%B8%EC%9A%94._(1).png?type=w773" alt="상단 배너" style="width:100%; height:100%; object-fit:cover;" />
-    </a>
-</div>
 
 <div class="app-container">
     <div class="sticky-wrapper">
@@ -230,6 +228,12 @@
 
             <div class="notice-container"><a id="notice-link"></a></div>
         </header>
+
+        <div class="promo-area-wrap" id="main-promo-wrap">
+            <a href="https://open.kakao.com/o/gAUqOrai" target="_blank" style="display:block; width:100%; height:100%;">
+                <img src="https://postfiles.pstatic.net/MjAyNjAzMTVfMjgg/MDAxNzczNTc4Mjk4MTIy.iJj44KlgK0bdQZPof5e5TPK45W2ydTgYQguXB2GUDKwg.8rugBlvMlT7yQ7lboSQS7Wu2de7kCS_Dcz364e234A8g.PNG/%EC%A0%9C%EB%AA%A9%EC%9D%84_%EC%9E%85%EB%A0%A5%ED%95%B4%EC%A3%BC%EC%84%B8%EC%9A%94._(3).png?type=w773" alt="상단 배너" style="width:100%; height:100%; object-fit:cover;" />
+            </a>
+        </div>
 
         <div class="search-container">
             <input type="text" id="search-input" class="search-input" placeholder="검색어를 입력하세요 (예: 도서관, 과학, 공연)" onkeyup="applyFilters()" />
@@ -272,23 +276,21 @@
 </div>
 
 <script>
-    // 🔴 중요: 발급받으신 파이어베이스 정보로 아래 내용을 채워주세요!
-const firebaseConfig = {
-  apiKey: "AIzaSyBZg-wKztuG-Ak7-WqWSAYe9UIj874fYAY",
-  authDomain: "heycj-55b6a.firebaseapp.com",
-  projectId: "heycj-55b6a",
-  storageBucket: "heycj-55b6a.firebasestorage.app",
-  messagingSenderId: "147201792706",
-  appId: "1:147201792706:web:3b3130a47cd0f50ce5b95b"
-};
+    // 파이어베이스 설정 (기존 설정 유지)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBZg-wKztuG-Ak7-WqWSAYe9UIj874fYAY",
+      authDomain: "heycj-55b6a.firebaseapp.com",
+      projectId: "heycj-55b6a",
+      storageBucket: "heycj-55b6a.firebasestorage.app",
+      messagingSenderId: "147201792706",
+      appId: "1:147201792706:web:3b3130a47cd0f50ce5b95b"
+    };
 
-    // 파이어베이스 초기화
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
     const db = firebase.database();
 
-    // 날짜 구하기 공통 함수
     function getTodayStr() {
         const kstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
         const yyyy = kstNow.getFullYear();
@@ -341,7 +343,6 @@ const firebaseConfig = {
         updateElem.innerText = `최근 업데이트: ${y}/${m}/${d} ${h}:${min}`;
     }
 
-    // 메인 방문자수 통계
     async function initVisitCounters() {
         const namespace = 'heycheongju_v1'; 
         const todayStr = getTodayStr();
@@ -374,7 +375,6 @@ const firebaseConfig = {
         return 0;
     }
 
-    // 카드 개별 조회수
     function fetchAllViewCountsSequentially(dataArray) {
         const todayStr = getTodayStr();
         const eventViewsRef = db.ref('event_views/' + todayStr);
@@ -902,7 +902,7 @@ const firebaseConfig = {
         document.getElementById('popupTitle').innerHTML = `${item.title || ''} ${item.isNew ? `<span class="card-new-badge">N</span>` : ''}`;
         document.getElementById('popupShareBtn').setAttribute('onclick', `sharePopupLink('${eventId}')`);
 
-        let applyTextStyle = 'color:var(--text-sub);';
+        let applyTextStyle = '';
         if (item.isTodayClose) applyTextStyle = 'color:#E53935; font-weight:700;';
 
         let popupImgHtml = '';
@@ -915,13 +915,14 @@ const firebaseConfig = {
             `;
         }
 
+        // 🌟 팝업창 UI 개선 (태그 형식으로 정리) 🌟
         document.getElementById('popupBody').innerHTML = `
             ${popupImgHtml}
             <div class="info-row"><div class="info-label">장소</div><div class="info-desc">${item.place || '정보 없음'}</div></div>
             <div class="info-row"><div class="info-label">비용</div><div class="info-desc">${item.costType || '정보 없음'}</div></div>
             <div class="info-row"><div class="info-label">접수</div><div class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</div></div>
             <div class="info-row"><div class="info-label">일정</div><div class="info-desc">${item.date || '해당정보 없음'}</div></div>
-            ${item.applyNote ? `<div class="info-row"><div class="info-label">참고사항</div><div class="info-desc" style="font-weight:bold; color:var(--text-main);">${item.applyNote}</div></div>` : ''}
+            ${item.applyNote ? `<div class="info-row"><div class="info-label">꿀팁</div><div class="info-desc" style="font-weight:bold; color:var(--text-main);">${item.applyNote}</div></div>` : ''}
         `;
 
         let btnDetails = '';
@@ -939,10 +940,12 @@ const firebaseConfig = {
         if (detailUrl && detailUrl.trim() !== '') {
             const safeUrl = detailUrl.trim().replace(/"/g, '&quot;');
             const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            
+            // 🌟 아이콘 및 텍스트 변경 🌟
             if (isImageUrl) {
-                btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">관련 사이트 🖼️</button>`;
+                btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">상세정보보기 🖼️</button>`;
             } else {
-                btnDetails = `<a href="${safeUrl}" onclick="trackEventAndOpen(event, '${safeUrl}', '${trackTitle}', 'detail')" class="btn-link">관련 사이트 🔗</a>`;
+                btnDetails = `<a href="${safeUrl}" onclick="trackEventAndOpen(event, '${safeUrl}', '${trackTitle}', 'detail')" class="btn-link">관련사이트 🌐</a>`;
             }
         } else {
             btnDetails = `<button type="button" class="btn-link btn-disabled" onclick="alert('등록된 상세정보 링크가 없습니다.');">사이트 정보 없음</button>`;
