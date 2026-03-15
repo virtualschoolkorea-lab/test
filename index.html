@@ -21,6 +21,9 @@
       gtag('config', 'G-HGXPJ0KLHD');
     </script>
 
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
         :root {
             --primary-color: #4CAF50;
@@ -76,11 +79,9 @@
 
         @media (min-width: 768px) {
             body { padding: 20px 0; background-color: #e9ecef; }
-            /* 전체 가로 폭 1080px 확대 */
             .app-container { max-width: 1080px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; }
             header { border-radius: 16px 16px 0 0; padding: 20px 24px 10px 24px; }
             .sticky-wrapper { border-radius: 16px 16px 0 0; }
-            /* 3열 레이아웃, 간격 좁게 설정 */
             #list-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 20px; align-items: stretch; }
             .card { margin-bottom: 0; height: auto; display: flex; flex-direction: column; }
             .card-title-row { margin-top: auto; padding-top: 10px; }
@@ -127,7 +128,7 @@
         .event-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding-bottom: 20px; box-sizing: border-box; }
         .event-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
         
-        /* event.stopPropagation을 지우더라도 박스를 클릭했을때 닫히지 않도록 유지됨 */
+        /* event.stopPropagation 제거 유지 (2중 팝업 동작을 위해) */
         .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: 85vh; border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px; }
         .event-modal-overlay.active .event-modal-content-box { transform: translateY(0); }
 
@@ -224,10 +225,24 @@
 </div>
 
 <script>
-    // 🔴 중요: 여기에 배포하신 구글 앱스 스크립트 웹 앱 URL을 붙여넣어 주세요!
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbw72Ogn0sa6NFbU-qfUwf97xoWve9qoy35sEQsD3BszKHGtZDGi5u50YAoO0ZqrlzGzDg/exec";
+    // 🔴 중요: 발급받으신 파이어베이스 정보로 아래 내용을 채워주세요!
+const firebaseConfig = {
+  apiKey: "AIzaSyBZg-wKztuG-Ak7-WqWSAYe9UIj874fYAY",
+  authDomain: "heycj-55b6a.firebaseapp.com",
+  projectId: "heycj-55b6a",
+  storageBucket: "heycj-55b6a.firebasestorage.app",
+  messagingSenderId: "147201792706",
+  appId: "1:147201792706:web:3b3130a47cd0f50ce5b95b"
+};
 
-    // 날짜 구하기 공통 함수 (예: "20260315")
+
+    // 파이어베이스 초기화
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.database();
+
+    // 날짜 구하기 공통 함수 (파이어베이스 Today용)
     function getTodayStr() {
         const kstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
         const yyyy = kstNow.getFullYear();
@@ -280,47 +295,55 @@
         updateElem.innerText = `최근 업데이트: ${y}/${m}/${d} ${h}:${min}`;
     }
 
-    // ★ 구글 시트 기반 메인 방문자 측정
+    // 🟢 원상복구된 메인 페이지 (Total/Today) 방문자 통계 (이전 무료 API 데이터 연동)
     async function initVisitCounters() {
+        const namespace = 'heycheongju_v1'; // 기존과 동일하게 유지하여 데이터 복구
         const todayStr = getTodayStr();
-        try {
-            // Total 카운트 올리기
-            fetch(`${GAS_URL}?action=up&key=total`)
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('count-total').innerText = data.count || 0;
-                });
 
-            // Today 카운트 올리기
-            fetch(`${GAS_URL}?action=up&key=${todayStr}_total`)
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('count-today').innerText = data.count || 0;
-                });
+        try {
+            const resTotal = await fetch(`https://api.counterapi.dev/v1/${namespace}/total/up`, { cache: 'no-store' });
+            const totalJson = await resTotal.json();
+            document.getElementById('count-total').innerText = getCounterNumber(totalJson);
+
+            const resToday = await fetch(`https://api.counterapi.dev/v1/${namespace}/today_${todayStr}/up`, { cache: 'no-store' });
+            const todayJson = await resToday.json();
+            document.getElementById('count-today').innerText = getCounterNumber(todayJson);
         } catch (e) {
-            console.log("메인 방문자 카운트 에러", e);
+            document.getElementById('count-total').innerText = '-';
+            document.getElementById('count-today').innerText = '-';
         }
     }
 
-    // ★ 메인 페이지 로딩 시 1번의 호출로 조회수 가져오기
-    async function fetchAllViewCountsSequentially(dataArray) {
+    function getCounterNumber(payload) {
+        if (payload == null) return 0;
+        if (typeof payload === 'number') return payload;
+        if (typeof payload.value === 'number') return payload.value;
+        if (typeof payload.count === 'number') return payload.count;
+        if (payload.data) {
+            if (typeof payload.data.value === 'number') return payload.data.value;
+            if (typeof payload.data.count === 'number') return payload.data.count;
+        }
+        if (typeof payload.value === 'string' && !isNaN(Number(payload.value))) return Number(payload.value);
+        if (typeof payload.count === 'string' && !isNaN(Number(payload.count))) return Number(payload.count);
+        return 0;
+    }
+
+    // ★ 카드별 개별 뷰수 (Firebase 사용 - 1번만 통신해서 전부 가져옴)
+    function fetchAllViewCountsSequentially(dataArray) {
         const todayStr = getTodayStr();
-        try {
-            const res = await fetch(`${GAS_URL}?action=getAll&date=${todayStr}`);
-            const viewsData = await res.json(); 
+        const eventViewsRef = db.ref('event_views/' + todayStr);
+
+        eventViewsRef.once('value').then((snapshot) => {
+            const viewsData = snapshot.val() || {}; 
 
             dataArray.forEach(item => {
                 const eventId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
-                const key = `${todayStr}_${eventId}`;
                 const countElem = document.getElementById(`view-count-${eventId}`);
-                
                 if (countElem) {
-                    countElem.innerText = viewsData[key] || 0;
+                    countElem.innerText = viewsData[eventId] || 0;
                 }
             });
-        } catch (e) {
-            console.error("조회수 로드 에러:", e);
-        }
+        }).catch(error => console.error("조회수 로드 에러:", error));
     }
 
     function trackEventAndOpen(e, url, title, btnType) {
@@ -376,7 +399,7 @@
         }
     });
 
-    // ★ 이벤트 위임 개선: closest()를 활용해 버튼 안의 글자나 아이콘을 눌러도 정상 동작
+    // ★ 2중 팝업 문제 해결: 버튼 내부 클릭 시에도 작동
     document.addEventListener('click', function(e) {
         const btn = e.target.closest('.btn-img-modal');
         if (btn) {
@@ -806,7 +829,7 @@
 
         container.innerHTML = htmlBuffer;
 
-        // 구글 앱스 스크립트 기반 조회수 로딩 호출
+        // 개별 카드 로딩 후 파이어베이스 기반 조회수 호출
         fetchAllViewCountsSequentially(filteredData);
     }
 
@@ -814,18 +837,17 @@
         const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
         if (!item) return;
 
-        // ★ 이벤트 조회수 증가 로직 (구글 앱스 스크립트 연동)
+        // ★ 파이어베이스 팝업 조회수 증가 (클릭 즉시 +1)
         try {
             const todayStr = getTodayStr();
-            const eventKey = `${todayStr}_${eventId}`;
+            const specificEventRef = db.ref(`event_views/${todayStr}/${eventId}`);
             
-            // fetch로 요청만 보내서 조회수 올리기 (사용자 경험을 위해 비동기로 작동)
-            fetch(`${GAS_URL}?action=up&key=${eventKey}`)
-                .then(res => res.json())
-                .then(data => {
+            specificEventRef.set(firebase.database.ServerValue.increment(1)).then(() => {
+                specificEventRef.once('value').then(snap => {
                     const countElem = document.getElementById(`view-count-${eventId}`);
-                    if (countElem) countElem.innerText = data.count || 0;
+                    if (countElem) countElem.innerText = snap.val() || 0;
                 });
+            });
         } catch (e) {
             console.log('조회수 카운트 에러', e);
         }
@@ -910,8 +932,8 @@
     document.addEventListener('DOMContentLoaded', () => {
         initNotice();
         initLastUpdated();
-        initVisitCounters(); // GAS 기반 방문자 수 초기화
-        fetchEventData();
+        initVisitCounters(); // 기존 무료 API 연동 (메인 방문자 수)
+        fetchEventData();    // 카드 로딩 후 파이어베이스로 개별 조회수 연동
     });
 </script>
 </body>
