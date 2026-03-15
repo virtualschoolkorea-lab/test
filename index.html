@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>헤이청주 - 일정 한눈에 보기</title>
-    
-    <meta name="referrer" content="no-referrer">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="헤이청주 📢 교육/체험 링크모음">
-    <meta property="og:description" content="청주 및 인근 지역의 교육/체험/행사 일정을 한눈에 확인하세요!">
-    <meta property="og:image" content="https://heycj.vercel.app/og-image.png"> 
 
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
-    
+    <meta name="referrer" content="no-referrer" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="헤이청주 📢 교육/체험 링크모음" />
+    <meta property="og:description" content="청주 및 인근 지역의 교육/체험/행사 일정을 한눈에 확인하세요!" />
+    <meta property="og:image" content="https://heycj.vercel.app/og-image.png" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-HGXPJ0KLHD"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -37,10 +37,10 @@
         .sticky-wrapper { position: sticky; top: 0; z-index: 100; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: inherit; }
 
         header { background-color: var(--primary-color); color: white; padding: 15px 16px 4px 16px; display: flex; flex-direction: column; border-radius: inherit; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
-        
+
         h1 { margin: 0; font-size: 1.5rem; font-weight: 700; text-align: center; }
         .sub-header { font-size: 0.7rem; opacity: 0.85; margin-top: 4px; text-align: center; }
-        
+
         .header-action-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 1px; margin-bottom: 8px; }
         .header-stats { display: flex; flex-direction: column; font-size: 0.7rem; line-height: 1.3; opacity: 0.95; }
         .header-stats span { font-weight: 700; color: #fff; margin-left: 5px; }
@@ -57,7 +57,7 @@
 
         .notice-container { background: rgba(0, 0, 0, 0.15); border-radius: 6px; padding: 6px 10px; text-align: center; font-size: 0.75rem; font-weight: 500; height: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .notice-container a { color: #fff; text-decoration: none; transition: opacity 0.3s ease-in-out; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
+
         .search-container { padding: 7px 15px; background-color: #fff; border-bottom: 1px solid var(--border-color); }
         .search-input { width: 100%; padding: 6px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; outline: none; box-sizing: border-box; background-color: #f9f9f9; transition: all 0.2s; }
         .search-input:focus { border-color: var(--primary-color); background-color: #fff; box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2); }
@@ -79,8 +79,7 @@
         .filter-cb:checked + .cb-label.age-label { background: #ff9800; border-color: #ff9800; box-shadow: 0 2px 4px rgba(255, 152, 0, 0.3); }
 
         .content { padding: 15px; }
-        
-        /* PC 버전 최적화 */
+
         @media (min-width: 768px) {
             body { padding: 20px 0; background-color: #e9ecef; }
             .app-container { max-width: 1000px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; }
@@ -106,17 +105,16 @@
         .badge-free { background-color: #4CAF50; }
         .badge-paid { background-color: #f39c12; }
         .badge-info { background-color: #7f8c8d; }
-        .badge-today { background-color: #E53935; } 
-        .badge-open { background-color: #2ecc71; }  
-        .badge-close { background-color: #F06292; } 
-        
+        .badge-today { background-color: #E53935; }
+        .badge-open { background-color: #2ecc71; }
+        .badge-close { background-color: #F06292; }
+
         .card-title-row { display: flex; justify-content: space-between; align-items: flex-start; }
         .card-title-row .title { font-size: 1.05rem; font-weight: 700; margin: 0; line-height: 1.4; word-break: keep-all; flex: 1; padding-top: 2px; }
-        
+
         .card-action-area { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-left: 10px; flex-shrink: 0; }
         .card-action-top { display: flex; align-items: center; gap: 8px; }
-        
-        /* 💡 수정됨: 저장하기 아이콘 스타일 */
+
         .btn-save { background: none; border: none; padding: 2px; cursor: pointer; color: #ccc; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
         .btn-save:hover { transform: scale(1.1); color: #888; }
         .btn-save.saved { color: #333; }
@@ -135,23 +133,23 @@
         .img-modal-content { max-width: 90%; max-height: 85vh; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); object-fit: contain; }
         .img-modal-close { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.9); color: #111; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 1.5rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
 
-        .event-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding-bottom: 20px; box-sizing: border-box;}
+        .event-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding-bottom: 20px; box-sizing: border-box; }
         .event-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
         .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: 85vh; border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px; }
         .event-modal-overlay.active .event-modal-content-box { transform: translateY(0); }
-        
+
         @media (min-width: 768px) {
             .event-modal-overlay { align-items: center; padding-bottom: 0; }
             .event-modal-content-box { border-radius: 16px; transform: scale(0.95); opacity: 0; transition: all 0.2s ease-out; }
             .event-modal-overlay.active .event-modal-content-box { transform: scale(1); opacity: 1; }
         }
-        
+
         .event-modal-header { padding: 16px 20px; position: relative; border-bottom: 1px solid #eee; display: flex; align-items: center; }
-        .event-modal-title { font-size: 1.1rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 70px; margin: 0; line-height: 1.5; flex: 1;}
+        .event-modal-title { font-size: 1.1rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 70px; margin: 0; line-height: 1.5; flex: 1; }
         .event-modal-share-btn { position: absolute; top: 50%; right: 48px; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #666; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s; padding: 4px; }
         .event-modal-share-btn:hover { background: #f0f0f0; }
         .event-modal-share-btn svg { width: 100%; height: 100%; fill: currentColor; }
-        
+
         .event-modal-close-btn { position: absolute; top: 50%; right: 12px; transform: translateY(-50%); background: none; border: none; font-size: 1.8rem; line-height: 1; cursor: pointer; color: #888; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s; }
         .event-modal-close-btn:hover { background: #f0f0f0; }
 
@@ -174,13 +172,13 @@
         <header id="app-header">
             <h1>헤이청주 📢 교육/체험 링크모음</h1>
             <div class="sub-header" id="last-updated-text">최근 업데이트: 계산중...</div>
-            
+
             <div class="header-action-row">
                 <div class="header-stats">
                     <div>TODAY<span id="count-today">...</span></div>
                     <div>TOTAL<span id="count-total">...</span></div>
                 </div>
-                
+
                 <div class="header-buttons-row">
                     <button class="btn-kakao-login" onclick="loginWithKakao()">
                         <svg viewBox="0 0 24 24"><path d="M12 3c-5.5 0-10 3.5-10 7.8 0 2.8 1.9 5.2 4.7 6.6l-1 3.8c-.1.4.3.7.6.5l4.5-3c.4 0 .8.1 1.2.1 5.5 0 10-3.5 10-7.8C22 6.5 17.5 3 12 3z"/></svg>
@@ -192,12 +190,12 @@
                     </button>
                 </div>
             </div>
-            
+
             <div class="notice-container"><a id="notice-link"></a></div>
         </header>
 
         <div class="search-container">
-            <input type="text" id="search-input" class="search-input" placeholder="검색어를 입력하세요 (예: 도서관, 과학, 공연)" onkeyup="applyFilters()">
+            <input type="text" id="search-input" class="search-input" placeholder="검색어를 입력하세요 (예: 도서관, 과학, 공연)" onkeyup="applyFilters()" />
         </div>
 
         <div class="tabs">
@@ -205,7 +203,7 @@
             <div class="tab" onclick="changeTab(this, 'always')">상시/현장접수</div>
             <div class="tab active" onclick="changeTab(this, 'affiliate')">제휴/이벤트</div>
         </div>
-        
+
         <div class="filter-wrapper">
             <div class="checkbox-group" id="combined-filter-group" onscroll="handleFilterScroll(this)"></div>
             <div class="fade-right" id="filter-fade"></div>
@@ -219,7 +217,7 @@
 
 <div class="img-modal-overlay" id="imageModal">
     <button class="img-modal-close" id="closeModalBtn">×</button>
-    <img src="" alt="상세정보 이미지" class="img-modal-content" id="imageModalImg">
+    <img src="" alt="상세정보 이미지" class="img-modal-content" id="imageModalImg" />
 </div>
 
 <div class="event-modal-overlay" id="eventModal" onclick="closeEventPopup(event)">
@@ -237,9 +235,8 @@
 </div>
 
 <script>
-    // 카카오 SDK 초기화
     try {
-        Kakao.init('9e15976baaa60ecc531d234dcbaf301e'); 
+        Kakao.init('여기에_카카오_자바스크립트_키를_입력하세요');
     } catch (e) {
         console.log("카카오 키가 아직 설정되지 않았습니다.");
     }
@@ -250,17 +247,17 @@
             return;
         }
         Kakao.Auth.login({
-            success: function(authObj) {
+            success: function() {
                 Kakao.API.request({
                     url: '/v2/user/me',
                     success: function(res) {
                         const nickname = res.kakao_account.profile.nickname;
                         alert(nickname + '님 환영합니다!\n(현재는 로그인 연동 대기 중입니다.)');
                     },
-                    fail: function(error) { alert('사용자 정보 요청 실패'); }
+                    fail: function() { alert('사용자 정보 요청 실패'); }
                 });
             },
-            fail: function(err) { alert('로그인 실패: 사용자가 취소했거나 오류가 발생했습니다.'); }
+            fail: function() { alert('로그인 실패: 사용자가 취소했거나 오류가 발생했습니다.'); }
         });
     }
 
@@ -272,67 +269,142 @@
     ];
 
     function initNotice() {
-        let currentIndex = 0; const noticeLink = document.getElementById('notice-link');
+        let currentIndex = 0;
+        const noticeLink = document.getElementById('notice-link');
+
         function updateNotice() {
             noticeLink.style.opacity = '0';
             setTimeout(() => {
-                const data = noticeData[currentIndex]; noticeLink.innerText = data.text;
-                if (data.link) { noticeLink.href = data.link; noticeLink.target = "_blank"; noticeLink.style.cursor = "pointer"; } 
-                else { noticeLink.removeAttribute('href'); noticeLink.removeAttribute('target'); noticeLink.style.cursor = "default"; }
-                noticeLink.style.opacity = '1'; currentIndex = (currentIndex + 1) % noticeData.length;
+                const data = noticeData[currentIndex];
+                noticeLink.innerText = data.text;
+                if (data.link) {
+                    noticeLink.href = data.link;
+                    noticeLink.target = "_blank";
+                    noticeLink.style.cursor = "pointer";
+                } else {
+                    noticeLink.removeAttribute('href');
+                    noticeLink.removeAttribute('target');
+                    noticeLink.style.cursor = "default";
+                }
+                noticeLink.style.opacity = '1';
+                currentIndex = (currentIndex + 1) % noticeData.length;
             }, 300);
         }
-        updateNotice(); setInterval(updateNotice, 4000); 
+        updateNotice();
+        setInterval(updateNotice, 4000);
     }
 
     function initLastUpdated() {
-        const updateElem = document.getElementById('last-updated-text'); const lm = new Date(document.lastModified);
-        const y = lm.getFullYear(); const m = lm.getMonth() + 1; const d = lm.getDate();
-        const h = String(lm.getHours()).padStart(2, '0'); const min = String(lm.getMinutes()).padStart(2, '0');
+        const updateElem = document.getElementById('last-updated-text');
+        const lm = new Date(document.lastModified);
+        const y = lm.getFullYear();
+        const m = lm.getMonth() + 1;
+        const d = lm.getDate();
+        const h = String(lm.getHours()).padStart(2, '0');
+        const min = String(lm.getMinutes()).padStart(2, '0');
         updateElem.innerText = `최근 업데이트: ${y}/${m}/${d} ${h}:${min}`;
     }
 
     async function initVisitCounters() {
-        const namespace = 'heycheongju_v1'; 
-        const kstNow = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
-        const yyyy = kstNow.getFullYear(); const mm = String(kstNow.getMonth() + 1).padStart(2, '0'); const dd = String(kstNow.getDate()).padStart(2, '0');
-        const todayStr = `${yyyy}${mm}${dd}`; 
+        const namespace = 'heycheongju_v1';
+        const kstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
+        const yyyy = kstNow.getFullYear();
+        const mm = String(kstNow.getMonth() + 1).padStart(2, '0');
+        const dd = String(kstNow.getDate()).padStart(2, '0');
+        const todayStr = `${yyyy}${mm}${dd}`;
+
         try {
-            const resTotal = await fetch(`https://api.counterapi.dev/v1/${namespace}/total/up`); document.getElementById('count-total').innerText = (await resTotal.json()).count;
-            const resToday = await fetch(`https://api.counterapi.dev/v1/${namespace}/today_${todayStr}/up`); document.getElementById('count-today').innerText = (await resToday.json()).count;
-        } catch (e) { document.getElementById('count-total').innerText = '-'; document.getElementById('count-today').innerText = '-'; }
+            const resTotal = await fetch(`https://api.counterapi.dev/v1/${namespace}/total/up`, { cache: 'no-store' });
+            const totalJson = await resTotal.json();
+            document.getElementById('count-total').innerText = getCounterNumber(totalJson);
+
+            const resToday = await fetch(`https://api.counterapi.dev/v1/${namespace}/today_${todayStr}/up`, { cache: 'no-store' });
+            const todayJson = await resToday.json();
+            document.getElementById('count-today').innerText = getCounterNumber(todayJson);
+        } catch (e) {
+            document.getElementById('count-total').innerText = '-';
+            document.getElementById('count-today').innerText = '-';
+        }
     }
 
-    // 💡 수정됨: 조회수 데이터를 대기열(Queue) 방식으로 하나씩 천천히 불러와서 오류 차단
+    function getCounterNumber(payload) {
+        if (payload == null) return 0;
+
+        if (typeof payload === 'number') return payload;
+
+        if (typeof payload.value === 'number') return payload.value;
+        if (typeof payload.count === 'number') return payload.count;
+
+        if (payload.data) {
+            if (typeof payload.data.value === 'number') return payload.data.value;
+            if (typeof payload.data.count === 'number') return payload.data.count;
+        }
+
+        if (typeof payload.value === 'string' && !isNaN(Number(payload.value))) return Number(payload.value);
+        if (typeof payload.count === 'string' && !isNaN(Number(payload.count))) return Number(payload.count);
+
+        return 0;
+    }
+
+    async function readCounterValue(namespace, name) {
+        const url = `https://api.counterapi.dev/v1/${namespace}/${encodeURIComponent(name)}?_t=${Date.now()}`;
+        const res = await fetch(url, {
+            method: 'GET',
+            cache: 'no-store'
+        });
+        if (!res.ok) throw new Error(`Counter GET failed: ${res.status}`);
+        const json = await res.json();
+        return getCounterNumber(json);
+    }
+
+    async function upCounterValue(namespace, name) {
+        const url = `https://api.counterapi.dev/v1/${namespace}/${encodeURIComponent(name)}/up?_t=${Date.now()}`;
+        const res = await fetch(url, {
+            method: 'GET',
+            cache: 'no-store'
+        });
+        if (!res.ok) throw new Error(`Counter UP failed: ${res.status}`);
+        const json = await res.json();
+        return getCounterNumber(json);
+    }
+
+    let viewFetchToken = 0;
+
     async function fetchAllViewCountsSequentially(dataArray) {
+        const namespace = 'heycheongju_v1';
+        const myToken = ++viewFetchToken;
+
         for (const item of dataArray) {
+            if (myToken !== viewFetchToken) return;
+
             const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
             const countElem = document.getElementById(`view-count-${eventUniqueId}`);
             if (!countElem) continue;
-            
+
             try {
-                const safeId = encodeURIComponent(eventUniqueId);
-                const res = await fetch(`https://api.counterapi.dev/v1/heycheongju_v1/event_${safeId}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    countElem.innerText = data.count || 0;
-                } else {
-                    countElem.innerText = '0';
+                const count = await readCounterValue(namespace, `event_${eventUniqueId}`);
+                if (myToken !== viewFetchToken) return;
+
+                const latestElem = document.getElementById(`view-count-${eventUniqueId}`);
+                if (latestElem) {
+                    latestElem.innerText = String(count);
                 }
             } catch (e) {
-                countElem.innerText = '0';
+                const latestElem = document.getElementById(`view-count-${eventUniqueId}`);
+                if (latestElem) {
+                    latestElem.innerText = '0';
+                }
             }
-            
-            // API 서버가 터지지 않게 다음 요청까지 100ms(0.1초) 대기
-            await new Promise(resolve => setTimeout(resolve, 100));
+
+            await new Promise(resolve => setTimeout(resolve, 120));
         }
     }
 
     function trackEventAndOpen(e, url, title, btnType) {
-        if(e) e.preventDefault(); 
+        if (e) e.preventDefault();
         if (title) {
             const actionName = (btnType === 'detail') ? '상세보기_클릭' : '신청하기_클릭';
-            gtag('event', actionName, { 'event_category': '버튼클릭', 'event_label': title, 'transport_type': 'beacon' });
+            gtag('event', actionName, { event_category: '버튼클릭', event_label: title, transport_type: 'beacon' });
         }
         setTimeout(() => { window.open(url, '_blank'); }, 200);
     }
@@ -340,42 +412,55 @@
     function trackEventClick(title, btnType) {
         if (!title) return;
         const actionName = (btnType === 'detail') ? '상세보기_클릭' : '신청하기_클릭';
-        gtag('event', actionName, { 'event_category': '버튼클릭', 'event_label': title, 'transport_type': 'beacon' });
+        gtag('event', actionName, { event_category: '버튼클릭', event_label: title, transport_type: 'beacon' });
     }
 
     function sharePage() {
-        const shareData = { title: '헤이청주 📢 교육/체험 링크모음', text: '우리 지역 체험 행사 일정을 한눈에 확인하세요!', url: window.location.href };
-        if (navigator.share) navigator.share(shareData).catch(console.error); else navigator.clipboard.writeText(window.location.href).then(() => alert('링크가 복사되었습니다!'));
+        const shareData = {
+            title: '헤이청주 📢 교육/체험 링크모음',
+            text: '우리 지역 체험 행사 일정을 한눈에 확인하세요!',
+            url: window.location.href
+        };
+        if (navigator.share) {
+            navigator.share(shareData).catch(console.error);
+        } else {
+            navigator.clipboard.writeText(window.location.href).then(() => alert('링크가 복사되었습니다!'));
+        }
     }
 
     function sharePopupLink(eventId) {
         const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
         const shareUrl = window.location.origin + window.location.pathname + '?id=' + encodeURIComponent(eventId);
-        const shareData = { title: item ? item.title : '헤이청주 일정 공유', text: '이 행사 어때요? 일정을 확인해보세요!', url: shareUrl };
-        if (navigator.share) navigator.share(shareData).catch(console.error); 
-        else navigator.clipboard.writeText(shareUrl).then(() => alert('팝업 링크가 복사되었습니다!\n원하는 곳에 붙여넣기 해주세요.'));
+        const shareData = {
+            title: item ? item.title : '헤이청주 일정 공유',
+            text: '이 행사 어때요? 일정을 확인해보세요!',
+            url: shareUrl
+        };
+        if (navigator.share) {
+            navigator.share(shareData).catch(console.error);
+        } else {
+            navigator.clipboard.writeText(shareUrl).then(() => alert('팝업 링크가 복사되었습니다!\n원하는 곳에 붙여넣기 해주세요.'));
+        }
     }
 
-    // 💡 수정됨: 하트에서 북마크(저장) 기능으로 변경 (에러 유발하는 API 호출 제거)
     function getSavedEvents() {
-        try { 
-            // 기존 하트 데이터(heycheongju_likes)가 남아있다면 가져와서 호환성 유지
-            return JSON.parse(localStorage.getItem('heycheongju_saves')) || JSON.parse(localStorage.getItem('heycheongju_likes')) || []; 
-        } 
-        catch (e) { return []; }
+        try {
+            return JSON.parse(localStorage.getItem('heycheongju_saves')) ||
+                   JSON.parse(localStorage.getItem('heycheongju_likes')) || [];
+        } catch (e) {
+            return [];
+        }
     }
-    
+
     function toggleSave(e, eventId) {
-        e.stopPropagation(); 
+        e.stopPropagation();
         let saves = getSavedEvents();
         const btn = e.currentTarget;
 
         if (saves.includes(eventId)) {
-            // 저장 취소
             saves = saves.filter(id => id !== eventId);
             btn.classList.remove('saved');
         } else {
-            // 저장하기
             saves.push(eventId);
             btn.classList.add('saved');
         }
@@ -384,7 +469,7 @@
 
     const imgModal = document.getElementById('imageModal');
     const modalImg = document.getElementById('imageModalImg');
-    
+
     imgModal.addEventListener('click', function(e) {
         if (e.target === imgModal || e.target.id === 'closeModalBtn') {
             imgModal.classList.remove('active');
@@ -409,26 +494,34 @@
     }
 
     let eventData = [];
+    let currentTab = 'affiliate';
 
     async function fetchEventData() {
         const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQV-02F-qXwS6yLb_XScKqwYj1N0qImwofY2Pyj2tvwnW0i1tl995_BjOfaVHpayppk6YYhqpdLrpa9/pub?output=csv";
-        const fetchUrl = csvUrl + "&_t=" + new Date().getTime(); 
+        const fetchUrl = csvUrl + "&_t=" + new Date().getTime();
+
         try {
-            const response = await fetch(fetchUrl);
+            const response = await fetch(fetchUrl, { cache: 'no-store' });
             if (!response.ok) throw new Error("네트워크 응답이 올바르지 않습니다.");
+
             const csvText = await response.text();
             eventData = parseCSVToJSON(csvText);
-            processEventDates(); processEventAges(); generateFilters(); processNewItems(); updateTabNewBadges(); 
-            
+
+            processEventDates();
+            processEventAges();
+            generateFilters();
+            processNewItems();
+            updateTabNewBadges();
+
             const urlParams = new URLSearchParams(window.location.search);
             const eventId = urlParams.get('id') || urlParams.get('event');
-            
+
             if (eventId !== null) {
                 const targetItem = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
                 if (targetItem && targetItem.type) {
                     document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
                     const targetTabElem = document.querySelector(`.tab[onclick*="${targetItem.type}"]`);
-                    if(targetTabElem) targetTabElem.classList.add('active');
+                    if (targetTabElem) targetTabElem.classList.add('active');
                     currentTab = targetItem.type;
                 }
             }
@@ -442,47 +535,96 @@
                     openEventPopup(eventId);
                 }, 300);
             }
-
-        } catch (error) { document.getElementById('list-container').innerHTML = '<div class="empty-state">행사 정보를 불러오는데 실패했습니다. 새로고침을 해주세요. 😥</div>'; }
+        } catch (error) {
+            console.error(error);
+            document.getElementById('list-container').innerHTML = '<div class="empty-state">행사 정보를 불러오는데 실패했습니다. 새로고침을 해주세요. 😥</div>';
+        }
     }
 
     function parseCSVToJSON(csv) {
-        const rows = []; let row = []; let curr = ''; let insideQuotes = false;
+        const rows = [];
+        let row = [];
+        let curr = '';
+        let insideQuotes = false;
+
         for (let i = 0; i < csv.length; i++) {
-            const char = csv[i]; const nextChar = csv[i + 1];
-            if (char === '"' && insideQuotes && nextChar === '"') { curr += '"'; i++; } else if (char === '"') { insideQuotes = !insideQuotes; } 
-            else if (char === ',' && !insideQuotes) { row.push(curr); curr = ''; } 
-            else if ((char === '\n' || (char === '\r' && nextChar === '\n')) && !insideQuotes) { row.push(curr); rows.push(row); row = []; curr = ''; if (char === '\r') i++; } 
-            else { curr += char; }
+            const char = csv[i];
+            const nextChar = csv[i + 1];
+
+            if (char === '"' && insideQuotes && nextChar === '"') {
+                curr += '"';
+                i++;
+            } else if (char === '"') {
+                insideQuotes = !insideQuotes;
+            } else if (char === ',' && !insideQuotes) {
+                row.push(curr);
+                curr = '';
+            } else if ((char === '\n' || (char === '\r' && nextChar === '\n')) && !insideQuotes) {
+                row.push(curr);
+                rows.push(row);
+                row = [];
+                curr = '';
+                if (char === '\r') i++;
+            } else {
+                curr += char;
+            }
         }
-        if (curr !== '' || row.length > 0) { row.push(curr); rows.push(row); }
+
+        if (curr !== '' || row.length > 0) {
+            row.push(curr);
+            rows.push(row);
+        }
+
         if (rows.length < 2) return [];
-        const headers = rows[0].map(h => h.trim().replace(/[\r\n]+/g, '')); const data = [];
+
+        const headers = rows[0].map(h => h.trim().replace(/[\r\n]+/g, ''));
+        const data = [];
+
         for (let i = 1; i < rows.length; i++) {
-            if (rows[i].length === 1 && rows[i][0].trim() === '') continue; const obj = {};
-            for (let j = 0; j < headers.length; j++) { if (headers[j]) obj[headers[j]] = rows[i][j] ? rows[i][j].trim().replace(/[\r\n]+$/, '') : ''; }
+            if (rows[i].length === 1 && rows[i][0].trim() === '') continue;
+            const obj = {};
+            for (let j = 0; j < headers.length; j++) {
+                if (headers[j]) obj[headers[j]] = rows[i][j] ? rows[i][j].trim().replace(/[\r\n]+$/, '') : '';
+            }
             if (obj.type || obj.title) data.push(obj);
         }
         return data;
     }
 
     function processEventDates() {
-        const today = new Date(); const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
-        const todayStr = `${today.getMonth() + 1}/${today.getDate()}`; const tomorrowStr = `${tomorrow.getMonth() + 1}/${tomorrow.getDate()}`; 
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const todayStr = `${today.getMonth() + 1}/${today.getDate()}`;
+        const tomorrowStr = `${tomorrow.getMonth() + 1}/${tomorrow.getDate()}`;
 
         eventData.forEach(item => {
-            if (item.type === 'affiliate' || item.type === 'always') { item.displayText = item.applyNote; return; }
-            item.isTodayOpen = false; item.isTodayClose = false; item.isTomorrowOpen = false; item.isTomorrowClose = false;
-            
+            if (item.type === 'affiliate' || item.type === 'always') {
+                item.displayText = item.applyNote;
+                return;
+            }
+
+            item.isTodayOpen = false;
+            item.isTodayClose = false;
+            item.isTomorrowOpen = false;
+            item.isTomorrowClose = false;
+
             if (item.applyStart && item.applyStart.includes(todayStr)) item.isTodayOpen = true;
             if (item.applyEnd && item.applyEnd.includes(todayStr)) item.isTodayClose = true;
             if (item.applyStart && item.applyStart.includes(tomorrowStr)) item.isTomorrowOpen = true;
             if (item.applyEnd && item.applyEnd.includes(tomorrowStr)) item.isTomorrowClose = true;
-            
+
             let text = '';
             if (item.applyStart && item.applyEnd) text = `${item.applyStart} ~ ${item.applyEnd}`;
-            else if (item.applyStart) text = `${item.applyStart} 오픈`; else if (item.applyEnd) text = `~ ${item.applyEnd}`;
-            if (item.applyNote) { if (text) text += ` <span style="font-weight:700; font-size:0.8rem;">[${item.applyNote}]</span>`; else text = `<span style="font-weight:700;">${item.applyNote}</span>`; }
+            else if (item.applyStart) text = `${item.applyStart} 오픈`;
+            else if (item.applyEnd) text = `~ ${item.applyEnd}`;
+
+            if (item.applyNote) {
+                if (text) text += ` <span style="font-weight:700; font-size:0.8rem;">[${item.applyNote}]</span>`;
+                else text = `<span style="font-weight:700;">${item.applyNote}</span>`;
+            }
+
             item.displayText = text || '상시 접수';
         });
     }
@@ -490,69 +632,134 @@
     function processEventAges() {
         eventData.forEach(item => {
             const mapped = new Set();
-            if (item.ageFilter && item.ageFilter.trim() !== '') { item.ageFilter.split(',').forEach(f => { const cleanF = f.trim(); if (cleanF) mapped.add(cleanF); }); }
+            if (item.ageFilter && item.ageFilter.trim() !== '') {
+                item.ageFilter.split(',').forEach(f => {
+                    const cleanF = f.trim();
+                    if (cleanF) mapped.add(cleanF);
+                });
+            }
             if (mapped.size === 0) mapped.add('미취학').add('초등').add('중고등').add('성인');
             item.mappedAges = Array.from(mapped);
         });
     }
 
     function generateFilters() {
-        const filterGroup = document.getElementById('combined-filter-group'); filterGroup.innerHTML = ''; 
-        const presentLocs = new Set(); const fixedLocs = ['청주', '충북', '대전', '세종', '온라인']; const chungbukSubRegions = ['괴산', '음성', '증평', '보은', '옥천', '충주', '제천', '진천', '단양', '영동'];
+        const filterGroup = document.getElementById('combined-filter-group');
+        filterGroup.innerHTML = '';
+
+        const presentLocs = new Set();
+        const fixedLocs = ['청주', '충북', '대전', '세종', '온라인'];
+        const chungbukSubRegions = ['괴산', '음성', '증평', '보은', '옥천', '충주', '제천', '진천', '단양', '영동'];
+
         eventData.forEach(item => {
             if (item.loc && item.loc.trim() !== '') {
                 const locText = item.loc.trim();
-                if (chungbukSubRegions.includes(locText) || locText === '충북') item.mappedLoc = '충북'; else if (fixedLocs.includes(locText)) item.mappedLoc = locText; else item.mappedLoc = '기타';
+                if (chungbukSubRegions.includes(locText) || locText === '충북') item.mappedLoc = '충북';
+                else if (fixedLocs.includes(locText)) item.mappedLoc = locText;
+                else item.mappedLoc = '기타';
                 presentLocs.add(item.mappedLoc);
-            } else item.mappedLoc = null; 
+            } else {
+                item.mappedLoc = null;
+            }
         });
 
         const ageFilters = ['미취학', '초등', '중고등', '성인'];
         ageFilters.forEach((age, index) => {
-            const id = `age-dynamic-${index}`; const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.id = id; checkbox.value = age; checkbox.className = 'filter-cb age-cb'; checkbox.onchange = applyFilters;
-            const label = document.createElement('label'); label.htmlFor = id; label.className = 'cb-label age-label'; label.innerText = age; filterGroup.appendChild(checkbox); filterGroup.appendChild(label);
+            const id = `age-dynamic-${index}`;
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = id;
+            checkbox.value = age;
+            checkbox.className = 'filter-cb age-cb';
+            checkbox.onchange = applyFilters;
+
+            const label = document.createElement('label');
+            label.htmlFor = id;
+            label.className = 'cb-label age-label';
+            label.innerText = age;
+
+            filterGroup.appendChild(checkbox);
+            filterGroup.appendChild(label);
         });
 
-        if (presentLocs.size > 0) { const divider = document.createElement('span'); divider.innerText = '|'; divider.style.color = '#ccc'; divider.style.display = 'flex'; divider.style.alignItems = 'center'; divider.style.fontSize = '0.7rem'; divider.style.margin = '0 2px'; filterGroup.appendChild(divider); }
+        if (presentLocs.size > 0) {
+            const divider = document.createElement('span');
+            divider.innerText = '|';
+            divider.style.color = '#ccc';
+            divider.style.display = 'flex';
+            divider.style.alignItems = 'center';
+            divider.style.fontSize = '0.7rem';
+            divider.style.margin = '0 2px';
+            filterGroup.appendChild(divider);
+        }
+
         const orderedLocs = [...fixedLocs, '기타'];
         orderedLocs.forEach((loc, index) => {
             if (presentLocs.has(loc)) {
-                const id = `loc-dynamic-${index}`; const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.id = id; checkbox.value = loc; checkbox.className = 'filter-cb loc-cb'; checkbox.onchange = applyFilters;
-                const label = document.createElement('label'); label.htmlFor = id; label.className = 'cb-label'; label.innerText = loc; filterGroup.appendChild(checkbox); filterGroup.appendChild(label);
+                const id = `loc-dynamic-${index}`;
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = id;
+                checkbox.value = loc;
+                checkbox.className = 'filter-cb loc-cb';
+                checkbox.onchange = applyFilters;
+
+                const label = document.createElement('label');
+                label.htmlFor = id;
+                label.className = 'cb-label';
+                label.innerText = loc;
+
+                filterGroup.appendChild(checkbox);
+                filterGroup.appendChild(label);
             }
         });
+
         setTimeout(() => handleFilterScroll(filterGroup), 100);
     }
 
     function parseDateValue(dateStr) {
-        if (!dateStr) return 9999; 
-        let match = dateStr.match(/(\d{1,2})\/(\d{1,2})/); if (match) return parseInt(match[1]) * 100 + parseInt(match[2]);
-        match = dateStr.match(/(\d{1,2})월\s*(\d{1,2})일/); if (match) return parseInt(match[1]) * 100 + parseInt(match[2]);
-        match = dateStr.match(/(\d{1,2})월/); if (match) return parseInt(match[1]) * 100;
-        return 9999; 
+        if (!dateStr) return 9999;
+        let match = dateStr.match(/(\d{1,2})\/(\d{1,2})/);
+        if (match) return parseInt(match[1]) * 100 + parseInt(match[2]);
+        match = dateStr.match(/(\d{1,2})월\s*(\d{1,2})일/);
+        if (match) return parseInt(match[1]) * 100 + parseInt(match[2]);
+        match = dateStr.match(/(\d{1,2})월/);
+        if (match) return parseInt(match[1]) * 100;
+        return 9999;
     }
-
-    let currentTab = 'affiliate'; 
 
     function parseRegDate(dateStr) {
         if (!dateStr) return 0;
         let s = String(dateStr).trim();
         let match = s.match(/(\d{4})[./-]\s*(\d{1,2})[./-]\s*(\d{1,2})(?:[.\s]+(?:오전|오후|AM|PM)?\s*(\d{1,2})[:시]\s*(\d{1,2}))?/i);
         if (match) {
-            let year = parseInt(match[1], 10); let month = parseInt(match[2], 10) - 1; let day = parseInt(match[3], 10);
-            let hour = match[4] ? parseInt(match[4], 10) : 0; let minute = match[5] ? parseInt(match[5], 10) : 0;
-            if (s.includes('오후') || s.toUpperCase().includes('PM')) { if (hour < 12) hour += 12; }
-            if ((s.includes('오전') || s.toUpperCase().includes('AM')) && hour === 12) { hour = 0; }
+            let year = parseInt(match[1], 10);
+            let month = parseInt(match[2], 10) - 1;
+            let day = parseInt(match[3], 10);
+            let hour = match[4] ? parseInt(match[4], 10) : 0;
+            let minute = match[5] ? parseInt(match[5], 10) : 0;
+
+            if (s.includes('오후') || s.toUpperCase().includes('PM')) {
+                if (hour < 12) hour += 12;
+            }
+            if ((s.includes('오전') || s.toUpperCase().includes('AM')) && hour === 12) {
+                hour = 0;
+            }
             return new Date(year, month, day, hour, minute).getTime();
         }
+
         let parsed = new Date(s).getTime();
         return isNaN(parsed) ? 0 : parsed;
     }
 
     function processNewItems() {
-        const now = Date.now(); const ONE_DAY = 24 * 60 * 60 * 1000; 
+        const now = Date.now();
+        const ONE_DAY = 24 * 60 * 60 * 1000;
+
         eventData.forEach((item, index) => {
-            item.originalIndex = index; item.isNew = false;
+            item.originalIndex = index;
+            item.isNew = false;
+
             const regDateMs = parseRegDate(item['등록일']);
             if (regDateMs > 0) {
                 const timeDiff = now - regDateMs;
@@ -565,71 +772,110 @@
     function updateTabNewBadges() {
         const tabs = ['ongoing', 'always', 'affiliate'];
         tabs.forEach(tabType => {
-            const hasNew = eventData.some(item => item.type === tabType && item.isNew); const tabElement = document.querySelector(`.tab[onclick*="${tabType}"]`);
-            if (!tabElement) return; const existingBadge = tabElement.querySelector('.new-badge');
-            if (hasNew) { if (!existingBadge) tabElement.insertAdjacentHTML('beforeend', '<span class="new-badge">N</span>'); } else { if (existingBadge) existingBadge.remove(); }
+            const hasNew = eventData.some(item => item.type === tabType && item.isNew);
+            const tabElement = document.querySelector(`.tab[onclick*="${tabType}"]`);
+            if (!tabElement) return;
+            const existingBadge = tabElement.querySelector('.new-badge');
+            if (hasNew) {
+                if (!existingBadge) tabElement.insertAdjacentHTML('beforeend', '<span class="new-badge">N</span>');
+            } else {
+                if (existingBadge) existingBadge.remove();
+            }
         });
     }
 
-    function changeTab(element, type) { document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active')); element.classList.add('active'); currentTab = type; applyFilters(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    function changeTab(element, type) {
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        element.classList.add('active');
+        currentTab = type;
+        applyFilters();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
     function applyFilters() {
-        const selectedLocs = Array.from(document.querySelectorAll('.loc-cb:checked')).map(cb => cb.value); const selectedAges = Array.from(document.querySelectorAll('.age-cb:checked')).map(cb => cb.value);
-        const keyword = document.getElementById('search-input').value.trim().toLowerCase(); const container = document.getElementById('list-container');
-        
+        const selectedLocs = Array.from(document.querySelectorAll('.loc-cb:checked')).map(cb => cb.value);
+        const selectedAges = Array.from(document.querySelectorAll('.age-cb:checked')).map(cb => cb.value);
+        const keyword = document.getElementById('search-input').value.trim().toLowerCase();
+        const container = document.getElementById('list-container');
+
         if (eventData.length === 0) return;
 
         let filteredData = eventData.filter(item => {
             const matchTab = keyword ? true : (item.type === currentTab);
-            let matchLoc = selectedLocs.length === 0 ? true : selectedLocs.some(loc => item.mappedLoc === loc);
-            let matchAge = selectedAges.length === 0 ? true : selectedAges.some(age => item.mappedAges && item.mappedAges.includes(age));
+            const matchLoc = selectedLocs.length === 0 ? true : selectedLocs.some(loc => item.mappedLoc === loc);
+            const matchAge = selectedAges.length === 0 ? true : selectedAges.some(age => item.mappedAges && item.mappedAges.includes(age));
+
             let matchSearch = true;
-            if (keyword) { matchSearch = (item.title && item.title.toLowerCase().includes(keyword)) || (item.place && item.place.toLowerCase().includes(keyword)) || (item.loc && item.loc.toLowerCase().includes(keyword)); }
+            if (keyword) {
+                matchSearch =
+                    (item.title && item.title.toLowerCase().includes(keyword)) ||
+                    (item.place && item.place.toLowerCase().includes(keyword)) ||
+                    (item.loc && item.loc.toLowerCase().includes(keyword));
+            }
+
             return matchTab && matchLoc && matchAge && matchSearch;
         });
 
         if (currentTab === 'ongoing' || keyword) {
             filteredData.sort((a, b) => {
                 if (a.isNew !== b.isNew) return b.isNew ? 1 : -1;
+
                 const getPriority = (item) => {
-                    if (item.isTodayOpen) return 1; if (item.isTodayClose) return 2; if (item.isTomorrowClose) return 3; return 4;
+                    if (item.isTodayOpen) return 1;
+                    if (item.isTodayClose) return 2;
+                    if (item.isTomorrowClose) return 3;
+                    return 4;
                 };
-                const pA = getPriority(a); const pB = getPriority(b);
+
+                const pA = getPriority(a);
+                const pB = getPriority(b);
                 if (pA !== pB) return pA - pB;
-                return parseDateValue(a.applyEnd) - parseDateValue(b.applyEnd); 
+
+                return parseDateValue(a.applyEnd) - parseDateValue(b.applyEnd);
             });
         } else if (currentTab === 'always' || currentTab === 'affiliate') {
-            filteredData.sort((a, b) => { if (a.isNew !== b.isNew) return b.isNew ? 1 : -1; return a.originalIndex - b.originalIndex; });
+            filteredData.sort((a, b) => {
+                if (a.isNew !== b.isNew) return b.isNew ? 1 : -1;
+                return a.originalIndex - b.originalIndex;
+            });
         }
 
-        if (filteredData.length === 0) { 
-            container.innerHTML = '<div class="empty-state">해당하는 행사가 없습니다. 조건이나 검색어를 변경해 보세요! 😥</div>'; 
-            return; 
+        if (filteredData.length === 0) {
+            container.innerHTML = '<div class="empty-state">해당하는 행사가 없습니다. 조건이나 검색어를 변경해 보세요! 😥</div>';
+            return;
         }
 
         const savedEvents = getSavedEvents();
-        
         let htmlBuffer = '';
 
         filteredData.forEach(item => {
-            let safeCost = item.costType || '비용정보 없음'; if (safeCost === '해당정보 없음') safeCost = '비용정보 없음';
-            let costBadgeClass = 'badge-info'; if (safeCost.includes('무료')) costBadgeClass = 'badge-free'; else if (safeCost.includes('유료')) costBadgeClass = 'badge-paid';
+            let safeCost = item.costType || '비용정보 없음';
+            if (safeCost === '해당정보 없음') safeCost = '비용정보 없음';
+
+            let costBadgeClass = 'badge-info';
+            if (safeCost.includes('무료')) costBadgeClass = 'badge-free';
+            else if (safeCost.includes('유료')) costBadgeClass = 'badge-paid';
 
             let dateBadges = '';
-            if (item.isTodayOpen) dateBadges += `<span class="badge badge-open">오늘오픈</span> `; 
+            if (item.isTodayOpen) dateBadges += `<span class="badge badge-open">오늘오픈</span> `;
             if (item.isTodayClose) dateBadges += `<span class="badge badge-today">오늘마감</span> `;
             if (item.isTomorrowOpen && !item.isTodayOpen) dateBadges += `<span class="badge badge-open" style="background-color:#ff9800;">내일오픈</span> `;
             if (item.isTomorrowClose && !item.isTodayClose) dateBadges += `<span class="badge badge-close">내일마감</span> `;
 
-            let cardClass = 'card'; let overlayHTML = '';
+            let cardClass = 'card';
+            let overlayHTML = '';
             const statusVal = item['커밍순'] ? item['커밍순'].replace(/\s+/g, '') : '';
-            if (statusVal === '커밍순') { cardClass += ' disabled-card'; overlayHTML = `<div class="status-overlay"><div class="status-stamp">COMING SOON</div></div>`; } 
-            else if (statusVal === '마감') { cardClass += ' disabled-card'; overlayHTML = `<div class="status-overlay"><div class="status-stamp closed">마감</div></div>`; }
+            if (statusVal === '커밍순') {
+                cardClass += ' disabled-card';
+                overlayHTML = `<div class="status-overlay"><div class="status-stamp">COMING SOON</div></div>`;
+            } else if (statusVal === '마감') {
+                cardClass += ' disabled-card';
+                overlayHTML = `<div class="status-overlay"><div class="status-stamp closed">마감</div></div>`;
+            }
 
             const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
             const isSaved = savedEvents.includes(eventUniqueId);
 
-            // 💡 북마크 아이콘(저장)으로 변경 적용
             const cardHTML = `
                 <div class="${cardClass}" id="card-${eventUniqueId}" onclick="openEventPopup('${eventUniqueId}')">
                     ${overlayHTML}
@@ -638,55 +884,52 @@
                             ${dateBadges}
                             <span class="badge badge-loc">${item.loc || ''}</span>
                             <span class="badge badge-age">${item.age || ''}</span>
-                            <span class="badge ${costBadgeClass}">${safeCost}</span> 
+                            <span class="badge ${costBadgeClass}">${safeCost}</span>
                         </div>
                     </div>
                     <div class="card-title-row">
                         <h2 class="title">${item.title || ''} ${item.isNew ? `<span class="card-new-badge">N</span>` : ''}</h2>
-                        
+
                         <div class="card-action-area">
                             <div class="card-action-top">
                                 <button class="btn-save ${isSaved ? 'saved' : ''}" onclick="toggleSave(event, '${eventUniqueId}')" title="저장하기">
                                     <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
                                 </button>
-                                
+
                                 <span class="view-count" title="조회수">
                                     <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-                                    <span id="view-count-${eventUniqueId}">-</span>
+                                    <span id="view-count-${eventUniqueId}">...</span>
                                 </span>
                             </div>
                             <span class="card-more-text">+ 더보기</span>
                         </div>
-                        
                     </div>
                 </div>
             `;
             htmlBuffer += cardHTML;
         });
 
-        // 한 번에 DOM에 삽입
         container.innerHTML = htmlBuffer;
 
-        // 💡 대기열(Queue) 함수를 호출하여 순차적으로 조회수 데이터 연동 실행
         fetchAllViewCountsSequentially(filteredData);
     }
 
-    function openEventPopup(eventId) {
+    async function openEventPopup(eventId) {
         const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
         if (!item) return;
 
-        const safeId = encodeURIComponent(eventId);
-        fetch(`https://api.counterapi.dev/v1/heycheongju_v1/event_${safeId}/up`)
-            .then(res => res.json())
-            .then(data => {
-                const countElem = document.getElementById(`view-count-${eventId}`);
-                if (countElem) countElem.innerText = data.count; 
-            }).catch(e => console.log('조회수 카운트 에러'));
+        try {
+            const newCount = await upCounterValue('heycheongju_v1', `event_${eventId}`);
+            const countElem = document.getElementById(`view-count-${eventId}`);
+            if (countElem) countElem.innerText = String(newCount);
+        } catch (e) {
+            console.log('조회수 카운트 에러', e);
+        }
 
         document.getElementById('popupTitle').innerHTML = `${item.title || ''} ${item.isNew ? `<span class="card-new-badge">N</span>` : ''}`;
         document.getElementById('popupShareBtn').setAttribute('onclick', `sharePopupLink('${eventId}')`);
 
-        let applyTextStyle = 'color:var(--text-sub);'; 
+        let applyTextStyle = 'color:var(--text-sub);';
         if (item.isTodayClose) applyTextStyle = 'color:#E53935; font-weight:700;';
 
         document.getElementById('popupBody').innerHTML = `
@@ -697,28 +940,43 @@
             ${item.applyNote ? `<div class="info-row"><div class="info-label">참고사항</div><div class="info-desc" style="font-weight:bold; color:var(--text-main);">${item.applyNote}</div></div>` : ''}
         `;
 
-        let btnDetails = ''; const detailUrl = item.link || item['링크'];
+        let btnDetails = '';
+        const detailUrl = item.link || item['링크'];
         let isImageUrl = false;
+
         if (detailUrl && detailUrl.trim() !== '') {
             const lowerUrl = detailUrl.trim().toLowerCase();
-            isImageUrl = /\.(jpeg|jpg|gif|png|webp)(?:[\?#].*)?$/i.test(lowerUrl) || lowerUrl.includes('drive.google.com/uc?') || lowerUrl.includes('phinf.pstatic.net');
+            isImageUrl =
+                /\.(jpeg|jpg|gif|png|webp)(?:[\?#].*)?$/i.test(lowerUrl) ||
+                lowerUrl.includes('drive.google.com/uc?') ||
+                lowerUrl.includes('phinf.pstatic.net');
         }
 
         if (detailUrl && detailUrl.trim() !== '') {
-            const safeUrl = detailUrl.trim().replace(/"/g, '&quot;'); const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-            if (isImageUrl) btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">관련 사이트 🖼️</button>`;
-            else btnDetails = `<a href="${safeUrl}" onclick="trackEventAndOpen(event, '${safeUrl}', '${trackTitle}', 'detail')" class="btn-link">관련 사이트 🔗</a>`;
+            const safeUrl = detailUrl.trim().replace(/"/g, '&quot;');
+            const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            if (isImageUrl) {
+                btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">관련 사이트 🖼️</button>`;
+            } else {
+                btnDetails = `<a href="${safeUrl}" onclick="trackEventAndOpen(event, '${safeUrl}', '${trackTitle}', 'detail')" class="btn-link">관련 사이트 🔗</a>`;
+            }
         } else {
             btnDetails = `<button type="button" class="btn-link btn-disabled" onclick="alert('등록된 상세정보 링크가 없습니다.');">사이트 정보 없음</button>`;
         }
 
-        let btnApply = ''; const rawApplyValue = item['신청링크'] || item.applyLink; 
+        let btnApply = '';
+        const rawApplyValue = item['신청링크'] || item.applyLink;
+
         if (rawApplyValue && rawApplyValue.trim() !== '') {
-            const cleanValue = rawApplyValue.trim(); const safeApplyValue = cleanValue.replace(/"/g, '&quot;');
-            const alertSafeValue = cleanValue.replace(/'/g, "\\'").replace(/"/g, '\\"'); const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const cleanValue = rawApplyValue.trim();
+            const safeApplyValue = cleanValue.replace(/"/g, '&quot;');
+            const alertSafeValue = cleanValue.replace(/'/g, "\\'").replace(/"/g, '\\"');
+            const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
             const isUrl = /^(https?:\/\/|www\.|javascript:)/i.test(cleanValue);
+
             if (isUrl) {
-                let actualUrl = safeApplyValue; if (cleanValue.toLowerCase().startsWith('www.')) actualUrl = `http://${safeApplyValue}`;
+                let actualUrl = safeApplyValue;
+                if (cleanValue.toLowerCase().startsWith('www.')) actualUrl = `http://${safeApplyValue}`;
                 btnApply = `<a href="${actualUrl}" onclick="trackEventAndOpen(event, '${actualUrl}', '${trackTitle}', 'apply')" class="btn-link">예약하기 🔗</a>`;
             } else {
                 btnApply = `<button type="button" class="btn-link btn-disabled" onclick="alert('${alertSafeValue}');">${safeApplyValue}</button>`;
@@ -729,7 +987,7 @@
 
         document.getElementById('popupFooter').innerHTML = `${btnDetails}${btnApply}`;
         document.getElementById('eventModal').classList.add('active');
-        
+
         try {
             history.pushState({ eventPopup: true }, '', '?id=' + encodeURIComponent(eventId));
         } catch (e) {
@@ -745,7 +1003,12 @@
         } catch (e) {}
     }
 
-    document.addEventListener('DOMContentLoaded', () => { initNotice(); initLastUpdated(); initVisitCounters(); fetchEventData(); });
+    document.addEventListener('DOMContentLoaded', () => {
+        initNotice();
+        initLastUpdated();
+        initVisitCounters();
+        fetchEventData();
+    });
 </script>
 </body>
 </html>
