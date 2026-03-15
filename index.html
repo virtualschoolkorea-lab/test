@@ -18,9 +18,10 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-HGXPJ0KLHD');
     </script>
+
+    <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" integrity="sha384-TiCmbV6AUn872m59///ZoJzibO121X7AokHto4ZzKk4108H8h5AIfwZk0JkL4xAO" crossorigin="anonymous"></script>
 
     <style>
         :root {
@@ -32,12 +33,21 @@
             --border-color: #e0e0e0;
         }
         body { font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; display: flex; justify-content: center; }
-        .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; }
-        .sticky-wrapper { position: sticky; top: 0; z-index: 100; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; }
+        .sticky-wrapper { position: sticky; top: 0; z-index: 100; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: inherit; }
 
-        header { background-color: var(--primary-color); color: white; padding: 15px 16px 4px 16px; display: flex; flex-direction: column; }
-        h1 { margin: 0; font-size: 1.5rem; font-weight: 700; text-align: center; }
-        .sub-header { font-size: 0.7rem; opacity: 0.85; margin-top: 4px; text-align: center; }
+        header { background-color: var(--primary-color); color: white; padding: 15px 16px 4px 16px; display: flex; flex-direction: column; border-radius: inherit; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+        
+        /* 헤더 상단 (제목 + 로그인 버튼) */
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+        h1 { margin: 0; font-size: 1.35rem; font-weight: 700; }
+        
+        /* 카카오 로그인 버튼 */
+        .btn-kakao-login { background-color: #FEE500; color: #000000; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: opacity 0.2s; }
+        .btn-kakao-login:hover { opacity: 0.9; }
+        .btn-kakao-login svg { width: 14px; height: 14px; fill: currentColor; }
+
+        .sub-header { font-size: 0.7rem; opacity: 0.85; margin-top: 4px; }
         .header-action-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 1px; margin-bottom: 8px; }
         .header-stats { display: flex; flex-direction: column; font-size: 0.7rem; line-height: 1.3; opacity: 0.95; }
         .header-stats span { font-weight: 700; color: #fff; margin-left: 5px; }
@@ -71,7 +81,19 @@
 
         .content { padding: 15px; }
         
-        /* 카드 기본 스타일 */
+        /* PC 버전 최적화 (반응형 Grid) */
+        @media (min-width: 768px) {
+            body { padding: 20px 0; background-color: #e9ecef; }
+            .app-container { max-width: 1000px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; }
+            header { border-radius: 16px 16px 0 0; padding: 20px 24px 10px 24px; }
+            .sticky-wrapper { border-radius: 16px 16px 0 0; }
+            
+            /* 카드를 바둑판 모양으로 배치 */
+            #list-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 16px; align-items: start; }
+            .card { margin-bottom: 0; height: 100%; display: flex; flex-direction: column; }
+            .card-title-row { margin-top: auto; padding-top: 10px; }
+        }
+
         .card { background: var(--card-bg); border-radius: 12px; padding: 16px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--border-color); display: block; transition: transform 0.2s; cursor: pointer; }
         .card:not(.disabled-card):hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
         .card.disabled-card { position: relative; overflow: hidden; pointer-events: none; user-select: none; }
@@ -91,43 +113,42 @@
         .badge-open { background-color: #2ecc71; }  
         .badge-close { background-color: #F06292; } 
         
-        /* 추가된 카드 텍스트 레이아웃 */
-        .card-title-row { display: flex; justify-content: space-between; align-items: center; }
+        .card-title-row { display: flex; justify-content: space-between; align-items: flex-end; }
         .card-title-row .title { font-size: 1.05rem; font-weight: 700; margin: 0; line-height: 1.4; word-break: keep-all; flex: 1; }
-        .card-more-text { font-size: 0.85rem; color: #999; font-weight: 600; white-space: nowrap; margin-left: 12px; }
-
-        .info-row { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 8px; display: flex; align-items: flex-start; }
-        .info-label { font-weight: 600; width: 60px; flex-shrink: 0; color: #555; line-height: 1.4; }
-        .info-desc { flex: 1; word-break: keep-all; line-height: 1.4; }
         
-        .btn-group { display: flex; gap: 8px; margin-top: 10px; }
-        .btn-link { display: block; text-align: center; background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); text-decoration: none; padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; font-weight: 700; margin-top: 10px; transition: all 0.2s; box-sizing: border-box; cursor: pointer; font-family: inherit; width: 100%; }
-        .btn-group .btn-link { flex: 1; margin-top: 0; font-size: 0.8rem; padding: 8px 2px; }
-        .btn-link:hover { background-color: #388E3C; }
+        /* 액션 영역: 하트 -> 눈(조회수) -> 더보기 */
+        .card-action-area { display: flex; align-items: center; gap: 6px; margin-left: 10px; flex-shrink: 0; }
         
-        .btn-disabled { background-color: #f2f2f2 !important; color: #888 !important; border: 1px solid #ddd !important; cursor: default !important; pointer-events: auto; }
-        .btn-disabled:hover { background-color: #f2f2f2 !important; }
+        .btn-like { background: none; border: none; padding: 2px; cursor: pointer; color: #ddd; transition: all 0.2s; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        .btn-like:hover { transform: scale(1.1); }
+        .btn-like.liked { color: #E53935; }
+        .btn-like svg { width: 18px; height: 18px; fill: currentColor; }
 
-        .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; }
-        .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; }
+        .view-count { display: flex; align-items: center; gap: 3px; font-size: 0.75rem; color: #aaa; font-weight: 500; }
+        .view-count svg { width: 15px; height: 15px; fill: currentColor; }
 
-        /* 이미지 모달 팝업 스타일 */
+        .card-more-text { font-size: 0.7rem; color: #999; font-weight: 500; white-space: nowrap; margin-left: 4px; }
+
+        .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; grid-column: 1 / -1; }
+        .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; grid-column: 1 / -1; }
+
+        /* 모달 스타일 (동일하게 유지) */
         .img-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; }
         .img-modal-overlay.active { display: flex; opacity: 1; }
         .img-modal-content { max-width: 90%; max-height: 85vh; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); object-fit: contain; }
         .img-modal-close { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.9); color: #111; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 1.5rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
 
-        /* 이벤트 상세 팝업 모달 스타일 */
         .event-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; transition: opacity 0.3s; padding-bottom: 20px; box-sizing: border-box;}
         .event-modal-overlay.active { display: flex; opacity: 1; }
         .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: 85vh; border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px; }
-        .event-modal-overlay.active .event-modal-content-box { transform: translateY(0); }
+        @media (min-width: 768px) {
+            .event-modal-overlay { align-items: center; padding-bottom: 0; }
+            .event-modal-content-box { border-radius: 16px; transform: scale(0.95); opacity: 0; transition: all 0.2s ease-out; }
+            .event-modal-overlay.active .event-modal-content-box { transform: scale(1); opacity: 1; }
+        }
+        
         .event-modal-header { padding: 16px 20px; position: relative; border-bottom: 1px solid #eee; display: flex; align-items: center; }
-        
-        /* 팝업 헤더 제목: 한줄로 줄이기 */
         .event-modal-title { font-size: 1.1rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 70px; margin: 0; line-height: 1.5; flex: 1;}
-        
-        /* 공유 및 닫기 버튼 */
         .event-modal-share-btn { position: absolute; top: 50%; right: 48px; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #666; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s; padding: 4px; }
         .event-modal-share-btn:hover { background: #f0f0f0; }
         .event-modal-share-btn svg { width: 100%; height: 100%; fill: currentColor; }
@@ -136,8 +157,15 @@
         .event-modal-close-btn:hover { background: #f0f0f0; }
 
         .event-modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+        .info-row { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 8px; display: flex; align-items: flex-start; }
+        .info-label { font-weight: 600; width: 60px; flex-shrink: 0; color: #555; line-height: 1.4; }
+        .info-desc { flex: 1; word-break: keep-all; line-height: 1.4; }
+
         .event-modal-footer { padding: 15px 20px; border-top: 1px solid #eee; background: #fafafa; display: flex; gap: 10px; }
-        .event-modal-footer .btn-link { flex: 1; margin: 0; padding: 12px 0; font-size: 1rem; }
+        .btn-link { display: block; text-align: center; background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); text-decoration: none; padding: 12px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; transition: all 0.2s; box-sizing: border-box; cursor: pointer; font-family: inherit; width: 100%; flex: 1; margin: 0; }
+        .btn-link:hover { background-color: #388E3C; }
+        .btn-disabled { background-color: #f2f2f2 !important; color: #888 !important; border: 1px solid #ddd !important; cursor: default !important; pointer-events: auto; }
+        .btn-disabled:hover { background-color: #f2f2f2 !important; }
     </style>
 </head>
 <body>
@@ -145,7 +173,13 @@
 <div class="app-container">
     <div class="sticky-wrapper">
         <header id="app-header">
-            <h1>헤이청주 📢 교육/체험 링크모음</h1>
+            <div class="header-top">
+                <h1>헤이청주 📢 교육/체험</h1>
+                <button class="btn-kakao-login" onclick="loginWithKakao()">
+                    <svg viewBox="0 0 24 24"><path d="M12 3c-5.5 0-10 3.5-10 7.8 0 2.8 1.9 5.2 4.7 6.6l-1 3.8c-.1.4.3.7.6.5l4.5-3c.4 0 .8.1 1.2.1 5.5 0 10-3.5 10-7.8C22 6.5 17.5 3 12 3z"/></svg>
+                    카카오 로그인
+                </button>
+            </div>
             <div class="sub-header" id="last-updated-text">최근 업데이트: 계산중...</div>
             <div class="header-action-row">
                 <div class="header-stats">
@@ -164,11 +198,11 @@
             <input type="text" id="search-input" class="search-input" placeholder="검색어를 입력하세요 (예: 도서관, 과학, 공연)" onkeyup="applyFilters()">
         </div>
 
-    <div class="tabs">
-        <div class="tab" onclick="changeTab(this, 'ongoing')">사전예약 중</div>
-        <div class="tab" onclick="changeTab(this, 'always')">상시/현장접수</div>
-        <div class="tab active" onclick="changeTab(this, 'affiliate')">제휴/이벤트</div>
-    </div>
+        <div class="tabs">
+            <div class="tab" onclick="changeTab(this, 'ongoing')">사전예약 중</div>
+            <div class="tab" onclick="changeTab(this, 'always')">상시/현장접수</div>
+            <div class="tab active" onclick="changeTab(this, 'affiliate')">제휴/이벤트</div>
+        </div>
         
         <div class="filter-wrapper">
             <div class="checkbox-group" id="combined-filter-group" onscroll="handleFilterScroll(this)"></div>
@@ -195,14 +229,43 @@
             </button>
             <button class="event-modal-close-btn" onclick="closeEventPopup()">×</button>
         </div>
-        <div class="event-modal-body" id="popupBody">
-            </div>
-        <div class="event-modal-footer" id="popupFooter">
-            </div>
+        <div class="event-modal-body" id="popupBody"></div>
+        <div class="event-modal-footer" id="popupFooter"></div>
     </div>
 </div>
 
 <script>
+    // 카카오 SDK 초기화 (여기에 본인의 앱 키를 넣으세요!)
+    // [중요] 카카오 디벨로퍼스 -> 내 애플리케이션 -> 요약 정보 -> 'JavaScript 키'
+    Kakao.init('YOUR_KAKAO_JAVASCRIPT_KEY'); 
+
+    // 카카오 로그인 함수
+    function loginWithKakao() {
+        if (!Kakao.isInitialized()) {
+            alert('개발자님, 코드 하단의 Kakao.init() 에 JavaScript 키를 입력해주세요!');
+            return;
+        }
+        Kakao.Auth.login({
+            success: function(authObj) {
+                // 로그인 성공 시 유저 정보 가져오기
+                Kakao.API.request({
+                    url: '/v2/user/me',
+                    success: function(res) {
+                        const nickname = res.kakao_account.profile.nickname;
+                        alert(nickname + '님 환영합니다!\n(현재는 로그인 UI 테스트 모드입니다.)');
+                        // 추후 이곳에 로그인 상태로 화면을 변경하는 로직을 추가할 수 있습니다.
+                    },
+                    fail: function(error) {
+                        alert('사용자 정보 요청 실패');
+                    }
+                });
+            },
+            fail: function(err) {
+                alert('로그인 실패: 사용자가 취소했거나 오류가 발생했습니다.');
+            }
+        });
+    }
+
     const noticeData = [
         { text: "[⚡내일오픈/마감,긴급정보 실시간 알림 오픈챗 입장하기👆] ", link: "https://open.kakao.com/o/gAUqOrai" },
         { text: "[헤이청주에 ☎️ 협업문의/제안/건의하기] 👆", link: "https://forms.gle/h8KLaLkfsU55aH5T9" },
@@ -242,31 +305,31 @@
         } catch (e) { document.getElementById('count-total').innerText = '-'; document.getElementById('count-today').innerText = '-'; }
     }
 
+    // [신규] 개별 카드의 조회수를 불러오는 함수
+    async function fetchCardViewCount(eventId) {
+        try {
+            const res = await fetch(`https://api.counterapi.dev/v1/heycheongju_v1/event_${eventId}`);
+            const data = await res.json();
+            const countElem = document.getElementById(`view-count-${eventId}`);
+            if (countElem) countElem.innerText = data.count || 0;
+        } catch (e) {
+            // 실패하더라도 에러를 내지 않고 조용히 넘어갑니다.
+        }
+    }
+
     function trackEventAndOpen(e, url, title, btnType) {
         if(e) e.preventDefault(); 
-        
         if (title) {
             const actionName = (btnType === 'detail') ? '상세보기_클릭' : '신청하기_클릭';
-            gtag('event', actionName, {
-                'event_category': '버튼클릭',
-                'event_label': title,
-                'transport_type': 'beacon'
-            });
+            gtag('event', actionName, { 'event_category': '버튼클릭', 'event_label': title, 'transport_type': 'beacon' });
         }
-
-        setTimeout(() => {
-            window.open(url, '_blank');
-        }, 200);
+        setTimeout(() => { window.open(url, '_blank'); }, 200);
     }
 
     function trackEventClick(title, btnType) {
         if (!title) return;
         const actionName = (btnType === 'detail') ? '상세보기_클릭' : '신청하기_클릭';
-        gtag('event', actionName, {
-            'event_category': '버튼클릭',
-            'event_label': title,
-            'transport_type': 'beacon'
-        });
+        gtag('event', actionName, { 'event_category': '버튼클릭', 'event_label': title, 'transport_type': 'beacon' });
     }
 
     function sharePage() {
@@ -274,24 +337,34 @@
         if (navigator.share) navigator.share(shareData).catch(console.error); else navigator.clipboard.writeText(window.location.href).then(() => alert('링크가 복사되었습니다!'));
     }
 
-    // 팝업 개별 공유 기능
     function sharePopupLink(eventId) {
         const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
         const shareUrl = window.location.origin + window.location.pathname + '?id=' + eventId;
-        const shareData = { 
-            title: item ? item.title : '헤이청주 일정 공유', 
-            text: '이 행사 어때요? 일정을 확인해보세요!', 
-            url: shareUrl 
-        };
-        
-        if (navigator.share) {
-            navigator.share(shareData).catch(console.error); 
-        } else {
-            navigator.clipboard.writeText(shareUrl).then(() => alert('팝업 링크가 복사되었습니다!\n원하는 곳에 붙여넣기 해주세요.'));
-        }
+        const shareData = { title: item ? item.title : '헤이청주 일정 공유', text: '이 행사 어때요? 일정을 확인해보세요!', url: shareUrl };
+        if (navigator.share) navigator.share(shareData).catch(console.error); 
+        else navigator.clipboard.writeText(shareUrl).then(() => alert('팝업 링크가 복사되었습니다!\n원하는 곳에 붙여넣기 해주세요.'));
     }
 
-    // 이미지 모달 팝업 제어
+    function getLikedEvents() {
+        try { return JSON.parse(localStorage.getItem('heycheongju_likes')) || []; } 
+        catch (e) { return []; }
+    }
+    
+    function toggleLike(e, eventId) {
+        e.stopPropagation(); 
+        let likes = getLikedEvents();
+        const btn = e.currentTarget;
+        
+        if (likes.includes(eventId)) {
+            likes = likes.filter(id => id !== eventId);
+            btn.classList.remove('liked');
+        } else {
+            likes.push(eventId);
+            btn.classList.add('liked');
+        }
+        localStorage.setItem('heycheongju_likes', JSON.stringify(likes));
+    }
+
     const imgModal = document.getElementById('imageModal');
     const modalImg = document.getElementById('imageModalImg');
     
@@ -306,7 +379,6 @@
         if (e.target && e.target.classList.contains('btn-img-modal')) {
             const url = e.target.getAttribute('data-url');
             const title = e.target.getAttribute('data-title');
-            
             modalImg.src = url;
             imgModal.classList.add('active');
             trackEventClick(title, 'detail');
@@ -329,20 +401,29 @@
             if (!response.ok) throw new Error("네트워크 응답이 올바르지 않습니다.");
             const csvText = await response.text();
             eventData = parseCSVToJSON(csvText);
-            processEventDates(); processEventAges(); generateFilters(); processNewItems(); updateTabNewBadges(); applyFilters();
-
-            // 주소창의 파라미터를 읽어와 특정 팝업을 바로 띄움 + 스크롤 이동
+            processEventDates(); processEventAges(); generateFilters(); processNewItems(); updateTabNewBadges(); 
+            
             const urlParams = new URLSearchParams(window.location.search);
             const eventId = urlParams.get('id') || urlParams.get('event');
+            
             if (eventId !== null) {
-                // DOM 렌더링 후 원활한 스크롤 이동을 위해 약간의 지연 처리
+                const targetItem = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
+                if (targetItem && targetItem.type) {
+                    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+                    const targetTabElem = document.querySelector(`.tab[onclick*="${targetItem.type}"]`);
+                    if(targetTabElem) targetTabElem.classList.add('active');
+                    currentTab = targetItem.type;
+                }
+            }
+
+            applyFilters();
+
+            if (eventId !== null) {
                 setTimeout(() => {
                     const targetCard = document.getElementById('card-' + eventId);
-                    if (targetCard) {
-                        targetCard.scrollIntoView({ behavior: 'auto', block: 'center' });
-                    }
+                    if (targetCard) targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     openEventPopup(eventId);
-                }, 100);
+                }, 300);
             }
 
         } catch (error) { document.getElementById('list-container').innerHTML = '<div class="empty-state">행사 정보를 불러오는데 실패했습니다. 새로고침을 해주세요. 😥</div>'; }
@@ -440,46 +521,27 @@
         if (!dateStr) return 0;
         let s = String(dateStr).trim();
         let match = s.match(/(\d{4})[./-]\s*(\d{1,2})[./-]\s*(\d{1,2})(?:[.\s]+(?:오전|오후|AM|PM)?\s*(\d{1,2})[:시]\s*(\d{1,2}))?/i);
-
         if (match) {
-            let year = parseInt(match[1], 10);
-            let month = parseInt(match[2], 10) - 1;
-            let day = parseInt(match[3], 10);
-            let hour = match[4] ? parseInt(match[4], 10) : 0;
-            let minute = match[5] ? parseInt(match[5], 10) : 0;
-
-            if (s.includes('오후') || s.toUpperCase().includes('PM')) {
-                if (hour < 12) hour += 12;
-            }
-            if ((s.includes('오전') || s.toUpperCase().includes('AM')) && hour === 12) {
-                hour = 0;
-            }
+            let year = parseInt(match[1], 10); let month = parseInt(match[2], 10) - 1; let day = parseInt(match[3], 10);
+            let hour = match[4] ? parseInt(match[4], 10) : 0; let minute = match[5] ? parseInt(match[5], 10) : 0;
+            if (s.includes('오후') || s.toUpperCase().includes('PM')) { if (hour < 12) hour += 12; }
+            if ((s.includes('오전') || s.toUpperCase().includes('AM')) && hour === 12) { hour = 0; }
             return new Date(year, month, day, hour, minute).getTime();
         }
-
         let parsed = new Date(s).getTime();
         return isNaN(parsed) ? 0 : parsed;
     }
 
     function processNewItems() {
-        const now = Date.now(); 
-        const ONE_DAY = 24 * 60 * 60 * 1000; 
-        
+        const now = Date.now(); const ONE_DAY = 24 * 60 * 60 * 1000; 
         eventData.forEach((item, index) => {
-            item.originalIndex = index;
-            item.isNew = false;
-            
+            item.originalIndex = index; item.isNew = false;
             const regDateMs = parseRegDate(item['등록일']);
             if (regDateMs > 0) {
                 const timeDiff = now - regDateMs;
-                if (timeDiff >= -ONE_DAY && timeDiff <= ONE_DAY) {
-                    item.isNew = true;
-                }
+                if (timeDiff >= -ONE_DAY && timeDiff <= ONE_DAY) item.isNew = true;
             }
-
-            if (item['N숨김'] === 'O' || item['N숨김'] === 'o') {
-                item.isNew = false;
-            }
+            if (item['N숨김'] === 'O' || item['N숨김'] === 'o') item.isNew = false;
         });
     }
 
@@ -497,7 +559,6 @@
     function applyFilters() {
         const selectedLocs = Array.from(document.querySelectorAll('.loc-cb:checked')).map(cb => cb.value); const selectedAges = Array.from(document.querySelectorAll('.age-cb:checked')).map(cb => cb.value);
         const keyword = document.getElementById('search-input').value.trim().toLowerCase(); const container = document.getElementById('list-container'); container.innerHTML = '';
-
         if (eventData.length === 0) return;
 
         let filteredData = eventData.filter(item => {
@@ -512,29 +573,20 @@
         if (currentTab === 'ongoing' || keyword) {
             filteredData.sort((a, b) => {
                 if (a.isNew !== b.isNew) return b.isNew ? 1 : -1;
-
                 const getPriority = (item) => {
-                    if (item.isTodayOpen) return 1;
-                    if (item.isTodayClose) return 2;
-                    if (item.isTomorrowClose) return 3;
-                    return 4;
+                    if (item.isTodayOpen) return 1; if (item.isTodayClose) return 2; if (item.isTomorrowClose) return 3; return 4;
                 };
-
-                const pA = getPriority(a);
-                const pB = getPriority(b);
-
+                const pA = getPriority(a); const pB = getPriority(b);
                 if (pA !== pB) return pA - pB;
-                
                 return parseDateValue(a.applyEnd) - parseDateValue(b.applyEnd); 
             });
         } else if (currentTab === 'always' || currentTab === 'affiliate') {
-            filteredData.sort((a, b) => { 
-                if (a.isNew !== b.isNew) return b.isNew ? 1 : -1;
-                return a.originalIndex - b.originalIndex; 
-            });
+            filteredData.sort((a, b) => { if (a.isNew !== b.isNew) return b.isNew ? 1 : -1; return a.originalIndex - b.originalIndex; });
         }
 
         if (filteredData.length === 0) { container.innerHTML = '<div class="empty-state">해당하는 행사가 없습니다. 조건이나 검색어를 변경해 보세요! 😥</div>'; return; }
+
+        const likedEvents = getLikedEvents();
 
         filteredData.forEach(item => {
             let safeCost = item.costType || '비용정보 없음'; if (safeCost === '해당정보 없음') safeCost = '비용정보 없음';
@@ -551,10 +603,12 @@
             if (statusVal === '커밍순') { cardClass += ' disabled-card'; overlayHTML = `<div class="status-overlay"><div class="status-stamp">COMING SOON</div></div>`; } 
             else if (statusVal === '마감') { cardClass += ' disabled-card'; overlayHTML = `<div class="status-overlay"><div class="status-stamp closed">마감</div></div>`; }
 
-            // 구글시트의 'ID'열(없으면 '고유번호', 둘다 없으면 기존 originalIndex 사용) 추출
-            const eventUniqueId = item['ID'] || item['id'] || item['고유번호'] || item.originalIndex;
+            const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
+            const isLiked = likedEvents.includes(eventUniqueId);
 
-            // 상세정보 제거하고 배지와 제목, +더보기만 출력하는 카드 디자인으로 변경됨 (id 부여)
+            // 각 카드가 렌더링될 때 개별 조회수를 비동기로 불러와서 채워 넣음
+            fetchCardViewCount(eventUniqueId);
+
             const cardHTML = `
                 <div class="${cardClass}" id="card-${eventUniqueId}" onclick="openEventPopup('${eventUniqueId}')">
                     ${overlayHTML}
@@ -568,7 +622,18 @@
                     </div>
                     <div class="card-title-row">
                         <h2 class="title">${item.title || ''} ${item.isNew ? `<span class="card-new-badge">N</span>` : ''}</h2>
-                        <div class="card-more-text">+ 더보기</div>
+                        
+                        <div class="card-action-area">
+                            <button class="btn-like ${isLiked ? 'liked' : ''}" onclick="toggleLike(event, '${eventUniqueId}')" title="찜하기">
+                                <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                            </button>
+                            <span class="view-count" title="조회수">
+                                <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                                <span id="view-count-${eventUniqueId}">-</span>
+                            </span>
+                            <span class="card-more-text">+ 더보기</span>
+                        </div>
+                        
                     </div>
                 </div>
             `;
@@ -576,21 +641,24 @@
         });
     }
 
-    // 이벤트 팝업 열기 함수
     function openEventPopup(eventId) {
         const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
         if (!item) return;
 
-        // 팝업 헤더 제목 삽입 (길면 말줄임 처리됨)
+        // 팝업 열릴 때 API를 호출해서 조회수 1 증가시키기
+        fetch(`https://api.counterapi.dev/v1/heycheongju_v1/event_${eventId}/up`)
+            .then(res => res.json())
+            .then(data => {
+                const countElem = document.getElementById(`view-count-${eventId}`);
+                if (countElem) countElem.innerText = data.count; // 올라간 조회수로 업데이트
+            }).catch(e => console.log('조회수 카운트 에러'));
+
         document.getElementById('popupTitle').innerHTML = `${item.title || ''} ${item.isNew ? `<span class="card-new-badge">N</span>` : ''}`;
-        
-        // 헤더 우측 공유 버튼 클릭 이벤트 할당
         document.getElementById('popupShareBtn').setAttribute('onclick', `sharePopupLink('${eventId}')`);
 
         let applyTextStyle = 'color:var(--text-sub);'; 
         if (item.isTodayClose) applyTextStyle = 'color:#E53935; font-weight:700;';
 
-        // 항목명 변경: 접수기간 -> 접수, 운영일정 -> 일정
         document.getElementById('popupBody').innerHTML = `
             <div class="info-row"><div class="info-label">장소</div><div class="info-desc">${item.place || '정보 없음'}</div></div>
             <div class="info-row"><div class="info-label">비용</div><div class="info-desc">${item.costType || '정보 없음'}</div></div>
@@ -599,9 +667,7 @@
             ${item.applyNote ? `<div class="info-row"><div class="info-label">참고사항</div><div class="info-desc" style="font-weight:bold; color:var(--text-main);">${item.applyNote}</div></div>` : ''}
         `;
 
-        // 버튼명 변경: '관련 사이트'
-        let btnDetails = '';
-        const detailUrl = item.link || item['링크'];
+        let btnDetails = ''; const detailUrl = item.link || item['링크'];
         let isImageUrl = false;
         if (detailUrl && detailUrl.trim() !== '') {
             const lowerUrl = detailUrl.trim().toLowerCase();
@@ -609,30 +675,20 @@
         }
 
         if (detailUrl && detailUrl.trim() !== '') {
-            const safeUrl = detailUrl.trim().replace(/"/g, '&quot;');
-            const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-            if (isImageUrl) {
-                btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">관련 사이트 🖼️</button>`;
-            } else {
-                btnDetails = `<a href="${safeUrl}" onclick="trackEventAndOpen(event, '${safeUrl}', '${trackTitle}', 'detail')" class="btn-link">관련 사이트 🔗</a>`;
-            }
+            const safeUrl = detailUrl.trim().replace(/"/g, '&quot;'); const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            if (isImageUrl) btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">관련 사이트 🖼️</button>`;
+            else btnDetails = `<a href="${safeUrl}" onclick="trackEventAndOpen(event, '${safeUrl}', '${trackTitle}', 'detail')" class="btn-link">관련 사이트 🔗</a>`;
         } else {
             btnDetails = `<button type="button" class="btn-link btn-disabled" onclick="alert('등록된 상세정보 링크가 없습니다.');">사이트 정보 없음</button>`;
         }
 
-        // 예약 버튼
-        let btnApply = '';
-        const rawApplyValue = item['신청링크'] || item.applyLink; 
+        let btnApply = ''; const rawApplyValue = item['신청링크'] || item.applyLink; 
         if (rawApplyValue && rawApplyValue.trim() !== '') {
-            const cleanValue = rawApplyValue.trim();
-            const safeApplyValue = cleanValue.replace(/"/g, '&quot;');
-            const alertSafeValue = cleanValue.replace(/'/g, "\\'").replace(/"/g, '\\"');
-            const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const cleanValue = rawApplyValue.trim(); const safeApplyValue = cleanValue.replace(/"/g, '&quot;');
+            const alertSafeValue = cleanValue.replace(/'/g, "\\'").replace(/"/g, '\\"'); const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
             const isUrl = /^(https?:\/\/|www\.|javascript:)/i.test(cleanValue);
-
             if (isUrl) {
-                let actualUrl = safeApplyValue;
-                if (cleanValue.toLowerCase().startsWith('www.')) actualUrl = `http://${safeApplyValue}`;
+                let actualUrl = safeApplyValue; if (cleanValue.toLowerCase().startsWith('www.')) actualUrl = `http://${safeApplyValue}`;
                 btnApply = `<a href="${actualUrl}" onclick="trackEventAndOpen(event, '${actualUrl}', '${trackTitle}', 'apply')" class="btn-link">예약하기 🔗</a>`;
             } else {
                 btnApply = `<button type="button" class="btn-link btn-disabled" onclick="alert('${alertSafeValue}');">${safeApplyValue}</button>`;
@@ -642,13 +698,10 @@
         }
 
         document.getElementById('popupFooter').innerHTML = `${btnDetails}${btnApply}`;
-
-        // 팝업 표시 및 주소창 URL 변경 (?id=고유값)
         document.getElementById('eventModal').classList.add('active');
         history.pushState({ eventPopup: true }, '', '?id=' + eventId);
     }
 
-    // 이벤트 팝업 닫기 함수
     function closeEventPopup(e) {
         if (e && e.target !== e.currentTarget && !e.target.classList.contains('event-modal-close-btn')) return;
         document.getElementById('eventModal').classList.remove('active');
