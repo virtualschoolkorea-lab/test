@@ -33,10 +33,9 @@
             --text-sub: #666666;
             --border-color: #e0e0e0;
         }
-        body { font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; display: flex; justify-content: center; padding-top: 40px; /* 배너 높이만큼 축소 */ }
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; display: flex; justify-content: center; padding-top: 40px; }
         .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; }
         
-        /* 🌟 배너 상시 고정 (높이 축소 40px) 🌟 */
         .promo-area-wrap {
             position: fixed;
             top: 0;
@@ -65,21 +64,20 @@
 
         .sticky-wrapper { position: sticky; top: 40px; z-index: 100; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: inherit; }
 
-        /* 🌟 헤더 여백 및 간격 조정 🌟 */
         header { background-color: var(--primary-color); color: white; padding: 12px 16px 8px 16px; display: flex; flex-direction: column; border-radius: inherit; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
 
         h1 { margin: 0 0 6px 0; font-size: 1.25rem; font-weight: 700; text-align: center; line-height: 1.2; }
-        .sub-header { font-size: 0.65rem; opacity: 0.85; margin: 0 0 8px 0; text-align: center; line-height: 1; } /* 제목과 간격 떨어뜨림 */
+        .sub-header { font-size: 0.65rem; opacity: 0.85; margin: 0 0 8px 0; text-align: center; line-height: 1; } 
 
-        .header-action-row { display: flex; justify-content: space-between; align-items: center; margin-top: 2px; margin-bottom: 8px; }
+        /* 🌟 공유버튼 하단 라인 정렬 및 여백 축소 🌟 */
+        .header-action-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 2px; margin-bottom: 5px; }
         
-        .header-stats { display: flex; flex-direction: row; gap: 12px; font-size: 0.65rem; line-height: 1; opacity: 0.95; align-items: center; }
+        .header-stats { display: flex; flex-direction: row; gap: 12px; font-size: 0.65rem; line-height: 1; opacity: 0.95; align-items: flex-end; margin-bottom: 2px; }
         .header-stats div { display: flex; align-items: baseline; }
         .header-stats span { font-weight: 700; color: #fff; margin-left: 4px; font-size: 0.75rem; }
 
         .header-buttons-row { display: flex; gap: 8px; align-items: center; }
         
-        /* 공유버튼 축소 */
         .btn-share { background: rgba(255, 255, 255, 0.25); border: none; color: white; padding: 4px 8px; border-radius: 20px; cursor: pointer; font-size: 0.65rem; font-weight: 700; display: flex; align-items: center; gap: 4px; transition: background 0.2s; margin: 0; }
         .btn-share:hover { background: rgba(255, 255, 255, 0.35); }
         .btn-share svg { width: 10px; height: 10px; fill: currentColor; }
@@ -122,7 +120,6 @@
             .card-title-row { margin-top: auto; padding-top: 10px; }
         }
 
-        /* 🌟 콘텐츠 카드 콤팩트 세팅 (padding 축소) 🌟 */
         .card { background: var(--card-bg); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--border-color); display: block; transition: transform 0.2s; cursor: pointer; }
         .card:not(.disabled-card):hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
         .card.disabled-card { position: relative; overflow: hidden; pointer-events: none; user-select: none; }
@@ -141,11 +138,9 @@
         .badge-open { background-color: #2ecc71; }
         .badge-close { background-color: #F06292; }
 
-        /* 🌟 조회수를 우측 상단으로 이동 🌟 */
         .view-count { display: flex; align-items: center; gap: 3px; font-size: 0.7rem; color: #aaa; font-weight: 500; flex-shrink: 0; margin-left: 8px; margin-top: 2px; }
         .view-count svg { width: 14px; height: 14px; fill: currentColor; }
 
-        /* 🌟 1줄 제목 세팅 & 더보기 버튼 이동 🌟 */
         .card-title-row { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 2px; }
         .card-title-row .title { font-size: 1rem; font-weight: 700; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; padding-right: 4px; }
         
@@ -175,7 +170,10 @@
         }
 
         .event-modal-header { padding: 16px 20px; position: relative; border-bottom: 1px solid #eee; display: flex; align-items: center; }
-        .event-modal-title { font-size: 1.1rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 70px; margin: 0; line-height: 1.5; flex: 1; }
+        
+        /* 🌟 팝업 제목 생략 없이 여러 줄 출력되도록 수정 🌟 */
+        .event-modal-title { font-size: 1.1rem; font-weight: 700; padding-right: 70px; margin: 0; line-height: 1.4; flex: 1; word-break: keep-all; }
+        
         .event-modal-share-btn { position: absolute; top: 50%; right: 48px; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #666; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s; padding: 4px; }
         .event-modal-share-btn:hover { background: #f0f0f0; }
         .event-modal-share-btn svg { width: 100%; height: 100%; fill: currentColor; }
@@ -819,7 +817,6 @@ const firebaseConfig = {
             let safeCost = item.costType || '';
             let costBadgeHTML = '';
             
-            // 🌟 뱃지 로직 수정: 유료/무료 딱 2글자만 넣고 나머지는 아예 미표기 🌟
             if (safeCost.includes('무료')) {
                 costBadgeHTML = `<span class="badge badge-free">무료</span>`;
             } else if (safeCost.includes('유료')) {
