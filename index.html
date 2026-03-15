@@ -70,7 +70,7 @@
         .filter-cb:checked + .cb-label.age-label { background: #ff9800; border-color: #ff9800; box-shadow: 0 2px 4px rgba(255, 152, 0, 0.3); }
 
         .content { padding: 15px; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 16px 16px 10px 16px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--border-color); display: block; transition: transform 0.2s; }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 16px 16px 10px 16px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--border-color); display: block; transition: transform 0.2s; cursor: pointer; }
         .card:not(.disabled-card):hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
         .card.disabled-card { position: relative; overflow: hidden; pointer-events: none; user-select: none; }
         .status-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.45); z-index: 10; display: flex; align-items: center; justify-content: center; }
@@ -110,6 +110,18 @@
         .img-modal-overlay.active { display: flex; opacity: 1; }
         .img-modal-content { max-width: 90%; max-height: 85vh; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); object-fit: contain; }
         .img-modal-close { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.9); color: #111; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 1.5rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+
+        /* 이벤트 상세 팝업 모달 스타일 */
+        .event-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; transition: opacity 0.3s; padding-bottom: 20px; box-sizing: border-box;}
+        .event-modal-overlay.active { display: flex; opacity: 1; }
+        .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: 85vh; border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px; }
+        .event-modal-overlay.active .event-modal-content-box { transform: translateY(0); }
+        .event-modal-header { padding: 20px 20px 10px 20px; position: relative; border-bottom: 1px solid #eee; }
+        .event-modal-title { font-size: 1.2rem; font-weight: 700; line-height: 1.4; word-break: keep-all; padding-right: 30px; margin: 0; }
+        .event-modal-close-btn { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.8rem; line-height: 1; cursor: pointer; color: #888; }
+        .event-modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+        .event-modal-footer { padding: 15px 20px; border-top: 1px solid #eee; background: #fafafa; display: flex; gap: 10px; }
+        .event-modal-footer .btn-link { flex: 1; margin: 0; padding: 12px 0; font-size: 1rem; }
     </style>
 </head>
 <body>
@@ -158,6 +170,19 @@
     <img src="" alt="상세정보 이미지" class="img-modal-content" id="imageModalImg">
 </div>
 
+<div class="event-modal-overlay" id="eventModal" onclick="closeEventPopup(event)">
+    <div class="event-modal-content-box" onclick="event.stopPropagation()">
+        <div class="event-modal-header">
+            <button class="event-modal-close-btn" onclick="closeEventPopup()">×</button>
+            <h2 class="event-modal-title" id="popupTitle">제목</h2>
+        </div>
+        <div class="event-modal-body" id="popupBody">
+            </div>
+        <div class="event-modal-footer" id="popupFooter">
+            </div>
+    </div>
+</div>
+
 <script>
     const noticeData = [
         { text: "[⚡내일오픈/마감,긴급정보 실시간 알림 오픈챗 입장하기👆] ", link: "https://open.kakao.com/o/gAUqOrai" },
@@ -198,26 +223,23 @@
         } catch (e) { document.getElementById('count-total').innerText = '-'; document.getElementById('count-today').innerText = '-'; }
     }
 
-    // 💡 [수정] 모바일 링크 클릭 전용: 0.2초 대기 후 페이지 이동
     function trackEventAndOpen(e, url, title, btnType) {
-        if(e) e.preventDefault(); // 링크 바로 열리는 것을 강제로 멈춤
+        if(e) e.preventDefault(); 
         
         if (title) {
             const actionName = (btnType === 'detail') ? '상세보기_클릭' : '신청하기_클릭';
             gtag('event', actionName, {
                 'event_category': '버튼클릭',
                 'event_label': title,
-                'transport_type': 'beacon' // 브라우저가 닫히거나 넘어가도 전송을 보장하는 속성
+                'transport_type': 'beacon'
             });
         }
 
-        // 모바일 브라우저가 통계 데이터를 보낼 수 있도록 0.2초(200ms)만 기다렸다가 창 띄우기
         setTimeout(() => {
             window.open(url, '_blank');
         }, 200);
     }
 
-    // 기존처럼 새 창을 띄우지 않는 이벤트용 (이미지 모달 등)
     function trackEventClick(title, btnType) {
         if (!title) return;
         const actionName = (btnType === 'detail') ? '상세보기_클릭' : '신청하기_클릭';
@@ -233,12 +255,13 @@
         if (navigator.share) navigator.share(shareData).catch(console.error); else navigator.clipboard.writeText(window.location.href).then(() => alert('링크가 복사되었습니다!'));
     }
 
-    const modal = document.getElementById('imageModal');
+    // 이미지 모달 팝업 제어
+    const imgModal = document.getElementById('imageModal');
     const modalImg = document.getElementById('imageModalImg');
     
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal || e.target.id === 'closeModalBtn') {
-            modal.classList.remove('active');
+    imgModal.addEventListener('click', function(e) {
+        if (e.target === imgModal || e.target.id === 'closeModalBtn') {
+            imgModal.classList.remove('active');
             setTimeout(() => { modalImg.src = ""; }, 200);
         }
     });
@@ -249,7 +272,7 @@
             const title = e.target.getAttribute('data-title');
             
             modalImg.src = url;
-            modal.classList.add('active');
+            imgModal.classList.add('active');
             trackEventClick(title, 'detail');
         }
     });
@@ -271,6 +294,14 @@
             const csvText = await response.text();
             eventData = parseCSVToJSON(csvText);
             processEventDates(); processEventAges(); generateFilters(); processNewItems(); updateTabNewBadges(); applyFilters();
+
+            // 주소창의 파라미터를 읽어와 특정 팝업을 바로 띄움
+            const urlParams = new URLSearchParams(window.location.search);
+            const eventId = urlParams.get('id') || urlParams.get('event'); // ?id=값 지원
+            if (eventId !== null) {
+                openEventPopup(eventId);
+            }
+
         } catch (error) { document.getElementById('list-container').innerHTML = '<div class="empty-state">행사 정보를 불러오는데 실패했습니다. 새로고침을 해주세요. 😥</div>'; }
     }
 
@@ -380,7 +411,6 @@
             if ((s.includes('오전') || s.toUpperCase().includes('AM')) && hour === 12) {
                 hour = 0;
             }
-
             return new Date(year, month, day, hour, minute).getTime();
         }
 
@@ -397,7 +427,6 @@
             item.isNew = false;
             
             const regDateMs = parseRegDate(item['등록일']);
-
             if (regDateMs > 0) {
                 const timeDiff = now - regDateMs;
                 if (timeDiff >= -ONE_DAY && timeDiff <= ONE_DAY) {
@@ -481,67 +510,11 @@
             if (statusVal === '커밍순') { cardClass += ' disabled-card'; overlayHTML = `<div class="status-overlay"><div class="status-stamp">COMING SOON</div></div>`; } 
             else if (statusVal === '마감') { cardClass += ' disabled-card'; overlayHTML = `<div class="status-overlay"><div class="status-stamp closed">마감</div></div>`; }
 
-            let btnDetails = '';
-            const detailUrl = item.link || item['링크'];
-            
-            let isImageUrl = false;
-            if (detailUrl && detailUrl.trim() !== '') {
-                const lowerUrl = detailUrl.trim().toLowerCase();
-                isImageUrl = /\.(jpeg|jpg|gif|png|webp)(?:[\?#].*)?$/i.test(lowerUrl) || 
-                             lowerUrl.includes('drive.google.com/uc?') || 
-                             lowerUrl.includes('phinf.pstatic.net');
-            }
-
-            // 💡 [수정] 상세보기 버튼에 딜레이 함수(trackEventAndOpen) 적용
-            if (detailUrl && detailUrl.trim() !== '') {
-                const safeUrl = detailUrl.trim().replace(/"/g, '&quot;');
-                const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-
-                if (isImageUrl) {
-                    btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">상세정보확인 🖼️</button>`;
-                } else {
-                    if (safeUrl.toLowerCase().startsWith('javascript:')) {
-                        btnDetails = `<a href="#" onclick="${safeUrl.replace('javascript:', '')}; trackEventClick('${trackTitle}', 'detail'); return false;" class="btn-link">상세정보확인 🔍</a>`;
-                    } else {
-                        btnDetails = `<a href="${safeUrl}" onclick="trackEventAndOpen(event, '${safeUrl}', '${trackTitle}', 'detail')" class="btn-link">상세정보확인 🔍</a>`;
-                    }
-                }
-            } else {
-                btnDetails = `<button type="button" class="btn-link btn-disabled" onclick="alert('등록된 상세정보 링크가 없습니다.');">상세정보확인 🔍</button>`;
-            }
-
-            // 💡 [수정] 신청하기 버튼에 딜레이 함수(trackEventAndOpen) 적용
-            let btnApply = '';
-            const rawApplyValue = item['신청링크'] || item.applyLink; 
-            
-            if (rawApplyValue && rawApplyValue.trim() !== '') {
-                const cleanValue = rawApplyValue.trim();
-                const safeApplyValue = cleanValue.replace(/"/g, '&quot;');
-                const alertSafeValue = cleanValue.replace(/'/g, "\\'").replace(/"/g, '\\"');
-                const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                
-                const isUrl = /^(https?:\/\/|www\.|javascript:)/i.test(cleanValue);
-
-                if (isUrl) {
-                    if (cleanValue.toLowerCase().startsWith('javascript:')) {
-                        btnApply = `<a href="#" onclick="${safeApplyValue.replace('javascript:', '')}; trackEventClick('${trackTitle}', 'apply'); return false;" class="btn-link">예약하기 🔗</a>`;
-                    } else {
-                        let actualUrl = safeApplyValue;
-                        if (cleanValue.toLowerCase().startsWith('www.')) actualUrl = `http://${safeApplyValue}`;
-                        
-                        btnApply = `<a href="${actualUrl}" onclick="trackEventAndOpen(event, '${actualUrl}', '${trackTitle}', 'apply')" class="btn-link">예약하기 🔗</a>`;
-                    }
-                } else {
-                    btnApply = `<button type="button" class="btn-link btn-disabled" onclick="alert('${alertSafeValue}');">${safeApplyValue}</button>`;
-                }
-            } else {
-                btnApply = `<button type="button" class="btn-link btn-disabled" onclick="alert('별도의 사전예약 링크가 필요 없는 현장접수/자유참여 행사입니다.');">현장접수/예약불필요</button>`;
-            }
-            
-            let actionButtonsHTML = `<div class="btn-group">${btnDetails}${btnApply}</div>`;
+            // 구글시트의 'ID'열(없으면 '고유번호', 둘다 없으면 기존 originalIndex 사용) 추출
+            const eventUniqueId = item['ID'] || item['id'] || item['고유번호'] || item.originalIndex;
 
             const cardHTML = `
-                <div class="${cardClass}">
+                <div class="${cardClass}" onclick="openEventPopup('${eventUniqueId}')">
                     ${overlayHTML}
                     <div class="card-header">
                         <div class="badges">
@@ -555,15 +528,91 @@
                     <div class="info-row"><div class="info-label">장소</div><div class="info-desc">${item.place || ''}</div></div>
                     <div class="info-row"><div class="info-label">접수기간</div><div class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</div></div>
                     <div class="info-row"><div class="info-label">운영일정</div><div class="info-desc">${item.date || '해당정보 없음'}</div></div>
-                    ${actionButtonsHTML}
+                    <div style="text-align: right; font-size: 0.8rem; color: var(--primary-color); font-weight: bold; margin-top: 10px;">자세히 보기 & 신청하기 👉</div>
                 </div>
             `;
             container.innerHTML += cardHTML;
         });
     }
 
+    // [신규] 이벤트 팝업 열기 함수
+    function openEventPopup(eventId) {
+        // ID 또는 기존 인덱스로 데이터 찾기
+        const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
+        if (!item) return;
+
+        document.getElementById('popupTitle').innerHTML = `${item.title || ''} ${item.isNew ? `<span class="card-new-badge">N</span>` : ''}`;
+        
+        let applyTextStyle = 'color:var(--text-sub);'; 
+        if (item.isTodayClose) applyTextStyle = 'color:#E53935; font-weight:700;';
+
+        document.getElementById('popupBody').innerHTML = `
+            <div class="info-row"><div class="info-label">장소</div><div class="info-desc">${item.place || '정보 없음'}</div></div>
+            <div class="info-row"><div class="info-label">비용</div><div class="info-desc">${item.costType || '정보 없음'}</div></div>
+            <div class="info-row"><div class="info-label">접수기간</div><div class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</div></div>
+            <div class="info-row"><div class="info-label">운영일정</div><div class="info-desc">${item.date || '해당정보 없음'}</div></div>
+            ${item.applyNote ? `<div class="info-row"><div class="info-label">참고사항</div><div class="info-desc" style="font-weight:bold; color:var(--text-main);">${item.applyNote}</div></div>` : ''}
+        `;
+
+        // 상세보기 버튼 (팝업 안으로 이동)
+        let btnDetails = '';
+        const detailUrl = item.link || item['링크'];
+        let isImageUrl = false;
+        if (detailUrl && detailUrl.trim() !== '') {
+            const lowerUrl = detailUrl.trim().toLowerCase();
+            isImageUrl = /\.(jpeg|jpg|gif|png|webp)(?:[\?#].*)?$/i.test(lowerUrl) || lowerUrl.includes('drive.google.com/uc?') || lowerUrl.includes('phinf.pstatic.net');
+        }
+
+        if (detailUrl && detailUrl.trim() !== '') {
+            const safeUrl = detailUrl.trim().replace(/"/g, '&quot;');
+            const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            if (isImageUrl) {
+                btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">상세확인 🖼️</button>`;
+            } else {
+                btnDetails = `<a href="${safeUrl}" onclick="trackEventAndOpen(event, '${safeUrl}', '${trackTitle}', 'detail')" class="btn-link">상세확인 🔍</a>`;
+            }
+        } else {
+            btnDetails = `<button type="button" class="btn-link btn-disabled" onclick="alert('등록된 상세정보 링크가 없습니다.');">상세확인 불가</button>`;
+        }
+
+        // 신청하기 버튼 (팝업 안으로 이동)
+        let btnApply = '';
+        const rawApplyValue = item['신청링크'] || item.applyLink; 
+        if (rawApplyValue && rawApplyValue.trim() !== '') {
+            const cleanValue = rawApplyValue.trim();
+            const safeApplyValue = cleanValue.replace(/"/g, '&quot;');
+            const alertSafeValue = cleanValue.replace(/'/g, "\\'").replace(/"/g, '\\"');
+            const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const isUrl = /^(https?:\/\/|www\.|javascript:)/i.test(cleanValue);
+
+            if (isUrl) {
+                let actualUrl = safeApplyValue;
+                if (cleanValue.toLowerCase().startsWith('www.')) actualUrl = `http://${safeApplyValue}`;
+                btnApply = `<a href="${actualUrl}" onclick="trackEventAndOpen(event, '${actualUrl}', '${trackTitle}', 'apply')" class="btn-link">예약하기 🔗</a>`;
+            } else {
+                btnApply = `<button type="button" class="btn-link btn-disabled" onclick="alert('${alertSafeValue}');">${safeApplyValue}</button>`;
+            }
+        } else {
+            btnApply = `<button type="button" class="btn-link btn-disabled" onclick="alert('사전예약 링크가 필요 없는 현장접수 행사입니다.');">현장접수</button>`;
+        }
+
+        document.getElementById('popupFooter').innerHTML = `${btnDetails}${btnApply}`;
+
+        // 팝업 표시 및 주소창 URL 변경 (?id=고유값)
+        document.getElementById('eventModal').classList.add('active');
+        history.pushState({ eventPopup: true }, '', '?id=' + eventId);
+    }
+
+    // [신규] 이벤트 팝업 닫기 함수
+    function closeEventPopup(e) {
+        // 배경을 클릭하거나 X 버튼을 누른 경우에만 닫힘
+        if (e && e.target !== e.currentTarget && !e.target.classList.contains('event-modal-close-btn')) return;
+        document.getElementById('eventModal').classList.remove('active');
+        // 뒤로가기 처럼 주소창 복원
+        history.pushState(null, '', window.location.pathname);
+    }
+
     document.addEventListener('DOMContentLoaded', () => { initNotice(); initLastUpdated(); initVisitCounters(); fetchEventData(); });
 </script>
 </body>
 </html>
-
