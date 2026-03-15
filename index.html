@@ -80,7 +80,7 @@
 
         .content { padding: 15px; }
         
-        /* PC 버전 최적화 (반응형 Grid 및 겹침 해결) */
+        /* PC 버전 최적화 */
         @media (min-width: 768px) {
             body { padding: 20px 0; background-color: #e9ecef; }
             .app-container { max-width: 1000px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; }
@@ -114,12 +114,13 @@
         .card-title-row .title { font-size: 1.05rem; font-weight: 700; margin: 0; line-height: 1.4; word-break: keep-all; flex: 1; padding-top: 2px; }
         
         .card-action-area { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-left: 10px; flex-shrink: 0; }
-        .card-action-top { display: flex; align-items: center; gap: 10px; }
+        .card-action-top { display: flex; align-items: center; gap: 8px; }
         
-        .btn-like { background: none; border: none; padding: 2px; cursor: pointer; color: #aaa; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 3px; font-size: 0.75rem; font-weight: 500; font-family: inherit;}
-        .btn-like:hover { transform: scale(1.05); }
-        .btn-like.liked { color: #E53935; }
-        .btn-like svg { width: 16px; height: 16px; fill: currentColor; }
+        /* 💡 수정됨: 저장하기 아이콘 스타일 */
+        .btn-save { background: none; border: none; padding: 2px; cursor: pointer; color: #ccc; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .btn-save:hover { transform: scale(1.1); color: #888; }
+        .btn-save.saved { color: #333; }
+        .btn-save svg { width: 18px; height: 18px; fill: currentColor; }
 
         .view-count { display: flex; align-items: center; gap: 3px; font-size: 0.75rem; color: #aaa; font-weight: 500; }
         .view-count svg { width: 16px; height: 16px; fill: currentColor; }
@@ -236,13 +237,11 @@
 </div>
 
 <script>
-// 카카오 SDK 초기화
+    // 카카오 SDK 초기화
     try {
-        Kakao.init('9e15976baaa60ecc531d234dcbaf301e');
-        console.log("카카오 초기화 성공 여부: ", Kakao.isInitialized());
+        Kakao.init('여기에_카카오_자바스크립트_키를_입력하세요'); 
     } catch (e) {
-        // 어떤 에러 때문에 막혔는지 화면에 경고창으로 띄워줍니다.
-        alert("카카오 초기화 에러: " + e.message);
+        console.log("카카오 키가 아직 설정되지 않았습니다.");
     }
 
     function loginWithKakao() {
@@ -304,36 +303,29 @@
         } catch (e) { document.getElementById('count-total').innerText = '-'; document.getElementById('count-today').innerText = '-'; }
     }
 
-    // [수정됨] 에러 처리 추가: 데이터가 없으면 '0'으로 표기
-    async function fetchCardViewCount(eventId) {
-        const countElem = document.getElementById(`view-count-${eventId}`);
-        if (!countElem) return;
-        try {
-            const safeId = encodeURIComponent(eventId);
-            const res = await fetch(`https://api.counterapi.dev/v1/heycheongju_v1/event_${safeId}`);
-            if (res.ok) {
-                const data = await res.json();
-                countElem.innerText = data.count || 0;
-            } else {
+    // 💡 수정됨: 조회수 데이터를 대기열(Queue) 방식으로 하나씩 천천히 불러와서 오류 차단
+    async function fetchAllViewCountsSequentially(dataArray) {
+        for (const item of dataArray) {
+            const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
+            const countElem = document.getElementById(`view-count-${eventUniqueId}`);
+            if (!countElem) continue;
+            
+            try {
+                const safeId = encodeURIComponent(eventUniqueId);
+                const res = await fetch(`https://api.counterapi.dev/v1/heycheongju_v1/event_${safeId}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    countElem.innerText = data.count || 0;
+                } else {
+                    countElem.innerText = '0';
+                }
+            } catch (e) {
                 countElem.innerText = '0';
             }
-        } catch (e) { countElem.innerText = '0'; }
-    }
-
-    // [수정됨] 에러 처리 추가: 데이터가 없으면 '0'으로 표기
-    async function fetchCardLikeCount(eventId) {
-        const countElem = document.getElementById(`like-count-${eventId}`);
-        if (!countElem) return;
-        try {
-            const safeId = encodeURIComponent(eventId);
-            const res = await fetch(`https://api.counterapi.dev/v1/heycheongju_like_v1/event_${safeId}`);
-            if (res.ok) {
-                const data = await res.json();
-                countElem.innerText = data.count || 0;
-            } else {
-                countElem.innerText = '0';
-            }
-        } catch (e) { countElem.innerText = '0'; }
+            
+            // API 서버가 터지지 않게 다음 요청까지 100ms(0.1초) 대기
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
     }
 
     function trackEventAndOpen(e, url, title, btnType) {
@@ -364,45 +356,30 @@
         else navigator.clipboard.writeText(shareUrl).then(() => alert('팝업 링크가 복사되었습니다!\n원하는 곳에 붙여넣기 해주세요.'));
     }
 
-    function getLikedEvents() {
-        try { return JSON.parse(localStorage.getItem('heycheongju_likes')) || []; } 
+    // 💡 수정됨: 하트에서 북마크(저장) 기능으로 변경 (에러 유발하는 API 호출 제거)
+    function getSavedEvents() {
+        try { 
+            // 기존 하트 데이터(heycheongju_likes)가 남아있다면 가져와서 호환성 유지
+            return JSON.parse(localStorage.getItem('heycheongju_saves')) || JSON.parse(localStorage.getItem('heycheongju_likes')) || []; 
+        } 
         catch (e) { return []; }
     }
     
-    // [수정됨] 찜하기 누를 때 숫자 꼬임 방지
-    function toggleLike(e, eventId) {
+    function toggleSave(e, eventId) {
         e.stopPropagation(); 
-        let likes = getLikedEvents();
+        let saves = getSavedEvents();
         const btn = e.currentTarget;
-        const countSpan = document.getElementById(`like-count-${eventId}`);
-        
-        let currentCount = 0;
-        if (countSpan && !isNaN(parseInt(countSpan.innerText))) {
-            currentCount = parseInt(countSpan.innerText);
-        }
 
-        if (likes.includes(eventId)) {
-            // 찜 취소
-            likes = likes.filter(id => id !== eventId);
-            btn.classList.remove('liked');
-            if (countSpan && currentCount > 0) countSpan.innerText = currentCount - 1;
+        if (saves.includes(eventId)) {
+            // 저장 취소
+            saves = saves.filter(id => id !== eventId);
+            btn.classList.remove('saved');
         } else {
-            // 찜하기
-            likes.push(eventId);
-            btn.classList.add('liked');
-            if (countSpan) countSpan.innerText = currentCount + 1;
-            
-            // 누적 하트 서버에 업데이트 (백그라운드)
-            try {
-                const safeId = encodeURIComponent(eventId);
-                fetch(`https://api.counterapi.dev/v1/heycheongju_like_v1/event_${safeId}/up`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (countSpan && data.count !== undefined) countSpan.innerText = data.count;
-                    }).catch(err => {});
-            } catch(e) {}
+            // 저장하기
+            saves.push(eventId);
+            btn.classList.add('saved');
         }
-        localStorage.setItem('heycheongju_likes', JSON.stringify(likes));
+        localStorage.setItem('heycheongju_saves', JSON.stringify(saves));
     }
 
     const imgModal = document.getElementById('imageModal');
@@ -630,7 +607,7 @@
             return; 
         }
 
-        const likedEvents = getLikedEvents();
+        const savedEvents = getSavedEvents();
         
         let htmlBuffer = '';
 
@@ -650,9 +627,9 @@
             else if (statusVal === '마감') { cardClass += ' disabled-card'; overlayHTML = `<div class="status-overlay"><div class="status-stamp closed">마감</div></div>`; }
 
             const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
-            const isLiked = likedEvents.includes(eventUniqueId);
+            const isSaved = savedEvents.includes(eventUniqueId);
 
-            // 로딩 중일 때는 기본으로 0이 아닌 '-'로 시작하도록 세팅 (이후 fetch 완료시 업데이트)
+            // 💡 북마크 아이콘(저장)으로 변경 적용
             const cardHTML = `
                 <div class="${cardClass}" id="card-${eventUniqueId}" onclick="openEventPopup('${eventUniqueId}')">
                     ${overlayHTML}
@@ -669,9 +646,8 @@
                         
                         <div class="card-action-area">
                             <div class="card-action-top">
-                                <button class="btn-like ${isLiked ? 'liked' : ''}" onclick="toggleLike(event, '${eventUniqueId}')" title="찜하기">
-                                    <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                                    <span id="like-count-${eventUniqueId}">-</span>
+                                <button class="btn-save ${isSaved ? 'saved' : ''}" onclick="toggleSave(event, '${eventUniqueId}')" title="저장하기">
+                                    <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
                                 </button>
                                 
                                 <span class="view-count" title="조회수">
@@ -691,14 +667,8 @@
         // 한 번에 DOM에 삽입
         container.innerHTML = htmlBuffer;
 
-        // [수정됨] Rate Limit(호출 초과) 방지를 위해 0.05초 간격으로 순차적 호출 진행
-        filteredData.forEach((item, index) => {
-            const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
-            setTimeout(() => {
-                fetchCardViewCount(eventUniqueId);
-                fetchCardLikeCount(eventUniqueId);
-            }, index * 50); 
-        });
+        // 💡 대기열(Queue) 함수를 호출하여 순차적으로 조회수 데이터 연동 실행
+        fetchAllViewCountsSequentially(filteredData);
     }
 
     function openEventPopup(eventId) {
