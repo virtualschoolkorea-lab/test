@@ -75,6 +75,23 @@
         .filter-cb:checked + .cb-label { background: var(--primary-color); color: #fff; border-color: var(--primary-color); font-weight: 700; box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3); }
         .filter-cb:checked + .cb-label.age-label { background: #ff9800; border-color: #ff9800; box-shadow: 0 2px 4px rgba(255, 152, 0, 0.3); }
 
+        /* ------------------ 배너 광고 스타일 추가 ------------------ */
+        .banner-ad-zone {
+            width: 100%;
+            background-color: #fff;
+            padding: 10px;
+            box-sizing: border-box;
+            border-bottom: 1px solid var(--border-color);
+            text-align: center;
+        }
+        .banner-ad-zone img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
+        }
+
         .content { padding: 15px; }
 
         @media (min-width: 768px) {
@@ -117,6 +134,10 @@
 
         .card-more-text { font-size: 0.7rem; color: #999; font-weight: 500; white-space: nowrap; background: #f4f4f4; padding: 3px 6px; border-radius: 4px; }
 
+        /* ------------------ 카드 하단 장소/일정 정보 스타일 추가 ------------------ */
+        .card-bottom-info { margin-top: 10px; font-size: 0.75rem; color: #888; display: flex; flex-direction: column; gap: 3px; }
+        .card-bottom-info span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px; }
+
         .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; grid-column: 1 / -1; }
         .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; grid-column: 1 / -1; }
 
@@ -128,7 +149,6 @@
         .event-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding-bottom: 20px; box-sizing: border-box; }
         .event-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
         
-        /* event.stopPropagation 제거 유지 (2중 팝업 동작을 위해) */
         .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: 85vh; border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px; }
         .event-modal-overlay.active .event-modal-content-box { transform: translateY(0); }
 
@@ -148,6 +168,11 @@
         .event-modal-close-btn:hover { background: #f0f0f0; }
 
         .event-modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+        
+        /* ------------------ 팝업 이미지 컨테이너 스타일 추가 ------------------ */
+        .popup-img-container { width: 100%; margin-bottom: 15px; border-radius: 8px; overflow: hidden; text-align: center; background-color: #f9f9f9; }
+        .popup-img-container img { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+
         .info-row { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 8px; display: flex; align-items: flex-start; }
         .info-label { font-weight: 600; width: 60px; flex-shrink: 0; color: #555; line-height: 1.4; }
         .info-desc { flex: 1; word-break: keep-all; line-height: 1.4; }
@@ -200,6 +225,12 @@
         </div>
     </div>
 
+    <div class="banner-ad-zone" id="top-banner">
+        <a href="#" target="_blank">
+            <img src="https://via.placeholder.com/500x80?text=여기에+광고+배너를+넣으세요" alt="배너 영역" />
+        </a>
+    </div>
+
     <div class="content" id="list-container">
         <div class="loading-state">데이터를 불러오는 중입니다... ⏳</div>
     </div>
@@ -234,7 +265,6 @@ const firebaseConfig = {
   messagingSenderId: "147201792706",
   appId: "1:147201792706:web:3b3130a47cd0f50ce5b95b"
 };
-
 
     // 파이어베이스 초기화
     if (!firebase.apps.length) {
@@ -798,6 +828,7 @@ const firebaseConfig = {
 
             const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
 
+            // 🌟 카드 하단에 장소/일정 정보 추가
             const cardHTML = `
                 <div class="${cardClass}" id="card-${eventUniqueId}" onclick="openEventPopup('${eventUniqueId}')">
                     ${overlayHTML}
@@ -821,6 +852,11 @@ const firebaseConfig = {
                             </div>
                             <span class="card-more-text">+ 더보기</span>
                         </div>
+                    </div>
+                    
+                    <div class="card-bottom-info">
+                        <span>📍 ${item.place ? item.place : '장소 정보 없음'}</span>
+                        <span>🗓️ ${item.date ? item.date : '일정 정보 없음'}</span>
                     </div>
                 </div>
             `;
@@ -858,7 +894,19 @@ const firebaseConfig = {
         let applyTextStyle = 'color:var(--text-sub);';
         if (item.isTodayClose) applyTextStyle = 'color:#E53935; font-weight:700;';
 
+        // 🌟 팝업 상단 이미지 데이터 연동 ('이미지' 열 값 확인)
+        let popupImgHtml = '';
+        const popupImgUrl = item['이미지'] || item.image || ''; 
+        if (popupImgUrl && popupImgUrl.trim() !== '') {
+            popupImgHtml = `
+                <div class="popup-img-container">
+                    <img src="${popupImgUrl.trim()}" alt="행사 썸네일" />
+                </div>
+            `;
+        }
+
         document.getElementById('popupBody').innerHTML = `
+            ${popupImgHtml}
             <div class="info-row"><div class="info-label">장소</div><div class="info-desc">${item.place || '정보 없음'}</div></div>
             <div class="info-row"><div class="info-label">비용</div><div class="info-desc">${item.costType || '정보 없음'}</div></div>
             <div class="info-row"><div class="info-label">접수</div><div class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</div></div>
