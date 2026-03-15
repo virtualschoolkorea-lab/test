@@ -37,10 +37,13 @@
             --border-color: #e0e0e0;
         }
         body { font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; display: flex; justify-content: center; }
+        
+        /* 팝업 열릴 시 뒤쪽 스크롤 방지 */
+        body.modal-open { overflow: hidden; }
+
         .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; }
         
-        /* 🌟 팝업 시 배너 활성화를 위해 z-index 대폭 상향 (99999) 🌟 */
-        .sticky-wrapper { position: sticky; top: 0; z-index: 99999; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: inherit; }
+        .sticky-wrapper { position: sticky; top: 0; z-index: 100; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: inherit; }
 
         header { background-color: var(--primary-color); color: white; padding: 12px 16px 8px 16px; display: flex; flex-direction: column; border-radius: inherit; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
 
@@ -64,9 +67,9 @@
 
         .promo-area-wrap {
             width: 100%;
-            height: 40px; 
+            height: 45px; 
             background-color: #fff;
-            padding: 4px 10px;
+            padding: 5px 10px;
             box-sizing: border-box;
             border-bottom: 1px solid var(--border-color);
             display: flex;
@@ -79,6 +82,7 @@
             border-radius: 4px;
             display: block;
             margin: 0 auto;
+            object-fit: contain;
         }
 
         .search-container { padding: 6px 15px; background-color: #fff; border-bottom: 1px solid var(--border-color); }
@@ -103,13 +107,27 @@
 
         .content { padding: 15px; }
 
+        /* 🌟 PC버전 화면 최적화 🌟 */
         @media (min-width: 768px) {
-            body { padding-top: 20px; padding-bottom: 20px; background-color: #e9ecef; }
-            .promo-area-wrap { height: 50px; }
-            .app-container { max-width: 1080px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; }
-            header { border-radius: 16px 16px 0 0; padding: 15px 24px 10px 24px; }
+            body { padding-top: 30px; padding-bottom: 30px; background-color: #e9ecef; }
+            
+            /* 가로폭을 살짝 줄여서 UI가 늘어지지 않게 고정 */
+            .app-container { max-width: 800px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; }
+            header { border-radius: 16px 16px 0 0; padding: 20px 24px 15px 24px; }
             .sticky-wrapper { border-radius: 16px 16px 0 0; }
-            #list-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 20px; align-items: stretch; }
+            
+            /* PC버전 텍스트 가독성 상향 */
+            h1 { font-size: 1.6rem; margin-bottom: 8px; }
+            .sub-header { font-size: 0.8rem; }
+            .header-stats { font-size: 0.8rem; }
+            .header-stats span { font-size: 1rem; }
+            .search-input { font-size: 1rem; padding: 10px 15px; }
+            .tab { font-size: 1rem; padding: 10px 0; }
+
+            /* 배너 비율 고정 */
+            .promo-area-wrap { height: 65px; padding: 8px 20px; }
+            
+            #list-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 20px; align-items: stretch; padding: 20px; }
             .card { margin-bottom: 0; height: auto; display: flex; flex-direction: column; }
             .card-title-row { margin-top: auto; padding-top: 10px; }
         }
@@ -146,18 +164,15 @@
         .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; grid-column: 1 / -1; }
         .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; grid-column: 1 / -1; }
 
-        /* 🌟 이미지 확대 모달 최상단 배치 🌟 */
         .img-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 100005; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
         .img-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
         .img-modal-content { max-width: 90%; max-height: calc(100vh - 80px); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); object-fit: contain; }
         .img-modal-close { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.9); color: #111; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 1.5rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
 
-        /* 🌟 팝업창 오버레이는 99998로 낮춰 상단바 뒤로 가게 설정 🌟 */
         .event-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding-bottom: 20px; box-sizing: border-box; }
         .event-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
         
-        /* 모달박스가 상단 고정 헤더 영역을 덮지 않도록 최대 높이 조정 */
-        .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: calc(100vh - 260px); border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px; }
+        .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: calc(100vh - 70px); border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px; }
         .event-modal-overlay.active .event-modal-content-box { transform: translateY(0); }
 
         @media (min-width: 768px) {
@@ -167,9 +182,7 @@
         }
 
         .event-modal-header { padding: 16px 20px; position: relative; border-bottom: 1px solid #eee; display: flex; align-items: center; }
-        
         .event-modal-title { font-size: 1.15rem; font-weight: 700; padding-right: 70px; margin: 0; line-height: 1.4; flex: 1; word-break: keep-all; }
-        
         .event-modal-share-btn { position: absolute; top: 50%; right: 48px; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #666; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s; padding: 4px; }
         .event-modal-share-btn:hover { background: #f0f0f0; }
         .event-modal-share-btn svg { width: 100%; height: 100%; fill: currentColor; }
@@ -182,52 +195,10 @@
         .popup-img-container { width: 100%; margin-bottom: 15px; border-radius: 8px; overflow: hidden; text-align: center; background-color: #f9f9f9; }
         .popup-img-container img { max-width: 100%; height: auto; display: block; margin: 0 auto; }
 
-        /* 🌟 팝업창 내부 상세 정보 리스트 대폭 디자인 개선 🌟 */
-        .popup-info-wrapper {
-            background: #fdfdfd;
-            border: 1px solid #eaeaea;
-            border-radius: 12px;
-            padding: 18px 16px;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.01);
-        }
-        .info-row { 
-            display: flex; 
-            align-items: flex-start; 
-            margin-bottom: 14px; 
-            padding-bottom: 14px; 
-            border-bottom: 1px dashed #ddd; 
-        }
-        .info-row:last-child {
-            margin-bottom: 0;
-            padding-bottom: 0;
-            border-bottom: none;
-        }
-        .info-label { 
-            font-weight: 700; 
-            width: 65px; 
-            flex-shrink: 0; 
-            color: #fff; 
-            background-color: var(--primary-color); 
-            padding: 5px 6px; 
-            border-radius: 6px; 
-            text-align: center; 
-            margin-right: 12px; 
-            font-size: 0.8rem; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            letter-spacing: -0.5px;
-        }
-        .info-label.tip-label {
-            background-color: #ff9800;
-        }
-        .info-desc { 
-            flex: 1; 
-            word-break: keep-all; 
-            line-height: 1.5; 
-            padding-top: 2px; 
-            color: #222; 
-            font-size: 0.95rem;
-            font-weight: 500;
-        }
+        /* 🌟 오리지널 베이직 & 심플 디자인으로 복귀 🌟 */
+        .info-row { font-size: 0.95rem; color: #444; margin-bottom: 10px; display: flex; align-items: flex-start; }
+        .info-label { font-weight: 700; width: 60px; flex-shrink: 0; color: #333; line-height: 1.4; }
+        .info-desc { flex: 1; word-break: keep-all; line-height: 1.4; color: #222; }
 
         .event-modal-footer { padding: 15px 20px; border-top: 1px solid #eee; background: #fafafa; display: flex; gap: 10px; }
         .btn-link { display: block; text-align: center; background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); text-decoration: none; padding: 12px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; transition: all 0.2s; box-sizing: border-box; cursor: pointer; font-family: inherit; width: 100%; flex: 1; margin: 0; }
@@ -263,7 +234,7 @@
 
         <div class="promo-area-wrap" id="main-promo-wrap">
             <a href="https://open.kakao.com/o/gAUqOrai" target="_blank" style="display:block; width:100%; height:100%;">
-                <img src="https://postfiles.pstatic.net/MjAyNjAzMTVfMjY2/MDAxNzczNTc4Nzg2Mzc2.h9rLpbeh1rWUistHqXJAOy547IYlm6gaua04ANxTgB4g.Uxz_ZQIlh3H0WuGyYyw5ky2Kt-vuaonw-o3DRnn3qwsg.PNG/%EC%A0%9C%EB%AA%A9%EC%9D%84_%EC%9E%85%EB%A0%A5%ED%95%B4%EC%A3%BC%EC%84%B8%EC%9A%94._(4).png?type=w773" alt="상단 배너" style="width:100%; height:100%; object-fit:cover;" />
+                <img src="https://postfiles.pstatic.net/MjAyNjAzMTVfMjAg/MDAxNzczNTYwODk5Mzc3.2jH1gOMPG1xXBHUw-YXiaUU_sZ9T5ZrOfGGy0EtlANIg.jPsRtljkL9r-mFAclLCqmsG-MA_i_0ecX6h4QoKSoPkg.PNG/%EC%A0%9C%EB%AA%A9%EC%9D%84_%EC%9E%85%EB%A0%A5%ED%95%B4%EC%A3%BC%EC%84%B8%EC%9A%94._(1).png?type=w773" alt="상단 배너" style="width:100%; height:100%; object-fit:cover;" />
             </a>
         </div>
 
@@ -308,7 +279,6 @@
 </div>
 
 <script>
-    // 파이어베이스 설정
     const firebaseConfig = {
       apiKey: "AIzaSyBZg-wKztuG-Ak7-WqWSAYe9UIj874fYAY",
       authDomain: "heycj-55b6a.firebaseapp.com",
@@ -917,6 +887,23 @@
         const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
         if (!item) return;
 
+        // 🌟 팝업 열릴 때 스크롤 멈추고 광고 배너를 맨 앞으로 복제해서 띄워주는 로직 🌟
+        document.body.classList.add('modal-open');
+        const originalBanner = document.getElementById('main-promo-wrap');
+        if (originalBanner) {
+            const rect = originalBanner.getBoundingClientRect();
+            const clone = originalBanner.cloneNode(true);
+            clone.id = 'modal-promo-clone';
+            clone.style.position = 'fixed';
+            clone.style.top = rect.top + 'px';
+            clone.style.left = rect.left + 'px';
+            clone.style.width = rect.width + 'px';
+            clone.style.height = rect.height + 'px';
+            clone.style.zIndex = '100000'; // 최상단 오버레이 위로 띄움
+            clone.style.margin = '0';
+            document.body.appendChild(clone);
+        }
+
         try {
             const todayStr = getTodayStr();
             const specificEventRef = db.ref(`event_views/${todayStr}/${eventId}`);
@@ -947,16 +934,14 @@
             `;
         }
 
-        // 🌟 가시성 대폭 개선된 팝업 정보창 🌟
+        // 🌟 다시 기본 형태의 깔끔한 텍스트 폼으로 복구 🌟
         document.getElementById('popupBody').innerHTML = `
             ${popupImgHtml}
-            <div class="popup-info-wrapper">
-                <div class="info-row"><div class="info-label">📍 장소</div><div class="info-desc">${item.place || '정보 없음'}</div></div>
-                <div class="info-row"><div class="info-label">💰 비용</div><div class="info-desc">${item.costType || '정보 없음'}</div></div>
-                <div class="info-row"><div class="info-label">📝 접수</div><div class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</div></div>
-                <div class="info-row"><div class="info-label">🗓️ 일정</div><div class="info-desc">${item.date || '해당정보 없음'}</div></div>
-                ${item.applyNote ? `<div class="info-row"><div class="info-label tip-label">💡 꿀팁</div><div class="info-desc" style="font-weight:bold; color:var(--text-main);">${item.applyNote}</div></div>` : ''}
-            </div>
+            <div class="info-row"><div class="info-label">장소</div><div class="info-desc">${item.place || '정보 없음'}</div></div>
+            <div class="info-row"><div class="info-label">비용</div><div class="info-desc">${item.costType || '정보 없음'}</div></div>
+            <div class="info-row"><div class="info-label">접수</div><div class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</div></div>
+            <div class="info-row"><div class="info-label">일정</div><div class="info-desc">${item.date || '해당정보 없음'}</div></div>
+            ${item.applyNote ? `<div class="info-row"><div class="info-label">꿀팁</div><div class="info-desc" style="font-weight:bold; color:var(--text-main);">${item.applyNote}</div></div>` : ''}
         `;
 
         let btnDetails = '';
@@ -1017,6 +1002,12 @@
 
     function closeEventPopup(e) {
         if (e && e.target !== e.currentTarget && !e.target.classList.contains('event-modal-close-btn')) return;
+        
+        // 🌟 팝업창 닫을 때 방지했던 스크롤 원복 & 활성화했던 배너 삭제 🌟
+        document.body.classList.remove('modal-open');
+        const clone = document.getElementById('modal-promo-clone');
+        if (clone) clone.remove();
+
         document.getElementById('eventModal').classList.remove('active');
         try {
             history.pushState(null, '', window.location.pathname);
