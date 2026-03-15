@@ -21,8 +21,6 @@
       gtag('config', 'G-HGXPJ0KLHD');
     </script>
 
-    <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" integrity="sha384-TiCmbV6AUn872m59///ZoJzibO121X7AokHto4ZzKk4108H8h5AIfwZk0JkL4xAO" crossorigin="anonymous"></script>
-
     <style>
         :root {
             --primary-color: #4CAF50;
@@ -46,10 +44,6 @@
         .header-stats span { font-weight: 700; color: #fff; margin-left: 5px; }
 
         .header-buttons-row { display: flex; gap: 8px; align-items: center; }
-
-        .btn-kakao-login { background-color: #FEE500; color: #000000; border: none; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: opacity 0.2s; }
-        .btn-kakao-login:hover { opacity: 0.9; }
-        .btn-kakao-login svg { width: 12px; height: 12px; fill: currentColor; }
 
         .btn-share { background: rgba(255, 255, 255, 0.25); border: none; color: white; padding: 4px 10px; border-radius: 20px; cursor: pointer; font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; gap: 4px; transition: background 0.2s; }
         .btn-share:hover { background: rgba(255, 255, 255, 0.35); }
@@ -82,10 +76,12 @@
 
         @media (min-width: 768px) {
             body { padding: 20px 0; background-color: #e9ecef; }
-            .app-container { max-width: 1000px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; }
+            /* 전체 가로 폭 확대 */
+            .app-container { max-width: 1080px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; }
             header { border-radius: 16px 16px 0 0; padding: 20px 24px 10px 24px; }
             .sticky-wrapper { border-radius: 16px 16px 0 0; }
-            #list-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 24px; align-items: stretch; }
+            /* 3열 레이아웃 강제 및 세로 간격(gap) 축소 */
+            #list-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 20px; align-items: stretch; }
             .card { margin-bottom: 0; height: auto; display: flex; flex-direction: column; }
             .card-title-row { margin-top: auto; padding-top: 10px; }
         }
@@ -114,11 +110,6 @@
 
         .card-action-area { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-left: 10px; flex-shrink: 0; }
         .card-action-top { display: flex; align-items: center; gap: 8px; }
-
-        .btn-save { background: none; border: none; padding: 2px; cursor: pointer; color: #ccc; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
-        .btn-save:hover { transform: scale(1.1); color: #888; }
-        .btn-save.saved { color: #333; }
-        .btn-save svg { width: 18px; height: 18px; fill: currentColor; }
 
         .view-count { display: flex; align-items: center; gap: 3px; font-size: 0.75rem; color: #aaa; font-weight: 500; }
         .view-count svg { width: 16px; height: 16px; fill: currentColor; }
@@ -180,10 +171,6 @@
                 </div>
 
                 <div class="header-buttons-row">
-                    <button class="btn-kakao-login" onclick="loginWithKakao()">
-                        <svg viewBox="0 0 24 24"><path d="M12 3c-5.5 0-10 3.5-10 7.8 0 2.8 1.9 5.2 4.7 6.6l-1 3.8c-.1.4.3.7.6.5l4.5-3c.4 0 .8.1 1.2.1 5.5 0 10-3.5 10-7.8C22 6.5 17.5 3 12 3z"/></svg>
-                        로그인
-                    </button>
                     <button class="btn-share" onclick="sharePage()">
                         <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
                         공유
@@ -235,30 +222,13 @@
 </div>
 
 <script>
-    try {
-        Kakao.init('9e15976baaa60ecc531d234dcbaf301e');
-    } catch (e) {
-        console.log("카카오 키가 아직 설정되지 않았습니다.");
-    }
-
-    function loginWithKakao() {
-        if (typeof Kakao === 'undefined' || !Kakao.isInitialized()) {
-            alert('개발자님, 코드 하단의 Kakao.init() 에 발급받으신 JavaScript 키를 입력해주세요!');
-            return;
-        }
-        Kakao.Auth.login({
-            success: function() {
-                Kakao.API.request({
-                    url: '/v2/user/me',
-                    success: function(res) {
-                        const nickname = res.kakao_account.profile.nickname;
-                        alert(nickname + '님 환영합니다!\n(현재는 로그인 연동 대기 중입니다.)');
-                    },
-                    fail: function() { alert('사용자 정보 요청 실패'); }
-                });
-            },
-            fail: function() { alert('로그인 실패: 사용자가 취소했거나 오류가 발생했습니다.'); }
-        });
+    // 공통 Today 날짜 포맷 함수
+    function getTodayStr() {
+        const kstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
+        const yyyy = kstNow.getFullYear();
+        const mm = String(kstNow.getMonth() + 1).padStart(2, '0');
+        const dd = String(kstNow.getDate()).padStart(2, '0');
+        return `${yyyy}${mm}${dd}`;
     }
 
     const noticeData = [
@@ -307,11 +277,7 @@
 
     async function initVisitCounters() {
         const namespace = 'heycheongju_v1';
-        const kstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
-        const yyyy = kstNow.getFullYear();
-        const mm = String(kstNow.getMonth() + 1).padStart(2, '0');
-        const dd = String(kstNow.getDate()).padStart(2, '0');
-        const todayStr = `${yyyy}${mm}${dd}`;
+        const todayStr = getTodayStr();
 
         try {
             const resTotal = await fetch(`https://api.counterapi.dev/v1/${namespace}/total/up`, { cache: 'no-store' });
@@ -329,29 +295,21 @@
 
     function getCounterNumber(payload) {
         if (payload == null) return 0;
-
         if (typeof payload === 'number') return payload;
-
         if (typeof payload.value === 'number') return payload.value;
         if (typeof payload.count === 'number') return payload.count;
-
         if (payload.data) {
             if (typeof payload.data.value === 'number') return payload.data.value;
             if (typeof payload.data.count === 'number') return payload.data.count;
         }
-
         if (typeof payload.value === 'string' && !isNaN(Number(payload.value))) return Number(payload.value);
         if (typeof payload.count === 'string' && !isNaN(Number(payload.count))) return Number(payload.count);
-
         return 0;
     }
 
     async function readCounterValue(namespace, name) {
         const url = `https://api.counterapi.dev/v1/${namespace}/${encodeURIComponent(name)}?_t=${Date.now()}`;
-        const res = await fetch(url, {
-            method: 'GET',
-            cache: 'no-store'
-        });
+        const res = await fetch(url, { method: 'GET', cache: 'no-store' });
         if (!res.ok) throw new Error(`Counter GET failed: ${res.status}`);
         const json = await res.json();
         return getCounterNumber(json);
@@ -359,10 +317,7 @@
 
     async function upCounterValue(namespace, name) {
         const url = `https://api.counterapi.dev/v1/${namespace}/${encodeURIComponent(name)}/up?_t=${Date.now()}`;
-        const res = await fetch(url, {
-            method: 'GET',
-            cache: 'no-store'
-        });
+        const res = await fetch(url, { method: 'GET', cache: 'no-store' });
         if (!res.ok) throw new Error(`Counter UP failed: ${res.status}`);
         const json = await res.json();
         return getCounterNumber(json);
@@ -372,6 +327,7 @@
 
     async function fetchAllViewCountsSequentially(dataArray) {
         const namespace = 'heycheongju_v1';
+        const todayStr = getTodayStr();
         const myToken = ++viewFetchToken;
 
         for (const item of dataArray) {
@@ -382,7 +338,8 @@
             if (!countElem) continue;
 
             try {
-                const count = await readCounterValue(namespace, `event_${eventUniqueId}`);
+                // Today 뷰수로 측정하여 로드
+                const count = await readCounterValue(namespace, `event_${eventUniqueId}_today_${todayStr}`);
                 if (myToken !== viewFetchToken) return;
 
                 const latestElem = document.getElementById(`view-count-${eventUniqueId}`);
@@ -441,30 +398,6 @@
         } else {
             navigator.clipboard.writeText(shareUrl).then(() => alert('팝업 링크가 복사되었습니다!\n원하는 곳에 붙여넣기 해주세요.'));
         }
-    }
-
-    function getSavedEvents() {
-        try {
-            return JSON.parse(localStorage.getItem('heycheongju_saves')) ||
-                   JSON.parse(localStorage.getItem('heycheongju_likes')) || [];
-        } catch (e) {
-            return [];
-        }
-    }
-
-    function toggleSave(e, eventId) {
-        e.stopPropagation();
-        let saves = getSavedEvents();
-        const btn = e.currentTarget;
-
-        if (saves.includes(eventId)) {
-            saves = saves.filter(id => id !== eventId);
-            btn.classList.remove('saved');
-        } else {
-            saves.push(eventId);
-            btn.classList.add('saved');
-        }
-        localStorage.setItem('heycheongju_saves', JSON.stringify(saves));
     }
 
     const imgModal = document.getElementById('imageModal');
@@ -845,7 +778,6 @@
             return;
         }
 
-        const savedEvents = getSavedEvents();
         let htmlBuffer = '';
 
         filteredData.forEach(item => {
@@ -874,7 +806,6 @@
             }
 
             const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
-            const isSaved = savedEvents.includes(eventUniqueId);
 
             const cardHTML = `
                 <div class="${cardClass}" id="card-${eventUniqueId}" onclick="openEventPopup('${eventUniqueId}')">
@@ -892,10 +823,6 @@
 
                         <div class="card-action-area">
                             <div class="card-action-top">
-                                <button class="btn-save ${isSaved ? 'saved' : ''}" onclick="toggleSave(event, '${eventUniqueId}')" title="저장하기">
-                                    <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
-                                </button>
-
                                 <span class="view-count" title="조회수">
                                     <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
                                     <span id="view-count-${eventUniqueId}">...</span>
@@ -919,7 +846,9 @@
         if (!item) return;
 
         try {
-            const newCount = await upCounterValue('heycheongju_v1', `event_${eventId}`);
+            const todayStr = getTodayStr();
+            // 팝업 클릭 시 팝업 주소 기반으로 Today 뷰수 증가
+            const newCount = await upCounterValue('heycheongju_v1', `event_${eventId}_today_${todayStr}`);
             const countElem = document.getElementById(`view-count-${eventId}`);
             if (countElem) countElem.innerText = String(newCount);
         } catch (e) {
