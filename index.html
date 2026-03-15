@@ -75,16 +75,17 @@
         .filter-cb:checked + .cb-label { background: var(--primary-color); color: #fff; border-color: var(--primary-color); font-weight: 700; box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3); }
         .filter-cb:checked + .cb-label.age-label { background: #ff9800; border-color: #ff9800; box-shadow: 0 2px 4px rgba(255, 152, 0, 0.3); }
 
-        /* ------------------ 배너 광고 스타일 추가 ------------------ */
-        .banner-ad-zone {
+        /* 배너 광고 스타일 (ad, banner 등의 단어를 피해서 차단 방지) */
+        .promo-area-wrap {
             width: 100%;
             background-color: #fff;
             padding: 10px;
             box-sizing: border-box;
             border-bottom: 1px solid var(--border-color);
             text-align: center;
+            display: block;
         }
-        .banner-ad-zone img {
+        .promo-area-wrap img {
             max-width: 100%;
             height: auto;
             border-radius: 8px;
@@ -99,7 +100,8 @@
             .app-container { max-width: 1080px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; }
             header { border-radius: 16px 16px 0 0; padding: 20px 24px 10px 24px; }
             .sticky-wrapper { border-radius: 16px 16px 0 0; }
-            #list-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 20px; align-items: stretch; }
+            /* 3열에서 다시 2열로 원복 */
+            #list-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 20px; align-items: stretch; }
             .card { margin-bottom: 0; height: auto; display: flex; flex-direction: column; }
             .card-title-row { margin-top: auto; padding-top: 10px; }
         }
@@ -134,9 +136,9 @@
 
         .card-more-text { font-size: 0.7rem; color: #999; font-weight: 500; white-space: nowrap; background: #f4f4f4; padding: 3px 6px; border-radius: 4px; }
 
-        /* ------------------ 카드 하단 장소/일정 정보 스타일 추가 ------------------ */
-        .card-bottom-info { margin-top: 10px; font-size: 0.75rem; color: #888; display: flex; flex-direction: column; gap: 3px; }
-        .card-bottom-info span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px; }
+        /* 카드 하단 정보 1줄 가로 배치로 수정 */
+        .card-bottom-info { margin-top: 10px; font-size: 0.75rem; color: #888; display: flex; flex-direction: row; align-items: center; flex-wrap: nowrap; gap: 6px; overflow: hidden; }
+        .card-bottom-info span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 3px; }
 
         .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; grid-column: 1 / -1; }
         .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; grid-column: 1 / -1; }
@@ -169,7 +171,6 @@
 
         .event-modal-body { padding: 20px; overflow-y: auto; flex: 1; }
         
-        /* ------------------ 팝업 이미지 컨테이너 스타일 추가 ------------------ */
         .popup-img-container { width: 100%; margin-bottom: 15px; border-radius: 8px; overflow: hidden; text-align: center; background-color: #f9f9f9; }
         .popup-img-container img { max-width: 100%; height: auto; display: block; margin: 0 auto; }
 
@@ -225,9 +226,9 @@
         </div>
     </div>
 
-    <div class="banner-ad-zone" id="top-banner">
+    <div class="promo-area-wrap" id="main-promo-wrap">
         <a href="#" target="_blank">
-            <img src="https://via.placeholder.com/500x80?text=여기에+광고+배너를+넣으세요" alt="배너 영역" />
+            <img src="https://via.placeholder.com/500x80?text=여기에+배너를+넣으세요" alt="헤이청주 프로모션 배너" />
         </a>
     </div>
 
@@ -272,7 +273,7 @@ const firebaseConfig = {
     }
     const db = firebase.database();
 
-    // 날짜 구하기 공통 함수 (파이어베이스 Today용)
+    // 날짜 구하기 공통 함수
     function getTodayStr() {
         const kstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
         const yyyy = kstNow.getFullYear();
@@ -325,9 +326,9 @@ const firebaseConfig = {
         updateElem.innerText = `최근 업데이트: ${y}/${m}/${d} ${h}:${min}`;
     }
 
-    // 🟢 원상복구된 메인 페이지 (Total/Today) 방문자 통계 (이전 무료 API 데이터 연동)
+    // 메인 방문자수 통계
     async function initVisitCounters() {
-        const namespace = 'heycheongju_v1'; // 기존과 동일하게 유지하여 데이터 복구
+        const namespace = 'heycheongju_v1'; 
         const todayStr = getTodayStr();
 
         try {
@@ -358,7 +359,7 @@ const firebaseConfig = {
         return 0;
     }
 
-    // ★ 카드별 개별 뷰수 (Firebase 사용 - 1번만 통신해서 전부 가져옴)
+    // 카드 개별 조회수
     function fetchAllViewCountsSequentially(dataArray) {
         const todayStr = getTodayStr();
         const eventViewsRef = db.ref('event_views/' + todayStr);
@@ -429,7 +430,6 @@ const firebaseConfig = {
         }
     });
 
-    // ★ 2중 팝업 문제 해결: 버튼 내부 클릭 시에도 작동
     document.addEventListener('click', function(e) {
         const btn = e.target.closest('.btn-img-modal');
         if (btn) {
@@ -828,7 +828,7 @@ const firebaseConfig = {
 
             const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
 
-            // 🌟 카드 하단에 장소/일정 정보 추가
+            // 🌟 카드 하단 1줄 가로 배치 
             const cardHTML = `
                 <div class="${cardClass}" id="card-${eventUniqueId}" onclick="openEventPopup('${eventUniqueId}')">
                     ${overlayHTML}
@@ -855,8 +855,9 @@ const firebaseConfig = {
                     </div>
                     
                     <div class="card-bottom-info">
-                        <span>📍 ${item.place ? item.place : '장소 정보 없음'}</span>
-                        <span>🗓️ ${item.date ? item.date : '일정 정보 없음'}</span>
+                        <span style="flex-shrink:0;">📍 ${item.place ? item.place : '장소미정'}</span>
+                        <span style="color:#ddd;">|</span>
+                        <span style="flex:1;">🗓️ ${item.date ? item.date : '일정미정'}</span>
                     </div>
                 </div>
             `;
@@ -864,8 +865,6 @@ const firebaseConfig = {
         });
 
         container.innerHTML = htmlBuffer;
-
-        // 개별 카드 로딩 후 파이어베이스 기반 조회수 호출
         fetchAllViewCountsSequentially(filteredData);
     }
 
@@ -873,7 +872,6 @@ const firebaseConfig = {
         const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
         if (!item) return;
 
-        // ★ 파이어베이스 팝업 조회수 증가 (클릭 즉시 +1)
         try {
             const todayStr = getTodayStr();
             const specificEventRef = db.ref(`event_views/${todayStr}/${eventId}`);
@@ -894,13 +892,13 @@ const firebaseConfig = {
         let applyTextStyle = 'color:var(--text-sub);';
         if (item.isTodayClose) applyTextStyle = 'color:#E53935; font-weight:700;';
 
-        // 🌟 팝업 상단 이미지 데이터 연동 ('이미지' 열 값 확인)
+        // 🌟 팝업 상단 이미지 데이터 연동 및 외부 블로그 차단 우회 속성 적용
         let popupImgHtml = '';
-        const popupImgUrl = item['이미지'] || item.image || ''; 
+        const popupImgUrl = item['이미지'] || item.image || item.Image || ''; 
         if (popupImgUrl && popupImgUrl.trim() !== '') {
             popupImgHtml = `
                 <div class="popup-img-container">
-                    <img src="${popupImgUrl.trim()}" alt="행사 썸네일" />
+                    <img src="${popupImgUrl.trim()}" alt="행사 썸네일" referrerpolicy="no-referrer" onerror="this.style.display='none'" />
                 </div>
             `;
         }
@@ -980,8 +978,8 @@ const firebaseConfig = {
     document.addEventListener('DOMContentLoaded', () => {
         initNotice();
         initLastUpdated();
-        initVisitCounters(); // 기존 무료 API 연동 (메인 방문자 수)
-        fetchEventData();    // 카드 로딩 후 파이어베이스로 개별 조회수 연동
+        initVisitCounters();
+        fetchEventData(); 
     });
 </script>
 </body>
