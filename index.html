@@ -41,7 +41,8 @@
         /* 팝업 열릴 시 뒤쪽 스크롤 방지 */
         body.modal-open { overflow: hidden; }
 
-        .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; }
+        /* 하단 고정 배너를 위한 여백 추가 */
+        .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; padding-bottom: 60px; }
         
         .sticky-wrapper { position: sticky; top: 0; z-index: 100; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: inherit; }
 
@@ -65,16 +66,24 @@
         .notice-container { background: rgba(0, 0, 0, 0.15); border-radius: 6px; padding: 4px 8px; text-align: center; font-size: 0.7rem; font-weight: 500; height: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 5px; }
         .notice-container a { color: #fff; text-decoration: none; transition: opacity 0.3s ease-in-out; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
 
+        /* 배너 하단 고정 스타일 */
         .promo-area-wrap {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
             width: 100%;
-            height: 45px; 
+            max-width: 500px;
+            height: 60px; 
             background-color: #fff;
             padding: 5px 10px;
             box-sizing: border-box;
-            border-bottom: 1px solid var(--border-color);
+            border-top: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 100000; /* 팝업 오버레이보다 무조건 위로 오도록 설정 */
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
         }
         .promo-area-wrap img {
             max-width: 100%;
@@ -111,12 +120,10 @@
         @media (min-width: 768px) {
             body { padding-top: 30px; padding-bottom: 30px; background-color: #e9ecef; }
             
-            /* 가로폭을 살짝 줄여서 UI가 늘어지지 않게 고정 */
-            .app-container { max-width: 800px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; }
+            .app-container { max-width: 800px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; padding-bottom: 90px; }
             header { border-radius: 16px 16px 0 0; padding: 20px 24px 15px 24px; }
             .sticky-wrapper { border-radius: 16px 16px 0 0; }
             
-            /* PC버전 텍스트 가독성 상향 */
             h1 { font-size: 1.6rem; margin-bottom: 8px; }
             .sub-header { font-size: 0.8rem; }
             .header-stats { font-size: 0.8rem; }
@@ -124,15 +131,25 @@
             .search-input { font-size: 1rem; padding: 10px 15px; }
             .tab { font-size: 1rem; padding: 10px 0; }
 
-            /* 배너 비율 고정 */
-            .promo-area-wrap { height: 65px; padding: 8px 20px; }
+            /* 하단 고정 배너 PC버전용 조정 */
+            .promo-area-wrap { 
+                max-width: 800px; 
+                height: 70px; 
+                padding: 8px 20px; 
+                bottom: 30px; /* PC의 바디 패딩에 맞춰 자연스럽게 컨테이너 바닥에 붙게 만듦 */
+                border-radius: 16px;
+                border: 1px solid var(--border-color);
+                box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            }
             
-            #list-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 20px; align-items: stretch; padding: 20px; }
+            /* 카드 삐져나감(Grid Blowout) 완벽 해결: 1fr -> minmax(0, 1fr) */
+            #list-container { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; align-items: stretch; padding: 20px; }
             .card { margin-bottom: 0; height: auto; display: flex; flex-direction: column; }
             .card-title-row { margin-top: auto; padding-top: 10px; }
         }
 
-        .card { background: var(--card-bg); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--border-color); display: block; transition: transform 0.2s; cursor: pointer; }
+        /* min-width: 0 추가하여 텍스트 길어질 때 카드가 영역 뚫고 나가는 것 방지 */
+        .card { background: var(--card-bg); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--border-color); display: block; transition: transform 0.2s; cursor: pointer; min-width: 0; }
         .card:not(.disabled-card):hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
         .card.disabled-card { position: relative; overflow: hidden; pointer-events: none; user-select: none; }
         .status-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.45); z-index: 10; display: flex; align-items: center; justify-content: center; }
@@ -153,12 +170,12 @@
         .view-count { display: flex; align-items: center; gap: 3px; font-size: 0.7rem; color: #aaa; font-weight: 500; flex-shrink: 0; margin-left: 8px; margin-top: 2px; }
         .view-count svg { width: 14px; height: 14px; fill: currentColor; }
 
-        .card-title-row { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 2px; }
+        .card-title-row { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 2px; min-width: 0; }
         .card-title-row .title { font-size: 1rem; font-weight: 700; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; padding-right: 4px; }
         
         .card-more-text { flex-shrink: 0; font-size: 0.65rem; color: #999; font-weight: 500; background: #f4f4f4; padding: 2px 6px; border-radius: 4px; }
 
-        .card-bottom-info { margin-top: 8px; font-size: 0.7rem; color: #888; display: flex; flex-direction: row; align-items: center; flex-wrap: nowrap; gap: 6px; overflow: hidden; }
+        .card-bottom-info { margin-top: 8px; font-size: 0.7rem; color: #888; display: flex; flex-direction: row; align-items: center; flex-wrap: nowrap; gap: 6px; overflow: hidden; min-width: 0; }
         .card-bottom-info span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 3px; }
 
         .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; grid-column: 1 / -1; }
@@ -169,15 +186,19 @@
         .img-modal-content { max-width: 90%; max-height: calc(100vh - 80px); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); object-fit: contain; }
         .img-modal-close { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.9); color: #111; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 1.5rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
 
-        .event-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding-bottom: 20px; box-sizing: border-box; }
+        /* 하단 배너를 침범하지 않게 padding-bottom 설정 */
+        .event-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding-bottom: 70px; box-sizing: border-box; }
         .event-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
         
         .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: calc(100vh - 70px); border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px; }
         .event-modal-overlay.active .event-modal-content-box { transform: translateY(0); }
 
         @media (min-width: 768px) {
-            .event-modal-overlay { align-items: center; padding-bottom: 0; }
-            .event-modal-content-box { border-radius: 16px; transform: scale(0.95); opacity: 0; transition: all 0.2s ease-out; }
+            .event-modal-overlay { 
+                align-items: flex-end; /* PC에서도 아래에서 올라오게 강제 */
+                padding-bottom: 110px; /* 배너 영역 70px + 바디 패딩 30px + 약간의 간격 확보 */
+            }
+            .event-modal-content-box { border-radius: 16px; transform: scale(0.95); opacity: 0; transition: all 0.2s ease-out; margin-bottom: 0; }
             .event-modal-overlay.active .event-modal-content-box { transform: scale(1); opacity: 1; }
         }
 
@@ -195,7 +216,6 @@
         .popup-img-container { width: 100%; margin-bottom: 15px; border-radius: 8px; overflow: hidden; text-align: center; background-color: #f9f9f9; }
         .popup-img-container img { max-width: 100%; height: auto; display: block; margin: 0 auto; }
 
-        /* 🌟 오리지널 베이직 & 심플 디자인으로 복귀 🌟 */
         .info-row { font-size: 0.95rem; color: #444; margin-bottom: 10px; display: flex; align-items: flex-start; }
         .info-label { font-weight: 700; width: 60px; flex-shrink: 0; color: #333; line-height: 1.4; }
         .info-desc { flex: 1; word-break: keep-all; line-height: 1.4; color: #222; }
@@ -232,12 +252,6 @@
             <div class="notice-container"><a id="notice-link"></a></div>
         </header>
 
-        <div class="promo-area-wrap" id="main-promo-wrap">
-            <a href="https://open.kakao.com/o/gAUqOrai" target="_blank" style="display:block; width:100%; height:100%;">
-                <img src="https://postfiles.pstatic.net/MjAyNjAzMTVfMjAg/MDAxNzczNTYwODk5Mzc3.2jH1gOMPG1xXBHUw-YXiaUU_sZ9T5ZrOfGGy0EtlANIg.jPsRtljkL9r-mFAclLCqmsG-MA_i_0ecX6h4QoKSoPkg.PNG/%EC%A0%9C%EB%AA%A9%EC%9D%84_%EC%9E%85%EB%A0%A5%ED%95%B4%EC%A3%BC%EC%84%B8%EC%9A%94._(1).png?type=w773" alt="상단 배너" style="width:100%; height:100%; object-fit:cover;" />
-            </a>
-        </div>
-
         <div class="search-container">
             <input type="text" id="search-input" class="search-input" placeholder="검색어를 입력하세요 (예: 도서관, 과학, 공연)" onkeyup="applyFilters()" />
         </div>
@@ -257,6 +271,12 @@
     <div class="content" id="list-container">
         <div class="loading-state">데이터를 불러오는 중입니다... ⏳</div>
     </div>
+</div>
+
+<div class="promo-area-wrap" id="main-promo-wrap">
+    <a href="https://open.kakao.com/o/gAUqOrai" target="_blank" style="display:block; width:100%; height:100%;">
+        <img src="https://postfiles.pstatic.net/MjAyNjAzMTVfMjY2/MDAxNzczNTc4Nzg2Mzc2.h9rLpbeh1rWUistHqXJAOy547IYlm6gaua04ANxTgB4g.Uxz_ZQIlh3H0WuGyYyw5ky2Kt-vuaonw-o3DRnn3qwsg.PNG/%EC%A0%9C%EB%AA%A9%EC%9D%84_%EC%9E%85%EB%A0%A5%ED%95%B4%EC%A3%BC%EC%84%B8%EC%9A%94._(4).png?type=w773" alt="상단 배너" style="width:100%; height:100%; object-fit:cover;" />
+    </a>
 </div>
 
 <div class="img-modal-overlay" id="imageModal">
@@ -377,9 +397,9 @@
         return 0;
     }
 
+    // 🌟 조회수가 매일 리셋되지 않고 무한 누적되도록 수정 (event_views_total 폴더 사용) 🌟
     function fetchAllViewCountsSequentially(dataArray) {
-        const todayStr = getTodayStr();
-        const eventViewsRef = db.ref('event_views/' + todayStr);
+        const eventViewsRef = db.ref('event_views_total');
 
         eventViewsRef.once('value').then((snapshot) => {
             const viewsData = snapshot.val() || {}; 
@@ -887,26 +907,12 @@
         const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
         if (!item) return;
 
-        // 🌟 팝업 열릴 때 스크롤 멈추고 광고 배너를 맨 앞으로 복제해서 띄워주는 로직 🌟
+        // 스크롤 방지만 유지, 기존의 광고 클론(clone) 코드는 불필요하므로 삭제
         document.body.classList.add('modal-open');
-        const originalBanner = document.getElementById('main-promo-wrap');
-        if (originalBanner) {
-            const rect = originalBanner.getBoundingClientRect();
-            const clone = originalBanner.cloneNode(true);
-            clone.id = 'modal-promo-clone';
-            clone.style.position = 'fixed';
-            clone.style.top = rect.top + 'px';
-            clone.style.left = rect.left + 'px';
-            clone.style.width = rect.width + 'px';
-            clone.style.height = rect.height + 'px';
-            clone.style.zIndex = '100000'; // 최상단 오버레이 위로 띄움
-            clone.style.margin = '0';
-            document.body.appendChild(clone);
-        }
 
         try {
-            const todayStr = getTodayStr();
-            const specificEventRef = db.ref(`event_views/${todayStr}/${eventId}`);
+            // 🌟 팝업 클릭 시 조회수도 event_views_total 폴더에 누적되도록 변경 🌟
+            const specificEventRef = db.ref(`event_views_total/${eventId}`);
             
             specificEventRef.set(firebase.database.ServerValue.increment(1)).then(() => {
                 specificEventRef.once('value').then(snap => {
@@ -934,7 +940,6 @@
             `;
         }
 
-        // 🌟 다시 기본 형태의 깔끔한 텍스트 폼으로 복구 🌟
         document.getElementById('popupBody').innerHTML = `
             ${popupImgHtml}
             <div class="info-row"><div class="info-label">장소</div><div class="info-desc">${item.place || '정보 없음'}</div></div>
@@ -1003,10 +1008,8 @@
     function closeEventPopup(e) {
         if (e && e.target !== e.currentTarget && !e.target.classList.contains('event-modal-close-btn')) return;
         
-        // 🌟 팝업창 닫을 때 방지했던 스크롤 원복 & 활성화했던 배너 삭제 🌟
+        // 스크롤 방지 해제 (기존 클론 삭제 로직 제거)
         document.body.classList.remove('modal-open');
-        const clone = document.getElementById('modal-promo-clone');
-        if (clone) clone.remove();
 
         document.getElementById('eventModal').classList.remove('active');
         try {
