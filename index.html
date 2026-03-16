@@ -9,8 +9,6 @@
     <meta property="og:type" content="website" />
     <meta property="og:title" content="헤이청주 📢 교육/체험 링크모음" />
     <meta property="og:description" content="⬆️ 오늘 새소식 확인하러가기 ⬆️" />
-    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/c/ce/Transparent.gif" />
-
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
     
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2755313313061030"
@@ -147,6 +145,7 @@
         .card:not(.disabled-card):hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
         .card.disabled-card { position: relative; overflow: hidden; pointer-events: none; user-select: none; }
         .status-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.45); z-index: 10; display: flex; align-items: center; justify-content: center; }
+        /* 커밍순 크기 줄인 CSS 적용됨 */
         .status-stamp { color: #fff; border: 2px solid #fff; padding: 4px 12px; font-size: 1.2rem; font-weight: 800; letter-spacing: 1px; transform: rotate(-10deg); border-radius: 6px; background: rgba(0, 0, 0, 0.3); text-align: center; }
         .status-stamp.closed { color: #ff5252; border-color: #ff5252; background: rgba(255, 82, 82, 0.15); }
 
@@ -276,7 +275,7 @@
 </div>
 
 <div class="promo-area-wrap" id="main-promo-wrap">
-    <a href="https://헤이청주.com/?id=A067" id="banner-link-target" style="display:block; width:100%; height:100%;">
+    <a href="https://헤이청주.com/?id=A067" id="banner-link" style="display:block; width:100%; height:100%;">
     </a>
 </div>
 
@@ -330,7 +329,7 @@
         { text: "[⚡내일오픈/마감,긴급정보 실시간 알림 오픈챗 입장하기👆] ", link: "https://open.kakao.com/o/gAUqOrai" },
         { text: "[헤이청주에 ☎️ 협업문의/제안/건의하기] 👆", link: "https://forms.gle/h8KLaLkfsU55aH5T9" },
         { text: "📝간혹 오타가 발생하므로 상세정보확인 페이지 반드시 참고", link: "" },
-        { text: "📢[제휴/이벤트] 정서뮤직원데이클래스 준비 👇 ", link: "" }
+        { text: "📢[제휴/이벤트 새소식] 총 80만원 상당의 혜택 확인하러가기 👇 ", link: "" }
     ];
 
     function initNotice() {
@@ -1038,10 +1037,10 @@
         initVisitCounters();
         fetchEventData(); 
         
-        // 카카오 봇 몰래 하단 배너 띄우기 (크롤러 회피용)
-        const bannerTarget = document.getElementById('banner-link-target');
-        if (bannerTarget) {
-            bannerTarget.innerHTML = '<img src="https://postfiles.pstatic.net/MjAyNjAzMTVfMjY2/MDAxNzczNTc4Nzg2Mzc2.h9rLpbeh1rWUistHqXJAOy547IYlm6gaua04ANxTgB4g.Uxz_ZQIlh3H0WuGyYyw5ky2Kt-vuaonw-o3DRnn3qwsg.PNG/%EC%A0%9C%EB%AA%A9%EC%9D%84_%EC%9E%85%EB%A0%A5%ED%95%B4%EC%A3%BC%EC%84%B8%EC%9A%94._(4).png?type=w773" alt="하단 배너" style="width:100%; height:100%; object-fit:cover;" />';
+        // 카카오 봇 몰래 배너 이미지 넣기 (크롤러 방지)
+        const bannerLink = document.getElementById('banner-link');
+        if (bannerLink) {
+            bannerLink.innerHTML = '<img src="https://postfiles.pstatic.net/MjAyNjAzMTVfMjY2/MDAxNzczNTc4Nzg2Mzc2.h9rLpbeh1rWUistHqXJAOy547IYlm6gaua04ANxTgB4g.Uxz_ZQIlh3H0WuGyYyw5ky2Kt-vuaonw-o3DRnn3qwsg.PNG/%EC%A0%9C%EB%AA%A9%EC%9D%84_%EC%9E%85%EB%A0%A5%ED%95%B4%EC%A3%BC%EC%84%B8%EC%9A%94._(4).png?type=w773" alt="상단 배너" style="width:100%; height:100%; object-fit:cover;" />';
         }
     });
 </script>
