@@ -41,8 +41,8 @@
         /* 팝업 열릴 시 뒤쪽 스크롤 방지 */
         body.modal-open { overflow: hidden; }
 
-        /* 하단 고정 배너를 위한 여백 추가 */
-        .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; padding-bottom: 60px; }
+        /* 하단 고정 배너를 위한 여백 추가 (모바일 높이 45px에 맞춰 조정) */
+        .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; padding-bottom: 50px; }
         
         .sticky-wrapper { position: sticky; top: 0; z-index: 100; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: inherit; }
 
@@ -66,7 +66,7 @@
         .notice-container { background: rgba(0, 0, 0, 0.15); border-radius: 6px; padding: 4px 8px; text-align: center; font-size: 0.7rem; font-weight: 500; height: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 5px; }
         .notice-container a { color: #fff; text-decoration: none; transition: opacity 0.3s ease-in-out; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
 
-        /* 배너 하단 고정 스타일 */
+        /* 🌟 배너 원래 사이즈 복구 & 하단 완벽 고정 🌟 */
         .promo-area-wrap {
             position: fixed;
             bottom: 0;
@@ -74,15 +74,15 @@
             transform: translateX(-50%);
             width: 100%;
             max-width: 500px;
-            height: 60px; 
+            height: 45px; /* 원래 사이즈 */
             background-color: #fff;
-            padding: 5px 10px;
+            padding: 5px 10px; /* 원래 패딩 */
             box-sizing: border-box;
             border-top: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 100000; /* 팝업 오버레이보다 무조건 위로 오도록 설정 */
+            z-index: 100000;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
         }
         .promo-area-wrap img {
@@ -120,7 +120,8 @@
         @media (min-width: 768px) {
             body { padding-top: 30px; padding-bottom: 30px; background-color: #e9ecef; }
             
-            .app-container { max-width: 800px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; padding-bottom: 90px; }
+            /* 컨테이너 패딩 PC 배너 높이(65px)에 맞춰 수정 */
+            .app-container { max-width: 800px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; padding-bottom: 75px; }
             header { border-radius: 16px 16px 0 0; padding: 20px 24px 15px 24px; }
             .sticky-wrapper { border-radius: 16px 16px 0 0; }
             
@@ -131,24 +132,23 @@
             .search-input { font-size: 1rem; padding: 10px 15px; }
             .tab { font-size: 1rem; padding: 10px 0; }
 
-            /* 하단 고정 배너 PC버전용 조정 */
+            /* 🌟 하단 고정 배너 PC버전용: 붕 뜨는 현상 완전 해결 (bottom: 0) 🌟 */
             .promo-area-wrap { 
                 max-width: 800px; 
-                height: 70px; 
-                padding: 8px 20px; 
-                bottom: 30px; /* PC의 바디 패딩에 맞춰 자연스럽게 컨테이너 바닥에 붙게 만듦 */
-                border-radius: 16px;
+                height: 65px; /* 원래 사이즈 */
+                padding: 8px 20px; /* 원래 패딩 */
+                bottom: 0; /* 강제로 맨 밑바닥에 부착 */
+                border-radius: 16px 16px 0 0; /* 위쪽만 둥글게 처리하여 깔끔하게 마감 */
                 border: 1px solid var(--border-color);
+                border-bottom: none;
                 box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
             }
             
-            /* 카드 삐져나감(Grid Blowout) 완벽 해결: 1fr -> minmax(0, 1fr) */
             #list-container { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; align-items: stretch; padding: 20px; }
             .card { margin-bottom: 0; height: auto; display: flex; flex-direction: column; }
             .card-title-row { margin-top: auto; padding-top: 10px; }
         }
 
-        /* min-width: 0 추가하여 텍스트 길어질 때 카드가 영역 뚫고 나가는 것 방지 */
         .card { background: var(--card-bg); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--border-color); display: block; transition: transform 0.2s; cursor: pointer; min-width: 0; }
         .card:not(.disabled-card):hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
         .card.disabled-card { position: relative; overflow: hidden; pointer-events: none; user-select: none; }
@@ -186,8 +186,8 @@
         .img-modal-content { max-width: 90%; max-height: calc(100vh - 80px); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); object-fit: contain; }
         .img-modal-close { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.9); color: #111; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 1.5rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
 
-        /* 하단 배너를 침범하지 않게 padding-bottom 설정 */
-        .event-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding-bottom: 70px; box-sizing: border-box; }
+        /* 하단 배너를 침범하지 않게 padding-bottom 설정 (모바일 45px에 맞춤) */
+        .event-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding-bottom: 45px; box-sizing: border-box; }
         .event-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
         
         .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: calc(100vh - 70px); border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px; }
@@ -195,8 +195,8 @@
 
         @media (min-width: 768px) {
             .event-modal-overlay { 
-                align-items: flex-end; /* PC에서도 아래에서 올라오게 강제 */
-                padding-bottom: 110px; /* 배너 영역 70px + 바디 패딩 30px + 약간의 간격 확보 */
+                align-items: flex-end; 
+                padding-bottom: 65px; /* PC 배너 높이 65px에 맞춰 수정 */
             }
             .event-modal-content-box { border-radius: 16px; transform: scale(0.95); opacity: 0; transition: all 0.2s ease-out; margin-bottom: 0; }
             .event-modal-overlay.active .event-modal-content-box { transform: scale(1); opacity: 1; }
@@ -216,8 +216,10 @@
         .popup-img-container { width: 100%; margin-bottom: 15px; border-radius: 8px; overflow: hidden; text-align: center; background-color: #f9f9f9; }
         .popup-img-container img { max-width: 100%; height: auto; display: block; margin: 0 auto; }
 
+        /* 🌟 팝업 정보 텍스트 구분선 스타일 추가 🌟 */
         .info-row { font-size: 0.95rem; color: #444; margin-bottom: 10px; display: flex; align-items: flex-start; }
-        .info-label { font-weight: 700; width: 60px; flex-shrink: 0; color: #333; line-height: 1.4; }
+        .info-label { font-weight: 700; color: #333; line-height: 1.4; flex-shrink: 0; }
+        .info-divider { color: #ddd; margin: 0 10px; line-height: 1.4; flex-shrink: 0; font-weight: 400; }
         .info-desc { flex: 1; word-break: keep-all; line-height: 1.4; color: #222; }
 
         .event-modal-footer { padding: 15px 20px; border-top: 1px solid #eee; background: #fafafa; display: flex; gap: 10px; }
@@ -397,7 +399,6 @@
         return 0;
     }
 
-    // 🌟 조회수가 매일 리셋되지 않고 무한 누적되도록 수정 (event_views_total 폴더 사용) 🌟
     function fetchAllViewCountsSequentially(dataArray) {
         const eventViewsRef = db.ref('event_views_total');
 
@@ -907,11 +908,9 @@
         const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
         if (!item) return;
 
-        // 스크롤 방지만 유지, 기존의 광고 클론(clone) 코드는 불필요하므로 삭제
         document.body.classList.add('modal-open');
 
         try {
-            // 🌟 팝업 클릭 시 조회수도 event_views_total 폴더에 누적되도록 변경 🌟
             const specificEventRef = db.ref(`event_views_total/${eventId}`);
             
             specificEventRef.set(firebase.database.ServerValue.increment(1)).then(() => {
@@ -940,13 +939,14 @@
             `;
         }
 
+        // 🌟 팝업창 세부 정보에 회색 구분선(|) 적용 🌟
         document.getElementById('popupBody').innerHTML = `
             ${popupImgHtml}
-            <div class="info-row"><div class="info-label">장소</div><div class="info-desc">${item.place || '정보 없음'}</div></div>
-            <div class="info-row"><div class="info-label">비용</div><div class="info-desc">${item.costType || '정보 없음'}</div></div>
-            <div class="info-row"><div class="info-label">접수</div><div class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</div></div>
-            <div class="info-row"><div class="info-label">일정</div><div class="info-desc">${item.date || '해당정보 없음'}</div></div>
-            ${item.applyNote ? `<div class="info-row"><div class="info-label">꿀팁</div><div class="info-desc" style="font-weight:bold; color:var(--text-main);">${item.applyNote}</div></div>` : ''}
+            <div class="info-row"><span class="info-label">장소</span><span class="info-divider">|</span><span class="info-desc">${item.place || '정보 없음'}</span></div>
+            <div class="info-row"><span class="info-label">비용</span><span class="info-divider">|</span><span class="info-desc">${item.costType || '정보 없음'}</span></div>
+            <div class="info-row"><span class="info-label">접수</span><span class="info-divider">|</span><span class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</span></div>
+            <div class="info-row"><span class="info-label">일정</span><span class="info-divider">|</span><span class="info-desc">${item.date || '해당정보 없음'}</span></div>
+            ${item.applyNote ? `<div class="info-row"><span class="info-label">꿀팁</span><span class="info-divider">|</span><span class="info-desc" style="font-weight:bold; color:var(--text-main);">${item.applyNote}</span></div>` : ''}
         `;
 
         let btnDetails = '';
@@ -1008,10 +1008,9 @@
     function closeEventPopup(e) {
         if (e && e.target !== e.currentTarget && !e.target.classList.contains('event-modal-close-btn')) return;
         
-        // 스크롤 방지 해제 (기존 클론 삭제 로직 제거)
         document.body.classList.remove('modal-open');
-
         document.getElementById('eventModal').classList.remove('active');
+        
         try {
             history.pushState(null, '', window.location.pathname);
         } catch (e) {}
