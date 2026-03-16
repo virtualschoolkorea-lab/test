@@ -952,15 +952,16 @@
 
         const tipText = (item['꿀팁'] || '').trim();
 
+// 태그 사이의 보이지 않는 특수 공백이 들어가지 않도록 정돈된 코드입니다.
         document.getElementById('popupBody').innerHTML = `
-            ${popupImgHtml}
-            <div class="info-row"><span class="info-label">장소</span><span class="info-divider">|</span><span class="info-desc">${item.place || '정보 없음'}</span></div>
-            <div class="info-row"><span class="info-label">대상</span><span class="info-divider">|</span><span class="info-desc">${item.age || '누구나 (또는 정보 없음)'}</span></div>
-            <div class="info-row"><span class="info-label">비용</span><span class="info-divider">|</span><span class="info-desc">${item.costType || '정보 없음'}</span></div>
-            <div class="info-row"><span class="info-label">접수</span><span class="info-divider">|</span><span class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</span></div>
-            <div class="info-row"><span class="info-label">일정</span><span class="info-divider">|</span><span class="info-desc">${item.date || '해당정보 없음'}</span></div>
-            ${tipText ? `<div class="info-row"><span class="info-label">메모</span><span class="info-divider">|</span><span class="info-desc" style="font-weight:bold; color:var(--text-main);">${tipText}</span></div>` : ''}
-        `;
+            ${popupImgHtml}
+            <div class="info-row"><span class="info-label">장소</span><span class="info-divider">|</span><span class="info-desc">${item.place || '정보 없음'}</span></div>
+            <div class="info-row"><span class="info-label">대상</span><span class="info-divider">|</span><span class="info-desc">${item.age || '누구나'}</span></div>
+            <div class="info-row"><span class="info-label">비용</span><span class="info-divider">|</span><span class="info-desc">${item.costType || '정보 없음'}</span></div>
+            <div class="info-row"><span class="info-label">접수</span><span class="info-divider">|</span><span class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</span></div>
+            <div class="info-row"><span class="info-label">일정</span><span class="info-divider">|</span><span class="info-desc">${item.date || '해당정보 없음'}</span></div>
+            ${tipText ? `<div class="info-row"><span class="info-label">메모</span><span class="info-divider">|</span><span class="info-desc" style="font-weight:bold; color:var(--text-main);">${tipText}</span></div>` : ''}
+        `;
 
         let btnDetails = '';
         const detailUrl = item.link || item['링크'];
