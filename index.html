@@ -64,7 +64,6 @@
         .notice-container { background: rgba(0, 0, 0, 0.15); border-radius: 6px; padding: 4px 8px; text-align: center; font-size: 0.7rem; font-weight: 500; height: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 5px; }
         .notice-container a { color: #fff; text-decoration: none; transition: opacity 0.3s ease-in-out; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
 
-        /* 🌟 배너를 모든 팝업(z-index: 99999)보다 위로(100000) 설정하여 절대 가려지지 않음 🌟 */
         .promo-area-wrap {
             position: fixed;
             bottom: 0;
@@ -176,11 +175,21 @@
         .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; grid-column: 1 / -1; }
         .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; grid-column: 1 / -1; }
 
-        /* 🌟 오버레이(팝업 배경)들에 padding-bottom을 주어 배너 영역을 침범하지 않게 함 🌟 */
+        /* 🌟 이미지 스크롤 탐색 및 우측 상단 X버튼 밀착 최적화 🌟 */
         .img-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; padding-bottom: 45px; box-sizing: border-box; }
         .img-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
-        .img-modal-content { max-width: 90%; max-height: calc(100vh - 80px); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); object-fit: contain; }
-        .img-modal-close { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.9); color: #111; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 1.5rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        
+        .img-modal-wrapper { position: relative; max-width: 90%; max-height: calc(100vh - 100px); display: inline-block; }
+        .img-modal-scroll-area { max-height: calc(100vh - 100px); overflow-y: auto; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); background: #fff; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+        
+        /* 얇고 예쁜 스크롤바 세팅 */
+        .img-modal-scroll-area::-webkit-scrollbar { width: 6px; }
+        .img-modal-scroll-area::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
+        
+        .img-modal-content { display: block; width: 100%; height: auto; }
+        
+        /* X 버튼이 이미지 크기에 딱 맞춰 우측 상단 모서리에 붙도록 설계 */
+        .img-modal-close { position: absolute; top: -14px; right: -14px; background: #fff; color: #111; border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 1.6rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); z-index: 100; line-height: 1; padding: 0 0 2px 0; }
 
         .event-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding-bottom: 45px; box-sizing: border-box; }
         .event-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
@@ -188,26 +197,14 @@
         .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: calc(100vh - 70px); border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px; }
         .event-modal-overlay.active .event-modal-content-box { transform: translateY(0); }
 
-        /* 🌟 웹사이트용 팝업(Iframe) 스타일 추가 🌟 */
-        .iframe-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; padding-bottom: 45px; box-sizing: border-box; }
-        .iframe-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
-        .iframe-modal-content { width: 92%; height: 85%; max-width: 600px; background: #fff; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-        .iframe-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: #f8f9fa; border-bottom: 1px solid #ddd; }
-        .iframe-modal-header span { font-weight: 700; font-size: 0.95rem; color: #333; }
-        .iframe-btn-group { display: flex; align-items: center; gap: 12px; }
-        .iframe-fallback-btn { font-size: 0.75rem; color: #fff; background: var(--primary-color); padding: 5px 10px; border-radius: 4px; text-decoration: none; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .iframe-modal-close { background: none; border: none; font-size: 1.6rem; line-height: 1; font-weight: bold; cursor: pointer; color: #555; padding: 0; display: flex; align-items: center; justify-content: center; }
-        .iframe-modal-content iframe { flex: 1; width: 100%; height: 100%; border: none; background: #fff; }
-
         @media (min-width: 768px) {
-            .event-modal-overlay, .img-modal-overlay, .iframe-modal-overlay { padding-bottom: 65px; } /* PC 배너 높이에 맞춤 */
+            .event-modal-overlay, .img-modal-overlay { padding-bottom: 65px; }
             .event-modal-content-box { border-radius: 16px; transform: scale(0.95); opacity: 0; transition: all 0.2s ease-out; margin-bottom: 0; }
             .event-modal-overlay.active .event-modal-content-box { transform: scale(1); opacity: 1; }
         }
 
-        /* 🌟 팝업 제목 모바일 줄바꿈 확실히 적용 🌟 */
-        .event-modal-header { padding: 16px 20px; position: relative; border-bottom: 1px solid #eee; display: flex; align-items: flex-start; } /* 센터 정렬 해제하여 줄바꿈 시 자연스럽게 */
-        .event-modal-title { font-size: 1.15rem; font-weight: 700; padding-right: 70px; margin: 0; line-height: 1.4; flex: 1; word-break: keep-all; white-space: pre-wrap; } /* pre-wrap으로 \n 인식 */
+        .event-modal-header { padding: 16px 20px; position: relative; border-bottom: 1px solid #eee; display: flex; align-items: flex-start; }
+        .event-modal-title { font-size: 1.15rem; font-weight: 700; padding-right: 70px; margin: 0; line-height: 1.4; flex: 1; word-break: keep-all; white-space: pre-wrap; }
         .event-modal-share-btn { position: absolute; top: 16px; right: 48px; background: none; border: none; cursor: pointer; color: #666; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s; padding: 4px; }
         .event-modal-share-btn:hover { background: #f0f0f0; }
         .event-modal-share-btn svg { width: 100%; height: 100%; fill: currentColor; }
@@ -285,20 +282,11 @@
 </div>
 
 <div class="img-modal-overlay" id="imageModal">
-    <button class="img-modal-close" id="closeModalBtn">×</button>
-    <img src="" alt="상세정보 이미지" class="img-modal-content" id="imageModalImg" />
-</div>
-
-<div class="iframe-modal-overlay" id="iframeModal">
-    <div class="iframe-modal-content">
-        <div class="iframe-modal-header">
-            <span>관련 웹사이트</span>
-            <div class="iframe-btn-group">
-                <a href="" id="iframeModalFallback" target="_blank" class="iframe-fallback-btn">새창열기</a>
-                <button class="iframe-modal-close" id="closeIframeModalBtn">×</button>
-            </div>
+    <div class="img-modal-wrapper">
+        <button class="img-modal-close" id="closeModalBtn">×</button>
+        <div class="img-modal-scroll-area" id="imageModalScroll">
+            <img src="" alt="상세정보 이미지" class="img-modal-content" id="imageModalImg" />
         </div>
-        <iframe id="iframeModalFrame" src="" title="관련사이트"></iframe>
     </div>
 </div>
 
@@ -474,45 +462,29 @@
         }
     }
 
-    // --- 모달 창 이벤트 리스너 ---
     const imgModal = document.getElementById('imageModal');
     const modalImg = document.getElementById('imageModalImg');
-    const iframeModal = document.getElementById('iframeModal');
+    const imgModalScroll = document.getElementById('imageModalScroll');
 
     imgModal.addEventListener('click', function(e) {
+        // 배경을 클릭하거나 X 버튼을 누르면 닫힘
         if (e.target === imgModal || e.target.id === 'closeModalBtn') {
             imgModal.classList.remove('active');
             setTimeout(() => { modalImg.src = ""; }, 200);
         }
     });
 
-    iframeModal.addEventListener('click', function(e) {
-        // 배경이나 X버튼 클릭 시 닫기
-        if (e.target === iframeModal || e.target.closest('#closeIframeModalBtn')) {
-            iframeModal.classList.remove('active');
-            setTimeout(() => { document.getElementById('iframeModalFrame').src = ""; }, 200);
-        }
-    });
-
     document.addEventListener('click', function(e) {
-        // 이미지 팝업 열기
         const imgBtn = e.target.closest('.btn-img-modal');
         if (imgBtn) {
             const url = imgBtn.getAttribute('data-url');
             const title = imgBtn.getAttribute('data-title');
+            
+            // 🌟 팝업을 열 때마다 스크롤을 맨 위로 초기화 🌟
+            if (imgModalScroll) imgModalScroll.scrollTop = 0;
+            
             modalImg.src = url;
             imgModal.classList.add('active');
-            trackEventClick(title, 'detail');
-        }
-
-        // 🌟 웹사이트(Iframe) 팝업 열기 🌟
-        const iframeBtn = e.target.closest('.btn-iframe-modal');
-        if (iframeBtn) {
-            const url = iframeBtn.getAttribute('data-url');
-            const title = iframeBtn.getAttribute('data-title');
-            document.getElementById('iframeModalFrame').src = url;
-            document.getElementById('iframeModalFallback').href = url; // 실패 대비 새창 링크 설정
-            iframeModal.classList.add('active');
             trackEventClick(title, 'detail');
         }
     });
@@ -965,7 +937,6 @@
             console.log('조회수 카운트 에러', e);
         }
 
-        // 🌟 모바일에서도 줄바꿈(\n)이 적용되도록 CSS pre-wrap 설정 및 HTML 렌더링 최적화 🌟
         const popupFormattedTitle = (item.title || '').replace(/\\n/g, '\n');
         document.getElementById('popupTitle').innerHTML = `${popupFormattedTitle} ${item.isNew ? `<span class="card-new-badge" style="vertical-align: middle;">N</span>` : ''}`;
         document.getElementById('popupShareBtn').setAttribute('onclick', `sharePopupLink('${eventId}')`);
@@ -983,8 +954,8 @@
             `;
         }
 
-        // 🌟 '꿀팁' 데이터가 비어있을 경우 아예 렌더링하지 않도록 방어 코드 적용 🌟
-        const tipText = (item['꿀팁'] || item.applyNote || '').trim();
+        // 🌟 오직 스프레드시트의 '꿀팁' 열에 적힌 값만 가져오고, 없으면 아예 표시 안 함 🌟
+        const tipText = (item['꿀팁'] || '').trim();
 
         document.getElementById('popupBody').innerHTML = `
             ${popupImgHtml}
@@ -1017,8 +988,8 @@
             if (isImageUrl) {
                 btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">상세정보 확인${whiteImgIcon}</button>`;
             } else {
-                // 🌟 관련사이트를 무조건 새창이 아닌 앱 내부 웹뷰(Iframe) 팝업으로 띄우도록 수정 🌟
-                btnDetails = `<button type="button" class="btn-link btn-iframe-modal" data-url="${safeUrl}" data-title="${trackTitle}">관련사이트${whiteLinkIcon}</button>`;
+                // 🌟 오류 방지를 위해 관련사이트는 원래대로 새 탭에서 열리도록 다시 복구 🌟
+                btnDetails = `<a href="${safeUrl}" onclick="trackEventAndOpen(event, '${safeUrl}', '${trackTitle}', 'detail')" class="btn-link">관련사이트${whiteLinkIcon}</a>`;
             }
         } else {
             btnDetails = `<button type="button" class="btn-link btn-disabled" onclick="alert('등록된 상세정보 링크가 없습니다.');">사이트 정보 없음</button>`;
