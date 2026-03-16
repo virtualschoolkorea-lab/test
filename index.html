@@ -38,10 +38,8 @@
         }
         body { font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; display: flex; justify-content: center; }
         
-        /* 팝업 열릴 시 뒤쪽 스크롤 방지 */
         body.modal-open { overflow: hidden; }
 
-        /* 하단 고정 배너를 위한 여백 추가 (모바일 높이 45px에 맞춰 조정) */
         .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; padding-bottom: 50px; }
         
         .sticky-wrapper { position: sticky; top: 0; z-index: 100; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: inherit; }
@@ -66,7 +64,6 @@
         .notice-container { background: rgba(0, 0, 0, 0.15); border-radius: 6px; padding: 4px 8px; text-align: center; font-size: 0.7rem; font-weight: 500; height: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 5px; }
         .notice-container a { color: #fff; text-decoration: none; transition: opacity 0.3s ease-in-out; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
 
-        /* 🌟 배너 원래 사이즈 복구 & 하단 완벽 고정 🌟 */
         .promo-area-wrap {
             position: fixed;
             bottom: 0;
@@ -74,9 +71,9 @@
             transform: translateX(-50%);
             width: 100%;
             max-width: 500px;
-            height: 45px; /* 원래 사이즈 */
+            height: 45px; 
             background-color: #fff;
-            padding: 5px 10px; /* 원래 패딩 */
+            padding: 5px 10px; 
             box-sizing: border-box;
             border-top: 1px solid var(--border-color);
             display: flex;
@@ -116,11 +113,9 @@
 
         .content { padding: 15px; }
 
-        /* 🌟 PC버전 화면 최적화 🌟 */
         @media (min-width: 768px) {
             body { padding-top: 30px; padding-bottom: 30px; background-color: #e9ecef; }
             
-            /* 컨테이너 패딩 PC 배너 높이(65px)에 맞춰 수정 */
             .app-container { max-width: 800px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; padding-bottom: 75px; }
             header { border-radius: 16px 16px 0 0; padding: 20px 24px 15px 24px; }
             .sticky-wrapper { border-radius: 16px 16px 0 0; }
@@ -132,13 +127,12 @@
             .search-input { font-size: 1rem; padding: 10px 15px; }
             .tab { font-size: 1rem; padding: 10px 0; }
 
-            /* 🌟 하단 고정 배너 PC버전용: 붕 뜨는 현상 완전 해결 (bottom: 0) 🌟 */
             .promo-area-wrap { 
                 max-width: 800px; 
-                height: 65px; /* 원래 사이즈 */
-                padding: 8px 20px; /* 원래 패딩 */
-                bottom: 0; /* 강제로 맨 밑바닥에 부착 */
-                border-radius: 16px 16px 0 0; /* 위쪽만 둥글게 처리하여 깔끔하게 마감 */
+                height: 65px; 
+                padding: 8px 20px; 
+                bottom: 0; 
+                border-radius: 16px 16px 0 0; 
                 border: 1px solid var(--border-color);
                 border-bottom: none;
                 box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
@@ -186,7 +180,6 @@
         .img-modal-content { max-width: 90%; max-height: calc(100vh - 80px); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); object-fit: contain; }
         .img-modal-close { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.9); color: #111; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 1.5rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
 
-        /* 하단 배너를 침범하지 않게 padding-bottom 설정 (모바일 45px에 맞춤) */
         .event-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding-bottom: 45px; box-sizing: border-box; }
         .event-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
         
@@ -196,14 +189,15 @@
         @media (min-width: 768px) {
             .event-modal-overlay { 
                 align-items: flex-end; 
-                padding-bottom: 65px; /* PC 배너 높이 65px에 맞춰 수정 */
+                padding-bottom: 65px; 
             }
             .event-modal-content-box { border-radius: 16px; transform: scale(0.95); opacity: 0; transition: all 0.2s ease-out; margin-bottom: 0; }
             .event-modal-overlay.active .event-modal-content-box { transform: scale(1); opacity: 1; }
         }
 
         .event-modal-header { padding: 16px 20px; position: relative; border-bottom: 1px solid #eee; display: flex; align-items: center; }
-        .event-modal-title { font-size: 1.15rem; font-weight: 700; padding-right: 70px; margin: 0; line-height: 1.4; flex: 1; word-break: keep-all; }
+        /* 팝업 제목 줄바꿈 적용을 위해 word-break 속성 수정 */
+        .event-modal-title { font-size: 1.15rem; font-weight: 700; padding-right: 70px; margin: 0; line-height: 1.4; flex: 1; word-break: break-word; }
         .event-modal-share-btn { position: absolute; top: 50%; right: 48px; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #666; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s; padding: 4px; }
         .event-modal-share-btn:hover { background: #f0f0f0; }
         .event-modal-share-btn svg { width: 100%; height: 100%; fill: currentColor; }
@@ -216,14 +210,14 @@
         .popup-img-container { width: 100%; margin-bottom: 15px; border-radius: 8px; overflow: hidden; text-align: center; background-color: #f9f9f9; }
         .popup-img-container img { max-width: 100%; height: auto; display: block; margin: 0 auto; }
 
-        /* 🌟 팝업 정보 텍스트 구분선 스타일 추가 🌟 */
         .info-row { font-size: 0.95rem; color: #444; margin-bottom: 10px; display: flex; align-items: flex-start; }
         .info-label { font-weight: 700; color: #333; line-height: 1.4; flex-shrink: 0; }
         .info-divider { color: #ddd; margin: 0 10px; line-height: 1.4; flex-shrink: 0; font-weight: 400; }
         .info-desc { flex: 1; word-break: keep-all; line-height: 1.4; color: #222; }
 
         .event-modal-footer { padding: 15px 20px; border-top: 1px solid #eee; background: #fafafa; display: flex; gap: 10px; }
-        .btn-link { display: block; text-align: center; background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); text-decoration: none; padding: 12px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; transition: all 0.2s; box-sizing: border-box; cursor: pointer; font-family: inherit; width: 100%; flex: 1; margin: 0; }
+        /* 버튼 내 텍스트와 아이콘 정렬을 위한 flex 속성 추가 */
+        .btn-link { display: flex; align-items: center; justify-content: center; text-align: center; background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); text-decoration: none; padding: 12px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; transition: all 0.2s; box-sizing: border-box; cursor: pointer; font-family: inherit; width: 100%; flex: 1; margin: 0; }
         .btn-link:hover { background-color: #388E3C; }
         .btn-disabled { background-color: #f2f2f2 !important; color: #888 !important; border: 1px solid #ddd !important; cursor: default !important; pointer-events: auto; }
         .btn-disabled:hover { background-color: #f2f2f2 !important; }
@@ -276,7 +270,7 @@
 </div>
 
 <div class="promo-area-wrap" id="main-promo-wrap">
-    <a href="https://test-two-chi-snlx9hzg2x.vercel.app/?id=A067" target="_blank" style="display:block; width:100%; height:100%;">
+    <a href="https://test-two-chi-snlx9hzg2x.vercel.app/?id=A067" style="display:block; width:100%; height:100%;">
         <img src="https://postfiles.pstatic.net/MjAyNjAzMTVfMjY2/MDAxNzczNTc4Nzg2Mzc2.h9rLpbeh1rWUistHqXJAOy547IYlm6gaua04ANxTgB4g.Uxz_ZQIlh3H0WuGyYyw5ky2Kt-vuaonw-o3DRnn3qwsg.PNG/%EC%A0%9C%EB%AA%A9%EC%9D%84_%EC%9E%85%EB%A0%A5%ED%95%B4%EC%A3%BC%EC%84%B8%EC%9A%94._(4).png?type=w773" alt="상단 배너" style="width:100%; height:100%; object-fit:cover;" />
     </a>
 </div>
@@ -447,7 +441,7 @@
         const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
         const shareUrl = window.location.origin + window.location.pathname + '?id=' + encodeURIComponent(eventId);
         const shareData = {
-            title: item ? item.title : '헤이청주 일정 공유',
+            title: item ? item.title.replace(/\n/g, ' ') : '헤이청주 일정 공유',
             text: '이 행사 어때요? 일정을 확인해보세요!',
             url: shareUrl
         };
@@ -490,10 +484,14 @@
 
     async function fetchEventData() {
         const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQV-02F-qXwS6yLb_XScKqwYj1N0qImwofY2Pyj2tvwnW0i1tl995_BjOfaVHpayppk6YYhqpdLrpa9/pub?output=csv";
-        const fetchUrl = csvUrl + "&_t=" + new Date().getTime();
+        
+        // 🌟 캐시 최적화 적용: 시간을 1분(60000ms) 단위로 묶어서 서버 부하 및 429 에러 방지 🌟
+        const timeBucket = Math.floor(Date.now() / 60000); 
+        const fetchUrl = csvUrl + "&_t=" + timeBucket;
 
         try {
-            const response = await fetch(fetchUrl, { cache: 'no-store' });
+            // cache: 'no-store'를 제거하여 브라우저의 기본 캐시 능력을 활용
+            const response = await fetch(fetchUrl);
             if (!response.ok) throw new Error("네트워크 응답이 올바르지 않습니다.");
 
             const csvText = await response.text();
@@ -867,6 +865,9 @@
             }
 
             const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
+            
+            // 🌟 카드 목록의 제목은 줄바꿈 없이 1줄로만 표기 🌟
+            const cardTitle = (item.title || '').replace(/\n/g, ' '); 
 
             const cardHTML = `
                 <div class="${cardClass}" id="card-${eventUniqueId}" onclick="openEventPopup('${eventUniqueId}')">
@@ -885,7 +886,7 @@
                     </div>
                     
                     <div class="card-title-row">
-                        <h2 class="title">${item.title || ''}</h2>
+                        <h2 class="title">${cardTitle}</h2>
                         ${item.isNew ? `<span class="card-new-badge">N</span>` : ''}
                         <span class="card-more-text">+ 더보기</span>
                     </div>
@@ -923,7 +924,9 @@
             console.log('조회수 카운트 에러', e);
         }
 
-        document.getElementById('popupTitle').innerHTML = `${item.title || ''} ${item.isNew ? `<span class="card-new-badge">N</span>` : ''}`;
+        // 🌟 팝업 제목에는 스프레드시트의 줄바꿈(\n)이 적용되도록 수정 🌟
+        const popupFormattedTitle = (item.title || '').replace(/\n/g, '<br>');
+        document.getElementById('popupTitle').innerHTML = `${popupFormattedTitle} ${item.isNew ? `<span class="card-new-badge">N</span>` : ''}`;
         document.getElementById('popupShareBtn').setAttribute('onclick', `sharePopupLink('${eventId}')`);
 
         let applyTextStyle = '';
@@ -939,7 +942,6 @@
             `;
         }
 
-        // 🌟 팝업창 세부 정보에 회색 구분선(|) 적용 🌟
         document.getElementById('popupBody').innerHTML = `
             ${popupImgHtml}
             <div class="info-row"><span class="info-label">장소</span><span class="info-divider">|</span><span class="info-desc">${item.place || '정보 없음'}</span></div>
@@ -961,14 +963,18 @@
                 lowerUrl.includes('phinf.pstatic.net');
         }
 
+        // 🌟 팝업창 버튼 텍스트와 이모티콘을 모두 흰색 SVG 아이콘으로 대체 🌟
+        const whiteLinkIcon = `<svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor; margin-left:4px; vertical-align:text-bottom;"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>`;
+        const whiteImgIcon = `<svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor; margin-left:4px; vertical-align:text-bottom;"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>`;
+
         if (detailUrl && detailUrl.trim() !== '') {
             const safeUrl = detailUrl.trim().replace(/"/g, '&quot;');
-            const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ');
             
             if (isImageUrl) {
-                btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">상세정보보기 🖼️</button>`;
+                btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">상세정보 확인${whiteImgIcon}</button>`;
             } else {
-                btnDetails = `<a href="${safeUrl}" onclick="trackEventAndOpen(event, '${safeUrl}', '${trackTitle}', 'detail')" class="btn-link">관련사이트 🌐</a>`;
+                btnDetails = `<a href="${safeUrl}" onclick="trackEventAndOpen(event, '${safeUrl}', '${trackTitle}', 'detail')" class="btn-link">관련사이트${whiteLinkIcon}</a>`;
             }
         } else {
             btnDetails = `<button type="button" class="btn-link btn-disabled" onclick="alert('등록된 상세정보 링크가 없습니다.');">사이트 정보 없음</button>`;
@@ -981,13 +987,13 @@
             const cleanValue = rawApplyValue.trim();
             const safeApplyValue = cleanValue.replace(/"/g, '&quot;');
             const alertSafeValue = cleanValue.replace(/'/g, "\\'").replace(/"/g, '\\"');
-            const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ');
             const isUrl = /^(https?:\/\/|www\.|javascript:)/i.test(cleanValue);
 
             if (isUrl) {
                 let actualUrl = safeApplyValue;
                 if (cleanValue.toLowerCase().startsWith('www.')) actualUrl = `http://${safeApplyValue}`;
-                btnApply = `<a href="${actualUrl}" onclick="trackEventAndOpen(event, '${actualUrl}', '${trackTitle}', 'apply')" class="btn-link">예약하기 🔗</a>`;
+                btnApply = `<a href="${actualUrl}" onclick="trackEventAndOpen(event, '${actualUrl}', '${trackTitle}', 'apply')" class="btn-link">예약하기${whiteLinkIcon}</a>`;
             } else {
                 btnApply = `<button type="button" class="btn-link btn-disabled" onclick="alert('${alertSafeValue}');">${safeApplyValue}</button>`;
             }
