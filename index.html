@@ -942,13 +942,16 @@
             `;
         }
 
+// 🌟 스프레드시트의 '꿀팁' 열 데이터를 가져오도록 변수 추가
+        const tipText = item['꿀팁'];
+
         document.getElementById('popupBody').innerHTML = `
             ${popupImgHtml}
             <div class="info-row"><span class="info-label">장소</span><span class="info-divider">|</span><span class="info-desc">${item.place || '정보 없음'}</span></div>
             <div class="info-row"><span class="info-label">비용</span><span class="info-divider">|</span><span class="info-desc">${item.costType || '정보 없음'}</span></div>
             <div class="info-row"><span class="info-label">접수</span><span class="info-divider">|</span><span class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</span></div>
             <div class="info-row"><span class="info-label">일정</span><span class="info-divider">|</span><span class="info-desc">${item.date || '해당정보 없음'}</span></div>
-            ${item.applyNote ? `<div class="info-row"><span class="info-label">꿀팁</span><span class="info-divider">|</span><span class="info-desc" style="font-weight:bold; color:var(--text-main);">${item.applyNote}</span></div>` : ''}
+            ${tipText ? `<div class="info-row"><span class="info-label">꿀팁</span><span class="info-divider">|</span><span class="info-desc" style="font-weight:bold; color:var(--text-main);">${tipText}</span></div>` : ''}
         `;
 
         let btnDetails = '';
