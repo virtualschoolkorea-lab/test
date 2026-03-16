@@ -7,10 +7,8 @@
 
     <meta name="referrer" content="no-referrer" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="헤이청주 📢 교육/체험 링크모음" />
-    <meta property="og:description" content="⬆️ 오늘 새소식 확인하러가기 ⬆️" />
-    <meta property="og:image" content="https://heycj.vercel.app/og-image.png" />
-
+    <meta property="og:title" content="헤이청주 🚀교육/체험 링크모음" />
+    <meta property="og:description" content="⬆️오늘 새소식 확인하러가기⬆️" />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
     
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2755313313061030" crossorigin="anonymous"></script>
@@ -39,6 +37,7 @@
         
         body.modal-open { overflow: hidden; }
 
+        /* 🌟 전체 컨테이너 여백 재조정 */
         .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; padding-bottom: 65px; }
         
         .sticky-wrapper { position: sticky; top: 0; z-index: 100; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: inherit; }
@@ -63,7 +62,7 @@
         .notice-container { background: rgba(0, 0, 0, 0.15); border-radius: 6px; padding: 4px 8px; text-align: center; font-size: 0.7rem; font-weight: 500; height: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 5px; }
         .notice-container a { color: #fff; text-decoration: none; transition: opacity 0.3s ease-in-out; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
 
-        /* 🌟 변경사항: 하단 배너 영역 세로폭 15% 증가 (45px -> 52px) 🌟 */
+        /* 🌟 1. 하단 배너 15% 세로폭 증가 및 레이아웃 깨짐 방지 */
         .promo-area-wrap {
             position: fixed;
             bottom: 0;
@@ -71,7 +70,7 @@
             transform: translateX(-50%);
             width: 100%;
             max-width: 500px;
-            height: 52px; 
+            height: 52px; /* 45px에서 15% 증가 */
             background-color: #fff;
             padding: 5px 10px; 
             box-sizing: border-box;
@@ -81,6 +80,7 @@
             justify-content: center;
             z-index: 100000;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            overflow: hidden; /* 구글광고가 제멋대로 커지는 것을 막아줌 */
         }
         .promo-area-wrap img {
             max-width: 100%;
@@ -115,7 +115,6 @@
 
         @media (min-width: 768px) {
             body { padding-top: 30px; padding-bottom: 30px; background-color: #e9ecef; }
-            
             .app-container { max-width: 800px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; padding-bottom: 90px; }
             header { border-radius: 16px 16px 0 0; padding: 20px 24px 15px 24px; }
             .sticky-wrapper { border-radius: 16px 16px 0 0; }
@@ -127,10 +126,9 @@
             .search-input { font-size: 1rem; padding: 10px 15px; }
             .tab { font-size: 1rem; padding: 10px 0; }
 
-            /* 🌟 PC화면 메인 배너 세로폭 15% 증가 (65px -> 75px) 🌟 */
             .promo-area-wrap { 
                 max-width: 800px; 
-                height: 75px; 
+                height: 75px; /* PC화면 높이 재조정 */
                 padding: 8px 20px; 
                 bottom: 0; 
                 border-radius: 16px 16px 0 0; 
@@ -176,8 +174,7 @@
         .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; grid-column: 1 / -1; }
         .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; grid-column: 1 / -1; }
 
-        /* 🌟 늘어난 하단 배너 크기에 맞춰 팝업 가림 방지 여백 수정 (55px -> 62px) 🌟 */
-        .img-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; padding-bottom: 62px; box-sizing: border-box; }
+        .img-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; padding-bottom: 65px; box-sizing: border-box; }
         .img-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
         
         .img-modal-wrapper { position: relative; max-width: 90%; max-height: calc(100% - 100px); display: inline-block; }
@@ -190,10 +187,11 @@
         
         .img-modal-close { position: absolute; top: -14px; right: -14px; background: #fff; color: #111; border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 1.6rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); z-index: 100; line-height: 1; padding: 0 0 2px 0; }
 
+        /* 🌟 팝업창 모바일 하단 가림 완벽 해결 (늘어난 배너 높이에 맞춤) */
         .event-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding-bottom: 0; box-sizing: border-box; }
         .event-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
         
-        .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: calc(100% - 80px); border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(120%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px 62px 10px; }
+        .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: calc(100% - 85px); border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(120%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px 65px 10px; }
         .event-modal-overlay.active .event-modal-content-box { transform: translateY(0); }
 
         @media (min-width: 768px) {
@@ -223,8 +221,8 @@
 
         .event-modal-footer { padding: 15px 20px; border-top: 1px solid #eee; background: #fafafa; display: flex; gap: 10px; }
         
-        /* 🌟 변경사항: 팝업 버튼 세로폭 20% 축소 (padding 12px -> 8px, 폰트사이즈 미세 조정) 🌟 */
-        .btn-link { display: flex; align-items: center; justify-content: center; text-align: center; background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); text-decoration: none; padding: 8px 0; border-radius: 6px; font-size: 0.95rem; font-weight: 700; transition: all 0.2s; box-sizing: border-box; cursor: pointer; font-family: inherit; width: 100%; flex: 1; margin: 0; }
+        /* 🌟 2. 팝업창 하단 버튼 세로폭 20% 축소 적용 (padding을 12px -> 9px로 줄임) */
+        .btn-link { display: flex; align-items: center; justify-content: center; text-align: center; background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); text-decoration: none; padding: 9px 0; border-radius: 6px; font-size: 0.95rem; font-weight: 700; transition: all 0.2s; box-sizing: border-box; cursor: pointer; font-family: inherit; width: 100%; flex: 1; margin: 0; }
         .btn-link:hover { background-color: #388E3C; }
         .btn-disabled { background-color: #f2f2f2 !important; color: #888 !important; border: 1px solid #ddd !important; cursor: default !important; pointer-events: auto; }
         .btn-disabled:hover { background-color: #f2f2f2 !important; }
@@ -277,8 +275,7 @@
 </div>
 
 <div class="promo-area-wrap" id="main-promo-wrap">
-    <a href="https://헤이청주.com/?id=A067" style="display:block; width:100%; height:100%;">
-        <img src="https://postfiles.pstatic.net/MjAyNjAzMTVfMjY2/MDAxNzczNTc4Nzg2Mzc2.h9rLpbeh1rWUistHqXJAOy547IYlm6gaua04ANxTgB4g.Uxz_ZQIlh3H0WuGyYyw5ky2Kt-vuaonw-o3DRnn3qwsg.PNG/%EC%A0%9C%EB%AA%A9%EC%9D%84_%EC%9E%85%EB%A0%A5%ED%95%B4%EC%A3%BC%EC%84%B8%EC%9A%94._(4).png?type=w773" alt="상단 배너" style="width:100%; height:100%; object-fit:cover;" />
+    <a href="https://헤이청주.com/?id=A067" id="banner-link" style="display:block; width:100%; height:100%;">
     </a>
 </div>
 
@@ -332,7 +329,7 @@
         { text: "[⚡내일오픈/마감,긴급정보 실시간 알림 오픈챗 입장하기👆] ", link: "https://open.kakao.com/o/gAUqOrai" },
         { text: "[헤이청주에 ☎️ 협업문의/제안/건의하기] 👆", link: "https://forms.gle/h8KLaLkfsU55aH5T9" },
         { text: "📝간혹 오타가 발생하므로 상세정보확인 페이지 반드시 참고", link: "" },
-        { text: "📢[제휴/이벤트] 정서뮤직원데이클래스 준비 👇 ", link: "" }
+        { text: "📢[제휴/이벤트 준비중] 정서뮤직아트클래스 커피쿠폰+할인권 👇 ", link: "" }
     ];
 
     function initNotice() {
@@ -903,7 +900,7 @@
                         <span class="card-more-text">+ 더보기</span>
                     </div>
                     
-<div class="card-bottom-info">
+                    <div class="card-bottom-info">
                         <span style="flex-shrink:0;">📍 ${item.place ? item.place : '장소미정'}</span>
                         <span style="color:#ddd;">|</span>
                         <span style="flex:1;">🗓️ ${item.date ? item.date : '일정미정'}</span>
@@ -922,10 +919,6 @@
         if (!item) return;
 
         document.body.classList.add('modal-open');
-
-        // 🌟 팝업이 열릴 때 하단 메인 배너 숨기기 (겹침 방지)
-        const promoWrap = document.getElementById('main-promo-wrap');
-        if (promoWrap) promoWrap.style.display = 'none';
 
         try {
             const specificEventRef = db.ref(`event_views_total/${eventId}`);
@@ -959,20 +952,23 @@
 
         const tipText = (item['꿀팁'] || '').trim();
 
-        // 🚨 수정 위치 2번: 팝업창 전용 애드센스 삽입 영역
+        // ========================================================
+        // 💡 애드센스 수정 부위 2: 팝업창 속 구글 광고 💡
+        // ========================================================
         document.getElementById('popupBody').innerHTML = `
             ${popupImgHtml}
             <div class="info-row"><span class="info-label">장소</span><span class="info-divider">|</span><span class="info-desc">${item.place || '정보 없음'}</span></div>
+            <div class="info-row"><span class="info-label">대상</span><span class="info-divider">|</span><span class="info-desc">${item.age || '누구나'}</span></div>
             <div class="info-row"><span class="info-label">비용</span><span class="info-divider">|</span><span class="info-desc">${item.costType || '정보 없음'}</span></div>
             <div class="info-row"><span class="info-label">접수</span><span class="info-divider">|</span><span class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</span></div>
             <div class="info-row"><span class="info-label">일정</span><span class="info-divider">|</span><span class="info-desc">${item.date || '해당정보 없음'}</span></div>
-            ${tipText ? `<div class="info-row"><span class="info-label">꿀팁</span><span class="info-divider">|</span><span class="info-desc" style="font-weight:bold; color:var(--text-main);">${tipText}</span></div>` : ''}
+            ${tipText ? `<div class="info-row"><span class="info-label">메모</span><span class="info-divider">|</span><span class="info-desc" style="font-weight:bold; color:var(--text-main);">${tipText}</span></div>` : ''}
             
-            <div style="margin-top: 25px; padding-top: 15px; border-top: 1px dashed #ddd; text-align: center; min-height: 100px;">
+            <div style="margin-top: 20px; text-align: center; min-height: 100px; overflow: hidden; border-top: 1px dashed #ddd; padding-top: 15px;">
                 <ins class="adsbygoogle"
                      style="display:block"
                      data-ad-client="ca-pub-2755313313061030"
-                     data-ad-slot="팝업창용_광고단위_번호_입력"
+                     data-ad-slot="팝업창_광고단위_10자리_숫자입력"
                      data-ad-format="auto"
                      data-full-width-responsive="true"></ins>
             </div>
@@ -1030,7 +1026,7 @@
         document.getElementById('popupFooter').innerHTML = `${btnDetails}${btnApply}`;
         document.getElementById('eventModal').classList.add('active');
 
-        // 🌟 팝업이 뜰 때 구글 봇에게 새 광고를 요청하는 필수 로직
+        // 🌟 팝업이 뜰 때마다 구글 봇에게 광고 새로고침 호출 (필수)
         try {
             (adsbygoogle = window.adsbygoogle || []).push({});
         } catch (e) {
@@ -1050,10 +1046,6 @@
         document.body.classList.remove('modal-open');
         document.getElementById('eventModal').classList.remove('active');
         
-        // 🌟 팝업이 닫힐 때 하단 메인 배너 다시 보여주기
-        const promoWrap = document.getElementById('main-promo-wrap');
-        if (promoWrap) promoWrap.style.display = 'flex';
-        
         try {
             history.pushState(null, '', window.location.pathname);
         } catch (e) {}
@@ -1064,6 +1056,12 @@
         initLastUpdated();
         initVisitCounters();
         fetchEventData(); 
+        
+        // 메인 하단 이미지를 유지할 경우 쓰이는 크롤러 방지 코드
+        const bannerLink = document.getElementById('banner-link');
+        if (bannerLink) {
+            bannerLink.innerHTML = '<img src="https://postfiles.pstatic.net/MjAyNjAzMTVfMjY2/MDAxNzczNTc4Nzg2Mzc2.h9rLpbeh1rWUistHqXJAOy547IYlm6gaua04ANxTgB4g.Uxz_ZQIlh3H0WuGyYyw5ky2Kt-vuaonw-o3DRnn3qwsg.PNG/%EC%A0%9C%EB%AA%A9%EC%9D%84_%EC%9E%85%EB%A0%A5%ED%95%B4%EC%A3%BC%EC%84%B8%EC%9A%94._(4).png?type=w773" alt="상단 배너" style="width:100%; height:100%; object-fit:cover;" />';
+        }
     });
 </script>
 </body>
