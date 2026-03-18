@@ -38,8 +38,7 @@
         
         body.modal-open { overflow: hidden; }
 
-        /* 기존 50px에서 58px로 변경 (배너 15% 증가분 반영) */
-        .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; padding-bottom: 58px; }
+        .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; padding-bottom: 50px; }
         
         .sticky-wrapper { position: sticky; top: 0; z-index: 100; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: inherit; }
 
@@ -63,7 +62,6 @@
         .notice-container { background: rgba(0, 0, 0, 0.15); border-radius: 6px; padding: 4px 8px; text-align: center; font-size: 0.7rem; font-weight: 500; height: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 5px; }
         .notice-container a { color: #fff; text-decoration: none; transition: opacity 0.3s ease-in-out; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
 
-        /* 배너 15% 세로폭 증가: 기존 45px -> 52px */
         .promo-area-wrap {
             position: fixed;
             bottom: 0;
@@ -71,7 +69,7 @@
             transform: translateX(-50%);
             width: 100%;
             max-width: 500px;
-            height: 52px; 
+            height: 45px; 
             background-color: #fff;
             padding: 5px 10px; 
             box-sizing: border-box;
@@ -116,8 +114,7 @@
         @media (min-width: 768px) {
             body { padding-top: 30px; padding-bottom: 30px; background-color: #e9ecef; }
             
-            /* 기존 75px에서 85px로 변경 */
-            .app-container { max-width: 800px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; padding-bottom: 85px; }
+            .app-container { max-width: 800px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; padding-bottom: 75px; }
             header { border-radius: 16px 16px 0 0; padding: 20px 24px 15px 24px; }
             .sticky-wrapper { border-radius: 16px 16px 0 0; }
             
@@ -128,10 +125,9 @@
             .search-input { font-size: 1rem; padding: 10px 15px; }
             .tab { font-size: 1rem; padding: 10px 0; }
 
-            /* 배너 15% 세로폭 증가: 기존 65px -> 75px */
             .promo-area-wrap { 
                 max-width: 800px; 
-                height: 75px; 
+                height: 65px; 
                 padding: 8px 20px; 
                 bottom: 0; 
                 border-radius: 16px 16px 0 0; 
@@ -177,8 +173,7 @@
         .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; grid-column: 1 / -1; }
         .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; grid-column: 1 / -1; }
 
-        /* 기존 55px에서 62px로 변경 */
-        .img-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; padding-bottom: 62px; box-sizing: border-box; }
+        .img-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; padding-bottom: 55px; box-sizing: border-box; }
         .img-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
         
         .img-modal-wrapper { position: relative; max-width: 90%; max-height: calc(100% - 100px); display: inline-block; }
@@ -188,19 +183,20 @@
         .img-modal-scroll-area::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
         
         .img-modal-content { display: block; width: 100%; height: auto; }
+        /* 저장/캡처 방어용 CSS (드래그 및 메뉴 팝업 방지) */
+        .no-save-img { -webkit-user-select: none; -webkit-touch-callout: none; user-select: none; }
         
         .img-modal-close { position: absolute; top: -14px; right: -14px; background: #fff; color: #111; border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 1.6rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); z-index: 100; line-height: 1; padding: 0 0 2px 0; }
 
         .event-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding-bottom: 0; box-sizing: border-box; }
         .event-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
         
-        /* 모바일에서 margin-bottom 배너 높이 증가에 맞춰 55px -> 62px 변경 */
-        .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: calc(100% - 80px); border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(120%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px 62px 10px; }
+        .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: calc(100% - 80px); border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(120%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px 55px 10px; }
         .event-modal-overlay.active .event-modal-content-box { transform: translateY(0); }
 
         @media (min-width: 768px) {
-            .img-modal-overlay { padding-bottom: 75px; } /* 65px -> 75px */
-            .event-modal-content-box { border-radius: 16px; transform: scale(0.95); opacity: 0; transition: all 0.2s ease-out; margin-bottom: 85px; } /* 75px -> 85px */
+            .img-modal-overlay { padding-bottom: 65px; }
+            .event-modal-content-box { border-radius: 16px; transform: scale(0.95); opacity: 0; transition: all 0.2s ease-out; margin-bottom: 75px; }
             .event-modal-overlay.active .event-modal-content-box { transform: scale(1); opacity: 1; }
         }
 
@@ -223,21 +219,17 @@
         .info-divider { color: #ddd; margin: 0 10px; line-height: 1.4; flex-shrink: 0; font-weight: 400; }
         .info-desc { flex: 1; word-break: keep-all; line-height: 1.4; color: #222; }
 
-        .event-modal-footer { padding: 15px 20px; background: #fafafa; display: flex; gap: 10px; }
+        /* footer 구조 변경 및 혜택받기 버튼 추가 */
+        .event-modal-footer { padding: 15px 20px; border-top: 1px solid #eee; background: #fafafa; display: flex; flex-direction: column; gap: 10px; }
+        .footer-btn-row { display: flex; gap: 10px; width: 100%; }
         
-        /* 버튼 세로폭 20% 축소: 기존 12px 0 -> 9.6px 0 */
-        .btn-link { display: flex; align-items: center; justify-content: center; text-align: center; background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); text-decoration: none; padding: 9.6px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; transition: all 0.2s; box-sizing: border-box; cursor: pointer; font-family: inherit; width: 100%; flex: 1; margin: 0; }
+        .btn-link { display: flex; align-items: center; justify-content: center; text-align: center; background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); text-decoration: none; padding: 12px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; transition: all 0.2s; box-sizing: border-box; cursor: pointer; font-family: inherit; width: 100%; flex: 1; margin: 0; }
         .btn-link:hover { background-color: #388E3C; }
         .btn-disabled { background-color: #f2f2f2 !important; color: #888 !important; border: 1px solid #ddd !important; cursor: default !important; pointer-events: auto; }
         .btn-disabled:hover { background-color: #f2f2f2 !important; }
 
-        /* 팝업 내 하단 광고 CSS 신설 */
-        .popup-promo-area { width: 100%; height: 52px; background-color: #fff; border-top: 1px solid #eee; display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
-        .popup-promo-area a { display: block; width: 100%; height: 100%; }
-        .popup-promo-area img { width: 100%; height: 100%; object-fit: cover; }
-        @media (min-width: 768px) {
-            .popup-promo-area { height: 75px; }
-        }
+        .btn-benefit { display: flex; align-items: center; justify-content: center; background-color: #E53935; color: white; border: none; padding: 12px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; width: 100%; cursor: pointer; transition: all 0.2s; box-sizing: border-box; font-family: inherit; }
+        .btn-benefit:hover { background-color: #C62828; }
     </style>
 </head>
 <body>
@@ -295,7 +287,7 @@
     <div class="img-modal-wrapper">
         <button class="img-modal-close" id="closeModalBtn">×</button>
         <div class="img-modal-scroll-area" id="imageModalScroll">
-            <img src="" alt="상세정보 이미지" class="img-modal-content" id="imageModalImg" />
+            <img src="" alt="상세정보 이미지" class="img-modal-content no-save-img" id="imageModalImg" oncontextmenu="return false;" draggable="false" />
         </div>
     </div>
 </div>
@@ -311,9 +303,6 @@
         </div>
         <div class="event-modal-body" id="popupBody"></div>
         <div class="event-modal-footer" id="popupFooter"></div>
-        <div class="popup-promo-area">
-            <a href="https://헤이청주.com/?id=A067" id="popup-banner-link"></a>
-        </div>
     </div>
 </div>
 
@@ -1026,7 +1015,23 @@
             btnApply = `<button type="button" class="btn-link btn-disabled" onclick="alert('사전예약 링크가 필요 없는 현장접수 행사입니다.');">현장접수</button>`;
         }
 
-        document.getElementById('popupFooter').innerHTML = `${btnDetails}${btnApply}`;
+        // 🌟 '제휴/이벤트' 탭이고 구글 시트의 '혜택' 열에 링크가 있을 때만 혜택받기 버튼 추가
+        let btnBenefit = '';
+        const benefitUrl = item['혜택'];
+        if (item.type === 'affiliate' && benefitUrl && benefitUrl.trim() !== '') {
+            const safeBenefitUrl = benefitUrl.trim().replace(/"/g, '&quot;');
+            btnBenefit = `<button type="button" class="btn-benefit btn-img-modal" data-url="${safeBenefitUrl}" data-title="혜택받기">🎁 혜택받기 (쿠폰/할인권 등)</button>`;
+        }
+
+        // 🌟 푸터 영역 구조 재조립
+        document.getElementById('popupFooter').innerHTML = `
+            ${btnBenefit}
+            <div class="footer-btn-row">
+                ${btnDetails}
+                ${btnApply}
+            </div>
+        `;
+
         document.getElementById('eventModal').classList.add('active');
 
         try {
@@ -1053,16 +1058,9 @@
         initVisitCounters();
         fetchEventData(); 
         
-        // 메인 하단 배너 이미지 설정
         const bannerLink = document.getElementById('banner-link');
         if (bannerLink) {
             bannerLink.innerHTML = '<img src="https://postfiles.pstatic.net/MjAyNjAzMTVfMjY2/MDAxNzczNTc4Nzg2Mzc2.h9rLpbeh1rWUistHqXJAOy547IYlm6gaua04ANxTgB4g.Uxz_ZQIlh3H0WuGyYyw5ky2Kt-vuaonw-o3DRnn3qwsg.PNG/%EC%A0%9C%EB%AA%A9%EC%9D%84_%EC%9E%85%EB%A0%A5%ED%95%B4%EC%A3%BC%EC%84%B8%EC%9A%94._(4).png?type=w773" alt="상단 배너" style="width:100%; height:100%; object-fit:cover;" />';
-        }
-
-        // 팝업창 하단 배너 이미지 설정
-        const popupBannerLink = document.getElementById('popup-banner-link');
-        if (popupBannerLink) {
-            popupBannerLink.innerHTML = '<img src="https://postfiles.pstatic.net/MjAyNjAzMTVfMjY2/MDAxNzczNTc4Nzg2Mzc2.h9rLpbeh1rWUistHqXJAOy547IYlm6gaua04ANxTgB4g.Uxz_ZQIlh3H0WuGyYyw5ky2Kt-vuaonw-o3DRnn3qwsg.PNG/%EC%A0%9C%EB%AA%A9%EC%9D%84_%EC%9E%85%EB%A0%A5%ED%95%B4%EC%A3%BC%EC%84%B8%EC%9A%94._(4).png?type=w773" alt="팝업 하단 배너" style="width:100%; height:100%; object-fit:cover;" />';
         }
     });
 </script>
