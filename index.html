@@ -158,7 +158,12 @@
         .badge-today { background-color: #E53935; }
         .badge-open { background-color: #2ecc71; }
         .badge-close { background-color: #F06292; }
-        .badge-hot { background-color: #FF3D00; } 
+.badge-hot { 
+    background-color: #ffebee; /* 옅은 붉은색(핑크) 배경 */
+    color: #d32f2f; /* 글씨는 눈에 띄게 진한 붉은색 */
+    border-radius: 20px; /* 모서리를 많이 깎아서 타원(알약) 모양으로 */
+    padding: 3px 8px; /* 좌우 여백을 살짝 늘려주면 타원 모양이 더 예뻐짐 */
+}
 
         .view-count { display: flex; align-items: center; gap: 3px; font-size: 0.7rem; color: #aaa; font-weight: 500; flex-shrink: 0; margin-left: 8px; margin-top: 2px; }
         .view-count svg { width: 14px; height: 14px; fill: currentColor; }
