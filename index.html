@@ -421,8 +421,8 @@
                     countElem.innerText = viewCount;
                 }
                 
-                // 5. 인기 뱃지 로직: 총 50 조회수가 넘으면 "지금인기🔥" 뱃지를 타이틀에 추가
-                if (viewCount >= 50) {
+                // 5. 인기 뱃지 로직: 총 200 조회수가 넘으면 "지금인기🔥" 뱃지를 타이틀에 추가
+                if (viewCount >= 200) {
                     const titleRow = document.querySelector(`#card-${eventId} .card-title-row`);
                     if (titleRow && !titleRow.querySelector('.badge-hot')) {
                         titleRow.insertAdjacentHTML('afterbegin', '<span class="badge-hot">지금인기🔥</span>');
