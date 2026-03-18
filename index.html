@@ -69,7 +69,8 @@
             transform: translateX(-50%);
             width: 100%;
             max-width: 500px;
-            height: 54px;
+            min-height: 60px; /* 고정 높이 대신 최소 높이 적용 */
+            height: auto;
             background-color: #fff;
             padding: 5px 10px; 
             box-sizing: border-box;
@@ -127,7 +128,8 @@
 
             .promo-area-wrap { 
                 max-width: 800px; 
-                height: 78px; 
+                min-height: 90px; /* 고정 높이 대신 최소 높이 적용 */
+                height: auto;
                 padding: 8px 20px; 
                 bottom: 0; 
                 border-radius: 16px 16px 0 0; 
@@ -159,11 +161,11 @@
         .badge-open { background-color: #2ecc71; }
         .badge-close { background-color: #F06292; }
         .badge-hot { 
-    background-color: #ffebee; 
-    color: #d32f2f; 
-    border-radius: 20px; 
-    padding: 3px 4px 3px 8px; /* 오른쪽 여백만 절반으로 줄임 */
-}
+            background-color: #ffebee; 
+            color: #d32f2f; 
+            border-radius: 20px; 
+            padding: 3px 4px 3px 8px;
+        }
 
         .view-count { display: flex; align-items: center; gap: 3px; font-size: 0.7rem; color: #aaa; font-weight: 500; flex-shrink: 0; margin-left: 8px; margin-top: 2px; }
         .view-count svg { width: 14px; height: 14px; fill: currentColor; }
@@ -183,11 +185,11 @@
         .img-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
         
         .img-modal-wrapper { 
-    position: relative; 
-    max-width: min(90%, 600px); /* 모바일은 90% 유지, PC에서는 최대 600px까지만 커지도록 제한 */
-    max-height: calc(100% - 100px); 
-    display: inline-block; 
-}
+            position: relative; 
+            max-width: min(90%, 600px); 
+            max-height: calc(100% - 100px); 
+            display: inline-block; 
+        }
         .img-modal-scroll-area { max-height: calc(100vh - 100px); overflow-y: auto; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); background: #fff; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
         
         .img-modal-scroll-area::-webkit-scrollbar { width: 6px; }
@@ -287,8 +289,15 @@
 </div>
 
 <div class="promo-area-wrap" id="main-promo-wrap">
-    <a href="https://헤이청주.com/?id=A067" id="banner-link" style="display:block; width:100%; height:100%;">
-    </a>
+    <ins class="adsbygoogle"
+         style="display:block; text-align:center;"
+         data-ad-client="ca-pub-2755313313061030"
+         data-ad-slot="여기에_발급받은_광고단위_ID_숫자입력"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
 </div>
 
 <div class="img-modal-overlay" id="imageModal">
@@ -509,7 +518,6 @@
             processNewItems();
             updateTabNewBadges();
 
-            // 1. Firebase에서 조회수를 모두 먼저 가져와서 eventData에 결합 (우선순위 정렬을 위함)
             const snapshot = await db.ref('event_views_total').once('value');
             const viewsData = snapshot.val() || {};
             
@@ -833,10 +841,8 @@
             return matchTab && matchLoc && matchAge && matchSearch;
         });
 
-        // 2. 새로운 정렬 우선순위 적용: (1)인기뱃지 (2)오늘오픈 (3)오늘마감 (4)내일오픈 (5)내일마감 (6)신규N
         if (currentTab === 'ongoing' || keyword) {
             filteredData.sort((a, b) => {
-                // 1순위: 인기뱃지 (isHot)
                 if (a.isHot && !b.isHot) return -1;
                 if (!a.isHot && b.isHot) return 1;
 
@@ -857,7 +863,6 @@
             });
         } else if (currentTab === 'always') {
             filteredData.sort((a, b) => {
-                // 다른 탭에서도 인기뱃지를 맨 위로 올리도록 처리 (동일한 사용자 경험 제공)
                 if (a.isHot && !b.isHot) return -1;
                 if (!a.isHot && b.isHot) return 1;
                 
@@ -922,7 +927,6 @@
             const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
             const cardTitle = (item.title || '').replace(/\n/g, ' '); 
 
-            // 3. 불러온 조회수와 인기 뱃지를 바로 렌더링하도록 변경
             const cardHTML = `
                 <div class="${cardClass}" id="card-${eventUniqueId}" onclick="openEventPopup('${eventUniqueId}')">
                     ${overlayHTML}
@@ -1097,11 +1101,6 @@
         initLastUpdated();
         initVisitCounters();
         fetchEventData(); 
-        
-        const bannerLink = document.getElementById('banner-link');
-        if (bannerLink) {
-            bannerLink.innerHTML = '<img src="https://firebasestorage.googleapis.com/v0/b/heycj-55b6a.firebasestorage.app/o/%EC%A0%95%EC%84%9C%EB%AE%A4%EC%A7%81%EC%95%84%ED%8A%B8%ED%81%B4%EB%9E%98%EC%8A%A4%20%EA%B4%91%EA%B3%A0%EB%B0%B0%EB%84%88.png?alt=media&token=2c1a1aed-5bc3-4f57-a6c5-dffb209d5598" alt="상단 배너" style="width:100%; height:100%; object-fit:contain;" />';
-        }
     });
 </script>
 </body>
