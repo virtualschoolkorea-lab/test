@@ -69,7 +69,7 @@
             transform: translateX(-50%);
             width: 100%;
             max-width: 500px;
-            height: 45px; 
+            height: 54px; /* 기존 45px에서 20% 증가 */
             background-color: #fff;
             padding: 5px 10px; 
             box-sizing: border-box;
@@ -98,6 +98,7 @@
         .tab.active { color: var(--primary-color); border-bottom: 3px solid var(--primary-color); font-weight: 700; }
         .new-badge { display: inline-block; background-color: #E53935; color: white; font-size: 0.6rem; font-weight: 800; padding: 1px 5px; border-radius: 6px; margin-left: 4px; vertical-align: super; }
         .card-new-badge { display: inline-block; background-color: #E53935; color: white; font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 6px; margin-left: 4px; vertical-align: baseline; flex-shrink: 0; }
+        .badge-hot { background-color: #FF5722; display: inline-block; color: white; font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 6px; margin-right: 4px; vertical-align: baseline; flex-shrink: 0; }
 
         .filter-wrapper { position: relative; background: #fafafa; border-bottom: 1px solid #eee; }
         .checkbox-group { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 4px; padding: 8px 10px; -ms-overflow-style: none; scrollbar-width: none; }
@@ -127,7 +128,7 @@
 
             .promo-area-wrap { 
                 max-width: 800px; 
-                height: 65px; 
+                height: 78px; /* 기존 65px에서 20% 증가 */
                 padding: 8px 20px; 
                 bottom: 0; 
                 border-radius: 16px 16px 0 0; 
@@ -173,7 +174,8 @@
         .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; grid-column: 1 / -1; }
         .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; grid-column: 1 / -1; }
 
-        .img-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; padding-bottom: 55px; box-sizing: border-box; }
+        /* 광고 배너 높이 조절에 맞춘 마진/패딩 재조정 */
+        .img-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; padding-bottom: 65px; box-sizing: border-box; }
         .img-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
         
         .img-modal-wrapper { position: relative; max-width: 90%; max-height: calc(100% - 100px); display: inline-block; }
@@ -183,7 +185,6 @@
         .img-modal-scroll-area::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
         
         .img-modal-content { display: block; width: 100%; height: auto; }
-        /* 저장/캡처 방어용 CSS (드래그 및 메뉴 팝업 방지) */
         .no-save-img { -webkit-user-select: none; -webkit-touch-callout: none; user-select: none; }
         
         .img-modal-close { position: absolute; top: -14px; right: -14px; background: #fff; color: #111; border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 1.6rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); z-index: 100; line-height: 1; padding: 0 0 2px 0; }
@@ -191,12 +192,12 @@
         .event-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding-bottom: 0; box-sizing: border-box; }
         .event-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
         
-        .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: calc(100% - 80px); border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(120%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px 55px 10px; }
+        .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: calc(100% - 80px); border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(120%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px 65px 10px; }
         .event-modal-overlay.active .event-modal-content-box { transform: translateY(0); }
 
         @media (min-width: 768px) {
-            .img-modal-overlay { padding-bottom: 65px; }
-            .event-modal-content-box { border-radius: 16px; transform: scale(0.95); opacity: 0; transition: all 0.2s ease-out; margin-bottom: 75px; }
+            .img-modal-overlay { padding-bottom: 90px; }
+            .event-modal-content-box { border-radius: 16px; transform: scale(0.95); opacity: 0; transition: all 0.2s ease-out; margin-bottom: 90px; }
             .event-modal-overlay.active .event-modal-content-box { transform: scale(1); opacity: 1; }
         }
 
@@ -219,16 +220,16 @@
         .info-divider { color: #ddd; margin: 0 10px; line-height: 1.4; flex-shrink: 0; font-weight: 400; }
         .info-desc { flex: 1; word-break: keep-all; line-height: 1.4; color: #222; }
 
-        /* footer 구조 변경 및 혜택받기 버튼 추가 */
         .event-modal-footer { padding: 15px 20px; border-top: 1px solid #eee; background: #fafafa; display: flex; flex-direction: column; gap: 10px; }
         .footer-btn-row { display: flex; gap: 10px; width: 100%; }
         
-        .btn-link { display: flex; align-items: center; justify-content: center; text-align: center; background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); text-decoration: none; padding: 12px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; transition: all 0.2s; box-sizing: border-box; cursor: pointer; font-family: inherit; width: 100%; flex: 1; margin: 0; }
+        /* 버튼 상하 패딩을 기존 12px에서 10px로 15% 가량 축소 */
+        .btn-link { display: flex; align-items: center; justify-content: center; text-align: center; background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); text-decoration: none; padding: 10px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; transition: all 0.2s; box-sizing: border-box; cursor: pointer; font-family: inherit; width: 100%; flex: 1; margin: 0; }
         .btn-link:hover { background-color: #388E3C; }
         .btn-disabled { background-color: #f2f2f2 !important; color: #888 !important; border: 1px solid #ddd !important; cursor: default !important; pointer-events: auto; }
         .btn-disabled:hover { background-color: #f2f2f2 !important; }
 
-        .btn-benefit { display: flex; align-items: center; justify-content: center; background-color: #E53935; color: white; border: none; padding: 12px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; width: 100%; cursor: pointer; transition: all 0.2s; box-sizing: border-box; font-family: inherit; }
+        .btn-benefit { display: flex; align-items: center; justify-content: center; background-color: #E53935; color: white; border: none; padding: 10px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; width: 100%; cursor: pointer; transition: all 0.2s; box-sizing: border-box; font-family: inherit; }
         .btn-benefit:hover { background-color: #C62828; }
     </style>
 </head>
@@ -413,9 +414,19 @@
 
             dataArray.forEach(item => {
                 const eventId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
+                const viewCount = viewsData[eventId] || 0;
                 const countElem = document.getElementById(`view-count-${eventId}`);
+                
                 if (countElem) {
-                    countElem.innerText = viewsData[eventId] || 0;
+                    countElem.innerText = viewCount;
+                }
+                
+                // 5. 인기 뱃지 로직: 총 50 조회수가 넘으면 "지금인기🔥" 뱃지를 타이틀에 추가
+                if (viewCount >= 50) {
+                    const titleRow = document.querySelector(`#card-${eventId} .card-title-row`);
+                    if (titleRow && !titleRow.querySelector('.badge-hot')) {
+                        titleRow.insertAdjacentHTML('afterbegin', '<span class="badge-hot">지금인기🔥</span>');
+                    }
                 }
             });
         }).catch(error => console.error("조회수 로드 에러:", error));
@@ -496,7 +507,7 @@
     }
 
     let eventData = [];
-    let currentTab = 'affiliate';
+    let currentTab = 'ongoing'; // 초기탭을 편의상 설정
 
     async function fetchEventData() {
         const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQV-02F-qXwS6yLb_XScKqwYj1N0qImwofY2Pyj2tvwnW0i1tl995_BjOfaVHpayppk6YYhqpdLrpa9/pub?output=csv";
@@ -732,6 +743,20 @@
         return 9999;
     }
 
+    // 4. 행사마감일이 지났는지 판별하는 함수 추가
+    function isDatePassed(dateStr) {
+        if (!dateStr) return false;
+        const val = parseDateValue(dateStr);
+        if (val === 9999) return false;
+        
+        const today = new Date();
+        // 당해 연도 기준으로 오늘 날짜를 MMDD 포맷으로 변환
+        const todayVal = (today.getMonth() + 1) * 100 + today.getDate();
+        
+        // 날짜가 오늘보다 과거이면 true
+        return val < todayVal;
+    }
+
     function parseRegDate(dateStr) {
         if (!dateStr) return 0;
         let s = String(dateStr).trim();
@@ -820,15 +845,19 @@
             return matchTab && matchLoc && matchAge && matchSearch;
         });
 
+        // 2, 3 정렬 순서 적용
         if (currentTab === 'ongoing' || keyword) {
             filteredData.sort((a, b) => {
+                // 1순위: 신규 콘텐츠
                 if (a.isNew !== b.isNew) return b.isNew ? 1 : -1;
 
+                // 2순위: (1)오늘오픈 (2)오늘마감 (3)내일오픈 (4)내일마감
                 const getPriority = (item) => {
                     if (item.isTodayOpen) return 1;
                     if (item.isTodayClose) return 2;
-                    if (item.isTomorrowClose) return 3;
-                    return 4;
+                    if (item.isTomorrowOpen) return 3;
+                    if (item.isTomorrowClose) return 4;
+                    return 5; // 그 외
                 };
 
                 const pA = getPriority(a);
@@ -837,7 +866,16 @@
 
                 return parseDateValue(a.applyEnd) - parseDateValue(b.applyEnd);
             });
-        } else if (currentTab === 'always' || currentTab === 'affiliate') {
+        } else if (currentTab === 'always') {
+            // 3. 상시접수 탭은 행사마감일 날짜 순으로 정렬
+            filteredData.sort((a, b) => {
+                if (a.isNew !== b.isNew) return b.isNew ? 1 : -1;
+                const dateA = parseDateValue(a['행사마감일'] || a.eventEnd);
+                const dateB = parseDateValue(b['행사마감일'] || b.eventEnd);
+                if (dateA !== dateB) return dateA - dateB;
+                return a.originalIndex - b.originalIndex;
+            });
+        } else if (currentTab === 'affiliate') {
             filteredData.sort((a, b) => {
                 if (a.isNew !== b.isNew) return b.isNew ? 1 : -1;
                 return a.originalIndex - b.originalIndex;
@@ -869,7 +907,13 @@
 
             let cardClass = 'card';
             let overlayHTML = '';
-            const statusVal = item['커밍순'] ? item['커밍순'].replace(/\s+/g, '') : '';
+            
+            // 4. 행사마감일이 지난 경우 강제로 마감 처리
+            let statusVal = item['커밍순'] ? item['커밍순'].replace(/\s+/g, '') : '';
+            if (isDatePassed(item['행사마감일'] || item.eventEnd)) {
+                statusVal = '마감';
+            }
+
             if (statusVal === '커밍순') {
                 cardClass += ' disabled-card';
                 overlayHTML = `<div class="status-overlay"><div class="status-stamp">COMING SOON</div></div>`;
@@ -978,15 +1022,16 @@
                 lowerUrl.includes('phinf.pstatic.net');
         }
 
-        const whiteLinkIcon = `<svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor; margin-left:4px; vertical-align:text-bottom;"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>`;
-        const whiteImgIcon = `<svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor; margin-left:4px; vertical-align:text-bottom;"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>`;
+        // 1. 요청하신 이모티콘 변경 (글로브를 흰색으로, 이미지는 컬러 그대로)
+        const whiteLinkIcon = `<span style="color: transparent; text-shadow: 0 0 0 white; margin-left:4px; font-size:16px; vertical-align:text-bottom;">🌐</span>`;
+        const colorImgIcon = `<span style="margin-left:4px; font-size:16px; vertical-align:text-bottom;">🖼️</span>`;
 
         if (detailUrl && detailUrl.trim() !== '') {
             const safeUrl = detailUrl.trim().replace(/"/g, '&quot;');
             const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ');
             
             if (isImageUrl) {
-                btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">상세정보 확인${whiteImgIcon}</button>`;
+                btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">상세정보 확인${colorImgIcon}</button>`;
             } else {
                 btnDetails = `<a href="${safeUrl}" onclick="trackEventAndOpen(event, '${safeUrl}', '${trackTitle}', 'detail')" class="btn-link">관련사이트${whiteLinkIcon}</a>`;
             }
@@ -1015,7 +1060,6 @@
             btnApply = `<button type="button" class="btn-link btn-disabled" onclick="alert('사전예약 링크가 필요 없는 현장접수 행사입니다.');">현장접수</button>`;
         }
 
-        // 🌟 '제휴/이벤트' 탭이고 구글 시트의 '혜택' 열에 링크가 있을 때만 혜택받기 버튼 추가
         let btnBenefit = '';
         const benefitUrl = item['혜택'];
         if (item.type === 'affiliate' && benefitUrl && benefitUrl.trim() !== '') {
@@ -1023,7 +1067,6 @@
             btnBenefit = `<button type="button" class="btn-benefit btn-img-modal" data-url="${safeBenefitUrl}" data-title="혜택받기">🎁 혜택받기 (쿠폰/할인권 등)</button>`;
         }
 
-        // 🌟 푸터 영역 구조 재조립
         document.getElementById('popupFooter').innerHTML = `
             ${btnBenefit}
             <div class="footer-btn-row">
