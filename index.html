@@ -38,7 +38,7 @@
         
         body.modal-open { overflow: hidden; }
 
-        .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; padding-bottom: 70px; /* 하단 배너 공간 확보 */ }
+        .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; padding-bottom: 50px; }
         
         .sticky-wrapper { position: sticky; top: 0; z-index: 100; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: inherit; }
 
@@ -62,7 +62,6 @@
         .notice-container { background: rgba(0, 0, 0, 0.15); border-radius: 6px; padding: 4px 8px; text-align: center; font-size: 0.7rem; font-weight: 500; height: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 5px; }
         .notice-container a { color: #fff; text-decoration: none; transition: opacity 0.3s ease-in-out; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
 
-        /* 하단 배너 고정 사이즈 설정 */
         .promo-area-wrap {
             position: fixed;
             bottom: 0;
@@ -70,9 +69,9 @@
             transform: translateX(-50%);
             width: 100%;
             max-width: 500px;
-            height: 60px; /* 모바일 높이 완전 고정! 애드센스 폭주 방지 */
+            height: 54px;
             background-color: #fff;
-            padding: 0; 
+            padding: 5px 10px; 
             box-sizing: border-box;
             border-top: 1px solid var(--border-color);
             display: flex;
@@ -80,13 +79,14 @@
             justify-content: center;
             z-index: 100000;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-            overflow: hidden;
         }
         .promo-area-wrap img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* 이미지가 찌그러지지 않고 꽉 차게 */
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 4px;
             display: block;
+            margin: 0 auto;
+            object-fit: contain;
         }
 
         .search-container { padding: 6px 15px; background-color: #fff; border-bottom: 1px solid var(--border-color); }
@@ -114,7 +114,7 @@
         @media (min-width: 768px) {
             body { padding-top: 30px; padding-bottom: 30px; background-color: #e9ecef; }
             
-            .app-container { max-width: 800px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; padding-bottom: 100px; }
+            .app-container { max-width: 800px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; padding-bottom: 75px; }
             header { border-radius: 16px 16px 0 0; padding: 20px 24px 15px 24px; }
             .sticky-wrapper { border-radius: 16px 16px 0 0; }
             
@@ -127,8 +127,8 @@
 
             .promo-area-wrap { 
                 max-width: 800px; 
-                height: 90px; /* PC 높이 완전 고정! */
-                padding: 0; 
+                height: 78px; 
+                padding: 8px 20px; 
                 bottom: 0; 
                 border-radius: 16px 16px 0 0; 
                 border: 1px solid var(--border-color);
@@ -159,11 +159,11 @@
         .badge-open { background-color: #2ecc71; }
         .badge-close { background-color: #F06292; }
         .badge-hot { 
-            background-color: #ffebee; 
-            color: #d32f2f; 
-            border-radius: 20px; 
-            padding: 3px 4px 3px 8px;
-        }
+    background-color: #ffebee; 
+    color: #d32f2f; 
+    border-radius: 20px; 
+    padding: 3px 4px 3px 8px; /* 오른쪽 여백만 절반으로 줄임 */
+}
 
         .view-count { display: flex; align-items: center; gap: 3px; font-size: 0.7rem; color: #aaa; font-weight: 500; flex-shrink: 0; margin-left: 8px; margin-top: 2px; }
         .view-count svg { width: 14px; height: 14px; fill: currentColor; }
@@ -183,11 +183,11 @@
         .img-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
         
         .img-modal-wrapper { 
-            position: relative; 
-            max-width: min(90%, 600px); 
-            max-height: calc(100% - 100px); 
-            display: inline-block; 
-        }
+    position: relative; 
+    max-width: min(90%, 600px); /* 모바일은 90% 유지, PC에서는 최대 600px까지만 커지도록 제한 */
+    max-height: calc(100% - 100px); 
+    display: inline-block; 
+}
         .img-modal-scroll-area { max-height: calc(100vh - 100px); overflow-y: auto; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); background: #fff; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
         
         .img-modal-scroll-area::-webkit-scrollbar { width: 6px; }
@@ -226,7 +226,7 @@
         .info-row { font-size: 0.95rem; color: #444; margin-bottom: 10px; display: flex; align-items: flex-start; }
         .info-label { font-weight: 700; color: #333; line-height: 1.4; flex-shrink: 0; }
         .info-divider { color: #ddd; margin: 0 10px; line-height: 1.4; flex-shrink: 0; font-weight: 400; }
-        .info-desc { flex: 1; word-break: keep-all; line-height: 1.4; color: #222; white-space: pre-wrap; }
+        .info-desc { flex: 1; word-break: keep-all; line-height: 1.4; color: #222; }
 
         .event-modal-footer { padding: 15px 20px; border-top: 1px solid #eee; background: #fafafa; display: flex; flex-direction: column; gap: 10px; }
         .footer-btn-row { display: flex; gap: 10px; width: 100%; }
@@ -287,12 +287,24 @@
 </div>
 
 <div class="promo-area-wrap" id="main-promo-wrap">
-    
-    <a href="https://헤이청주.com/?id=A067" id="temp-banner-link" style="display:block; width:100%; height:100%;">
-        <img src="https://firebasestorage.googleapis.com/v0/b/heycj-55b6a.firebasestorage.app/o/%EC%A0%95%EC%84%9C%EB%AE%A4%EC%A7%81%EC%95%84%ED%8A%B8%ED%81%B4%EB%9E%98%EC%8A%A4%20%EA%B4%91%EA%B3%A0%EB%B0%B0%EB%84%88.png?alt=media&token=2c1a1aed-5bc3-4f57-a6c5-dffb209d5598" alt="임시 배너" style="width:100%; height:100%; object-fit:contain; display:block; margin:0 auto;" />
-    </a>
+    <div style="position: relative; width: 100%; height: 100%;">
+        
+        <a href="https://헤이청주.com/?id=A067" id="fallback-banner" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; display: flex; justify-content: center; align-items: center; text-decoration: none;">
+            <img src="https://firebasestorage.googleapis.com/v0/b/heycj-55b6a.firebasestorage.app/o/%EC%A0%95%EC%84%9C%EB%AE%A4%EC%A7%81%EC%95%84%ED%8A%B8%ED%81%B4%EB%9E%98%EC%8A%A4%20%EA%B4%91%EA%B3%A0%EB%B0%B0%EB%84%88.png?alt=media&token=2c1a1aed-5bc3-4f57-a6c5-dffb209d5598" alt="상단 배너" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px;" />
+        </a>
+
+        <div id="adsense-banner" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;">
+            <ins class="adsbygoogle"
+                 style="display:inline-block; width:100%; height:100%;"
+                 data-ad-client="ca-pub-2755313313061030"
+                 data-ad-slot="여기에_발급받은_광고단위ID_입력"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
 
     </div>
+</div>
 
 <div class="img-modal-overlay" id="imageModal">
     <div class="img-modal-wrapper">
@@ -331,9 +343,6 @@
         firebase.initializeApp(firebaseConfig);
     }
     const db = firebase.database();
-
-    const stripNewlines = (str) => (str || '').replace(/\\n/g, ' ').replace(/\n/g, ' ');
-    const keepNewlines = (str) => (str || '').replace(/\\n/g, '\n');
 
     function getTodayStr() {
         const kstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
@@ -451,7 +460,7 @@
         const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
         const shareUrl = window.location.origin + window.location.pathname + '?id=' + encodeURIComponent(eventId);
         const shareData = {
-            title: item ? stripNewlines(item.title) : '헤이청주 일정 공유',
+            title: item ? item.title.replace(/\n/g, ' ') : '헤이청주 일정 공유',
             text: '이 행사 어때요? 일정을 확인해보세요!',
             url: shareUrl
         };
@@ -515,13 +524,14 @@
             processNewItems();
             updateTabNewBadges();
 
+            // 1. Firebase에서 조회수를 모두 먼저 가져와서 eventData에 결합 (우선순위 정렬을 위함)
             const snapshot = await db.ref('event_views_total').once('value');
             const viewsData = snapshot.val() || {};
             
             eventData.forEach(item => {
                 const eventId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
                 item.viewCount = viewsData[eventId] || 0;
-                item.isHot = item.viewCount >= 200; 
+                item.isHot = item.viewCount >= 200; // 200 이상이면 핫(인기) 뱃지 대상
             });
 
             const urlParams = new URLSearchParams(window.location.search);
@@ -822,43 +832,8 @@
 
         if (eventData.length === 0) return;
 
-        // [스마트 탭 전환 로직]
-        if (keyword) {
-            const potentialMatches = eventData.filter(item => {
-                const matchLoc = selectedLocs.length === 0 ? true : selectedLocs.some(loc => item.mappedLoc === loc);
-                const matchAge = selectedAges.length === 0 ? true : selectedAges.some(age => item.mappedAges && item.mappedAges.includes(age));
-                const matchSearch = (item.title && item.title.toLowerCase().includes(keyword)) ||
-                                    (item.place && item.place.toLowerCase().includes(keyword)) ||
-                                    (item.loc && item.loc.toLowerCase().includes(keyword));
-                return matchLoc && matchAge && matchSearch;
-            });
-
-            const hasMatchesInCurrentTab = potentialMatches.some(item => item.type === currentTab);
-
-            if (!hasMatchesInCurrentTab && potentialMatches.length > 0) {
-                const counts = { ongoing: 0, always: 0, affiliate: 0 };
-                potentialMatches.forEach(item => { if(counts[item.type] !== undefined) counts[item.type]++; });
-
-                let bestTab = currentTab;
-                let max = 0;
-                ['ongoing', 'always', 'affiliate'].forEach(t => {
-                    if (counts[t] > max) {
-                        max = counts[t];
-                        bestTab = t;
-                    }
-                });
-
-                if (bestTab !== currentTab) {
-                    currentTab = bestTab;
-                    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-                    const targetTabElem = document.querySelector(`.tab[onclick*="${currentTab}"]`);
-                    if (targetTabElem) targetTabElem.classList.add('active');
-                }
-            }
-        }
-
         let filteredData = eventData.filter(item => {
-            const matchTab = (item.type === currentTab);
+            const matchTab = keyword ? true : (item.type === currentTab);
             const matchLoc = selectedLocs.length === 0 ? true : selectedLocs.some(loc => item.mappedLoc === loc);
             const matchAge = selectedAges.length === 0 ? true : selectedAges.some(age => item.mappedAges && item.mappedAges.includes(age));
 
@@ -873,8 +848,10 @@
             return matchTab && matchLoc && matchAge && matchSearch;
         });
 
+        // 2. 새로운 정렬 우선순위 적용: (1)인기뱃지 (2)오늘오픈 (3)오늘마감 (4)내일오픈 (5)내일마감 (6)신규N
         if (currentTab === 'ongoing' || keyword) {
             filteredData.sort((a, b) => {
+                // 1순위: 인기뱃지 (isHot)
                 if (a.isHot && !b.isHot) return -1;
                 if (!a.isHot && b.isHot) return 1;
 
@@ -895,6 +872,7 @@
             });
         } else if (currentTab === 'always') {
             filteredData.sort((a, b) => {
+                // 다른 탭에서도 인기뱃지를 맨 위로 올리도록 처리 (동일한 사용자 경험 제공)
                 if (a.isHot && !b.isHot) return -1;
                 if (!a.isHot && b.isHot) return 1;
                 
@@ -957,12 +935,9 @@
             }
 
             const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
-            
-            // 리스트용 변수 (줄바꿈 모두 제거)
-            const cardTitle = stripNewlines(item.title); 
-            const cardPlace = stripNewlines(item.place) || '장소미정';
-            const cardDate = stripNewlines(item.date) || '일정미정';
+            const cardTitle = (item.title || '').replace(/\n/g, ' '); 
 
+            // 3. 불러온 조회수와 인기 뱃지를 바로 렌더링하도록 변경
             const cardHTML = `
                 <div class="${cardClass}" id="card-${eventUniqueId}" onclick="openEventPopup('${eventUniqueId}')">
                     ${overlayHTML}
@@ -986,10 +961,10 @@
                         <span class="card-more-text">+ 더보기</span>
                     </div>
                     
-                    <div class="card-bottom-info">
-                        <span style="flex-shrink:0;">📍 ${cardPlace}</span>
+<div class="card-bottom-info">
+                        <span style="flex-shrink:0;">📍 ${item.place ? item.place : '장소미정'}</span>
                         <span style="color:#ddd;">|</span>
-                        <span style="flex:1;">🗓️ ${cardDate}</span>
+                        <span style="flex:1;">🗓️ ${item.date ? item.date : '일정미정'}</span>
                     </div>
                 </div>
             `;
@@ -1018,14 +993,7 @@
             console.log('조회수 카운트 에러', e);
         }
 
-        // 팝업용 변수 (줄바꿈 유지)
-        const popupFormattedTitle = keepNewlines(item.title);
-        const popupPlace = keepNewlines(item.place) || '정보 없음';
-        const popupAge = keepNewlines(item.age) || '누구나';
-        const popupCostType = keepNewlines(item.costType) || '정보 없음';
-        const popupDate = keepNewlines(item.date) || '해당정보 없음';
-        const popupTipText = keepNewlines(item['꿀팁']).trim();
-
+        const popupFormattedTitle = (item.title || '').replace(/\\n/g, '\n');
         document.getElementById('popupTitle').innerHTML = `${popupFormattedTitle} ${item.isNew ? `<span class="card-new-badge" style="vertical-align: middle;">N</span>` : ''}`;
         document.getElementById('popupShareBtn').setAttribute('onclick', `sharePopupLink('${eventId}')`);
 
@@ -1042,14 +1010,16 @@
             `;
         }
 
+        const tipText = (item['꿀팁'] || '').trim();
+
         document.getElementById('popupBody').innerHTML = `
             ${popupImgHtml}
-            <div class="info-row"><span class="info-label">장소</span><span class="info-divider">|</span><span class="info-desc">${popupPlace}</span></div>
-            <div class="info-row"><span class="info-label">대상</span><span class="info-divider">|</span><span class="info-desc">${popupAge}</span></div>
-            <div class="info-row"><span class="info-label">비용</span><span class="info-divider">|</span><span class="info-desc">${popupCostType}</span></div>
+            <div class="info-row"><span class="info-label">장소</span><span class="info-divider">|</span><span class="info-desc">${item.place || '정보 없음'}</span></div>
+            <div class="info-row"><span class="info-label">대상</span><span class="info-divider">|</span><span class="info-desc">${item.age || '누구나'}</span></div>
+            <div class="info-row"><span class="info-label">비용</span><span class="info-divider">|</span><span class="info-desc">${item.costType || '정보 없음'}</span></div>
             <div class="info-row"><span class="info-label">접수</span><span class="info-divider">|</span><span class="info-desc" style="${applyTextStyle}">${item.displayText || ''}</span></div>
-            <div class="info-row"><span class="info-label">일정</span><span class="info-divider">|</span><span class="info-desc">${popupDate}</span></div>
-            ${popupTipText ? `<div class="info-row"><span class="info-label">메모</span><span class="info-divider">|</span><span class="info-desc" style="font-weight:bold; color:var(--text-main);">${popupTipText}</span></div>` : ''}
+            <div class="info-row"><span class="info-label">일정</span><span class="info-divider">|</span><span class="info-desc">${item.date || '해당정보 없음'}</span></div>
+            ${tipText ? `<div class="info-row"><span class="info-label">메모</span><span class="info-divider">|</span><span class="info-desc" style="font-weight:bold; color:var(--text-main);">${tipText}</span></div>` : ''}
         `;
 
         let btnDetails = '';
@@ -1070,7 +1040,7 @@
 
         if (detailUrl && detailUrl.trim() !== '') {
             const safeUrl = detailUrl.trim().replace(/"/g, '&quot;');
-            const trackTitle = stripNewlines(item.title).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ');
             
             if (isImageUrl) {
                 btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">상세정보 확인${colorImgIcon}</button>`;
@@ -1088,7 +1058,7 @@
             const cleanValue = rawApplyValue.trim();
             const safeApplyValue = cleanValue.replace(/"/g, '&quot;');
             const alertSafeValue = cleanValue.replace(/'/g, "\\'").replace(/"/g, '\\"');
-            const trackTitle = stripNewlines(item.title).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ');
             const isUrl = /^(https?:\/\/|www\.|javascript:)/i.test(cleanValue);
 
             if (isUrl) {
@@ -1142,6 +1112,7 @@
         initLastUpdated();
         initVisitCounters();
         fetchEventData(); 
+        
     });
 </script>
 </body>
