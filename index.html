@@ -38,7 +38,7 @@
         
         body.modal-open { overflow: hidden; }
 
-        .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; padding-bottom: 50px; }
+        .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; padding-bottom: 70px; /* 하단 배너 공간 확보 */ }
         
         .sticky-wrapper { position: sticky; top: 0; z-index: 100; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: inherit; }
 
@@ -62,6 +62,7 @@
         .notice-container { background: rgba(0, 0, 0, 0.15); border-radius: 6px; padding: 4px 8px; text-align: center; font-size: 0.7rem; font-weight: 500; height: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 5px; }
         .notice-container a { color: #fff; text-decoration: none; transition: opacity 0.3s ease-in-out; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
 
+        /* 하단 배너 고정 사이즈 설정 */
         .promo-area-wrap {
             position: fixed;
             bottom: 0;
@@ -69,26 +70,23 @@
             transform: translateX(-50%);
             width: 100%;
             max-width: 500px;
-            min-height: 60px;
-            height: auto;
+            height: 60px; /* 모바일 높이 완전 고정! 애드센스 폭주 방지 */
             background-color: #fff;
-            padding: 5px 10px; 
+            padding: 0; 
             box-sizing: border-box;
             border-top: 1px solid var(--border-color);
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 100000;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
         }
         .promo-area-wrap img {
-            max-width: 100%;
-            max-height: 100%;
-            border-radius: 4px;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 이미지가 찌그러지지 않고 꽉 차게 */
             display: block;
-            margin: 0 auto;
-            object-fit: contain;
         }
 
         .search-container { padding: 6px 15px; background-color: #fff; border-bottom: 1px solid var(--border-color); }
@@ -116,7 +114,7 @@
         @media (min-width: 768px) {
             body { padding-top: 30px; padding-bottom: 30px; background-color: #e9ecef; }
             
-            .app-container { max-width: 800px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; padding-bottom: 75px; }
+            .app-container { max-width: 800px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; padding-bottom: 100px; }
             header { border-radius: 16px 16px 0 0; padding: 20px 24px 15px 24px; }
             .sticky-wrapper { border-radius: 16px 16px 0 0; }
             
@@ -129,9 +127,8 @@
 
             .promo-area-wrap { 
                 max-width: 800px; 
-                min-height: 90px;
-                height: auto;
-                padding: 8px 20px; 
+                height: 90px; /* PC 높이 완전 고정! */
+                padding: 0; 
                 bottom: 0; 
                 border-radius: 16px 16px 0 0; 
                 border: 1px solid var(--border-color);
@@ -229,8 +226,6 @@
         .info-row { font-size: 0.95rem; color: #444; margin-bottom: 10px; display: flex; align-items: flex-start; }
         .info-label { font-weight: 700; color: #333; line-height: 1.4; flex-shrink: 0; }
         .info-divider { color: #ddd; margin: 0 10px; line-height: 1.4; flex-shrink: 0; font-weight: 400; }
-        
-        /* 팝업 상세 내용 부분은 줄바꿈이 적용되도록 CSS 수정 */
         .info-desc { flex: 1; word-break: keep-all; line-height: 1.4; color: #222; white-space: pre-wrap; }
 
         .event-modal-footer { padding: 15px 20px; border-top: 1px solid #eee; background: #fafafa; display: flex; flex-direction: column; gap: 10px; }
@@ -292,20 +287,14 @@
 </div>
 
 <div class="promo-area-wrap" id="main-promo-wrap">
+    
     <a href="https://헤이청주.com/?id=A067" id="temp-banner-link" style="display:block; width:100%; height:100%;">
-        <img src="https://firebasestorage.googleapis.com/v0/b/heycj-55b6a.firebasestorage.app/o/%EC%A0%95%EC%84%9C%EB%AE%A4%EC%A7%81%EC%95%84%ED%8A%B8%ED%81%B4%EB%9E%98%EC%8A%A4%20%EA%B4%91%EA%B3%A0%EB%B0%B0%EB%84%88.png?alt=media&token=2c1a1aed-5bc3-4f57-a6c5-dffb209d5598" alt="임시 배너" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:4px; display:block; margin:0 auto;" />
+        <img src="https://firebasestorage.googleapis.com/v0/b/heycj-55b6a.firebasestorage.app/o/%EC%A0%95%EC%84%9C%EB%AE%A4%EC%A7%81%EC%95%84%ED%8A%B8%ED%81%B4%EB%9E%98%EC%8A%A4%20%EA%B4%91%EA%B3%A0%EB%B0%B0%EB%84%88.png?alt=media&token=2c1a1aed-5bc3-4f57-a6c5-dffb209d5598" alt="임시 배너" />
     </a>
 
-    <ins class="adsbygoogle"
-         style="display:block; text-align:center; width:100%;"
-         data-ad-client="ca-pub-2755313313061030"
-         data-ad-slot="여기에_발급받은_광고단위_ID_숫자입력"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-    <script>
-         (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-</div>
+    기호를 지워서 코드를 활성화하세요!
+         ========================================== -->
+    </div>
 
 <div class="img-modal-overlay" id="imageModal">
     <div class="img-modal-wrapper">
@@ -345,9 +334,7 @@
     }
     const db = firebase.database();
 
-    // 텍스트에서 줄바꿈을 공백으로 바꾸는 함수 (메인 카드 노출용)
     const stripNewlines = (str) => (str || '').replace(/\\n/g, ' ').replace(/\n/g, ' ');
-    // 텍스트의 줄바꿈을 유지하는 함수 (팝업 상세 정보용)
     const keepNewlines = (str) => (str || '').replace(/\\n/g, '\n');
 
     function getTodayStr() {
@@ -838,7 +825,6 @@
         if (eventData.length === 0) return;
 
         // [스마트 탭 전환 로직]
-        // 검색어가 있을 때, 현재 탭에 일치하는 결과가 없고 다른 탭에 결과가 있다면 해당 탭으로 자동 이동
         if (keyword) {
             const potentialMatches = eventData.filter(item => {
                 const matchLoc = selectedLocs.length === 0 ? true : selectedLocs.some(loc => item.mappedLoc === loc);
@@ -857,7 +843,6 @@
 
                 let bestTab = currentTab;
                 let max = 0;
-                // 가장 결과가 많은 탭으로 전환 (우선순위: ongoing > always > affiliate)
                 ['ongoing', 'always', 'affiliate'].forEach(t => {
                     if (counts[t] > max) {
                         max = counts[t];
@@ -875,7 +860,7 @@
         }
 
         let filteredData = eventData.filter(item => {
-            const matchTab = (item.type === currentTab); // 검색 시에도 현재 선택된 탭 기준 필터링 유지
+            const matchTab = (item.type === currentTab);
             const matchLoc = selectedLocs.length === 0 ? true : selectedLocs.some(loc => item.mappedLoc === loc);
             const matchAge = selectedAges.length === 0 ? true : selectedAges.some(age => item.mappedAges && item.mappedAges.includes(age));
 
