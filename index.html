@@ -328,7 +328,8 @@
       projectId: "heycj-55b6a",
       storageBucket: "heycj-55b6a.firebasestorage.app",
       messagingSenderId: "147201792706",
-      appId: "1:147201792706:web:3b3130a47cd0f50ce5b95b"
+      appId: "1:147201792706:web:3b3130a47cd0f50ce5b95b",
+      databaseURL: "https://heycj-55b6a-default-rtdb.asia-northeast3.firebasedatabase.app" // [추가됨] 파이어베이스 데이터베이스 URL
     };
 
     let db = null;
@@ -515,18 +516,22 @@
     let itemsRendered = 0;
     const ITEMS_PER_PAGE = 20;
 
+    // [변경된 부분] 구글 시트 대신 파이어베이스에서 데이터를 직접 가져오도록 수정
     async function fetchEventData() {
-        const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQV-02F-qXwS6yLb_XScKqwYj1N0qImwofY2Pyj2tvwnW0i1tl995_BjOfaVHpayppk6YYhqpdLrpa9/pub?output=csv";
-        
-        const timeBucket = Math.floor(Date.now() / 60000); 
-        const fetchUrl = csvUrl + "&_t=" + timeBucket;
-
         try {
-            const response = await fetch(fetchUrl);
-            if (!response.ok) throw new Error("네트워크 응답이 올바르지 않습니다.");
+            // 1. 파이어베이스에서 이벤트 데이터를 0.1초만에 가져옵니다.
+            if (!db) throw new Error("파이어베이스 연결이 준비되지 않았습니다.");
+            
+            const snapshot = await db.ref('events_data').once('value');
+            const data = snapshot.val();
 
-            const csvText = await response.text();
-            eventData = parseCSVToJSON(csvText);
+            if (!data) {
+                document.getElementById('list-container').innerHTML = '<div class="empty-state">등록된 행사가 없습니다. 데이터베이스 연동을 확인해주세요.</div>';
+                return;
+            }
+
+            // 2. 파이어베이스 데이터를 자바스크립트 배열로 변환
+            eventData = Array.isArray(data) ? data : Object.values(data);
 
             processEventDates();
             processEventAges();
@@ -534,12 +539,12 @@
             processNewItems();
             updateTabNewBadges();
 
-            // 조회수를 가져오는 부분에도 에러 방어코드 적용
+            // 3. 기존 개별 행사 조회수 데이터 가져오기
             let viewsData = {};
             if (db) {
                 try {
-                    const snapshot = await db.ref('event_views_total').once('value');
-                    viewsData = snapshot.val() || {};
+                    const viewSnapshot = await db.ref('event_views_total').once('value');
+                    viewsData = viewSnapshot.val() || {};
                 } catch (viewError) {
                     console.warn("조회수를 불러오는 데 실패했습니다.", viewError);
                 }
@@ -551,6 +556,7 @@
                 item.isHot = item.viewCount >= 200; 
             });
 
+            // 4. URL 파라미터 확인 및 화면 렌더링
             const urlParams = new URLSearchParams(window.location.search);
             const eventId = urlParams.get('id') || urlParams.get('event');
 
@@ -577,56 +583,6 @@
             console.error(error);
             document.getElementById('list-container').innerHTML = '<div class="empty-state">행사 정보를 불러오는데 실패했습니다. 새로고침을 해주세요. 😥</div>';
         }
-    }
-
-    function parseCSVToJSON(csv) {
-        const rows = [];
-        let row = [];
-        let curr = '';
-        let insideQuotes = false;
-
-        for (let i = 0; i < csv.length; i++) {
-            const char = csv[i];
-            const nextChar = csv[i + 1];
-
-            if (char === '"' && insideQuotes && nextChar === '"') {
-                curr += '"';
-                i++;
-            } else if (char === '"') {
-                insideQuotes = !insideQuotes;
-            } else if (char === ',' && !insideQuotes) {
-                row.push(curr);
-                curr = '';
-            } else if ((char === '\n' || (char === '\r' && nextChar === '\n')) && !insideQuotes) {
-                row.push(curr);
-                rows.push(row);
-                row = [];
-                curr = '';
-                if (char === '\r') i++;
-            } else {
-                curr += char;
-            }
-        }
-
-        if (curr !== '' || row.length > 0) {
-            row.push(curr);
-            rows.push(row);
-        }
-
-        if (rows.length < 2) return [];
-
-        const headers = rows[0].map(h => h.trim().replace(/[\r\n]+/g, ''));
-        const data = [];
-
-        for (let i = 1; i < rows.length; i++) {
-            if (rows[i].length === 1 && rows[i][0].trim() === '') continue;
-            const obj = {};
-            for (let j = 0; j < headers.length; j++) {
-                if (headers[j]) obj[headers[j]] = rows[i][j] ? rows[i][j].trim() : ''; // 여기서 .replace(/[\r\n]+$/, '') 제거하여 원본 줄바꿈 최대한 보존
-            }
-            if (obj.type || obj.title) data.push(obj);
-        }
-        return data;
     }
 
     function processEventDates() {
