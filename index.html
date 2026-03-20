@@ -408,22 +408,21 @@ async function initVisitCounters() {
             return;
         }
 
-        const todayStr = getTodayStr(); // 예: 20260320
-        const totalRef = db.ref('site_views/total');
-        const todayRef = db.ref(`site_views/today_${todayStr}`);
+        const todayStr = getTodayStr(); // 예: 20260321
+        // 보안 규칙에 맞춰 'visits' 항목을 사용합니다.
+        const totalRef = db.ref('visits/total');
+        const todayRef = db.ref(`visits/today_${todayStr}`);
 
         try {
-            // 1. 브라우저 세션 스토리지를 확인하여, 창을 닫기 전까지는 새로고침해도 조회수가 중복으로 안 올라가게 방지 (어뷰징 방지)
+            // 새로고침 연타 시 중복 카운트 방지 (세션 스토리지 활용)
             const hasVisited = sessionStorage.getItem('visited_today_' + todayStr);
             if (!hasVisited) {
-                // 오늘 처음 방문한 거라면 파이어베이스 조회수 +1 증가
                 await totalRef.set(firebase.database.ServerValue.increment(1));
                 await todayRef.set(firebase.database.ServerValue.increment(1));
                 sessionStorage.setItem('visited_today_' + todayStr, 'true');
             }
 
-            // 2. 실시간(.on)으로 파이어베이스에서 조회수를 가져와서 화면에 표시!
-            // 누군가 접속해서 숫자가 오르면 내 화면도 새로고침 없이 바로 숫자가 바뀝니다.
+            // 실시간 조회수 화면 표시
             totalRef.on('value', snap => {
                 document.getElementById('count-total').innerText = snap.val() || 0;
             });
