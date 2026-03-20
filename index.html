@@ -38,7 +38,8 @@
         
         body.modal-open { overflow: hidden; }
 
-        .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; padding-bottom: 50px; }
+        /* 하단 탭 공간 확보를 위해 padding-bottom 증가 */
+        .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; padding-bottom: 120px; }
         
         .sticky-wrapper { position: sticky; top: 0; z-index: 100; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: inherit; }
 
@@ -62,10 +63,41 @@
         .notice-container { background: rgba(0, 0, 0, 0.15); border-radius: 6px; padding: 4px 8px; text-align: center; font-size: 0.7rem; font-weight: 500; height: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 5px; }
         .notice-container a { color: #fff; text-decoration: none; transition: opacity 0.3s ease-in-out; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
 
-        /* 하단 배너 (애드센스 구조 적용) */
-        .promo-area-wrap {
+        /* 하단 메인 네비게이션 탭 CSS */
+        .bottom-nav {
             position: fixed;
             bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 500px;
+            height: 60px;
+            background-color: #ffffff;
+            display: flex;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+            z-index: 100001;
+            border-top: 1px solid var(--border-color);
+        }
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.2s;
+            gap: 4px;
+        }
+        .nav-item svg { width: 22px; height: 22px; fill: currentColor; transition: transform 0.2s; }
+        .nav-item.active { color: var(--primary-color); font-weight: 700; }
+        .nav-item.active svg { transform: translateY(-2px); }
+
+        /* 하단 배너 (애드센스 구조 적용) - 탭 위로 이동 */
+        .promo-area-wrap {
+            position: fixed;
+            bottom: 60px; /* 하단 탭 높이만큼 띄움 */
             left: 50%;
             transform: translateX(-50%);
             width: 100%;
@@ -81,6 +113,15 @@
             z-index: 100000;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
         }
+
+        /* 뷰 전환용 클래스 */
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+
+        /* 임시 안내 화면 */
+        .placeholder-content { text-align: center; padding: 60px 20px; color: #666; }
+        .placeholder-content h2 { font-size: 1.2rem; margin-bottom: 10px; color: var(--primary-color); }
+        .placeholder-content p { font-size: 0.9rem; }
 
         .search-container { padding: 6px 15px; background-color: #fff; border-bottom: 1px solid var(--border-color); }
         .search-input { width: 100%; padding: 6px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.85rem; outline: none; box-sizing: border-box; background-color: #f9f9f9; transition: all 0.2s; }
@@ -107,7 +148,7 @@
         @media (min-width: 768px) {
             body { padding-top: 30px; padding-bottom: 30px; background-color: #e9ecef; }
             
-            .app-container { max-width: 800px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; padding-bottom: 75px; }
+            .app-container { max-width: 800px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; padding-bottom: 150px; }
             header { border-radius: 16px 16px 0 0; padding: 20px 24px 15px 24px; }
             .sticky-wrapper { border-radius: 16px 16px 0 0; }
             
@@ -118,16 +159,8 @@
             .search-input { font-size: 1rem; padding: 10px 15px; }
             .tab { font-size: 1rem; padding: 10px 0; }
 
-            .promo-area-wrap { 
-                max-width: 800px; 
-                height: 78px; 
-                padding: 8px 20px; 
-                bottom: 0; 
-                border-radius: 16px 16px 0 0; 
-                border: 1px solid var(--border-color);
-                border-bottom: none;
-                box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
-            }
+            .bottom-nav { max-width: 800px; border-radius: 0 0 16px 16px; }
+            .promo-area-wrap { max-width: 800px; height: 78px; padding: 8px 20px; bottom: 60px; border: 1px solid var(--border-color); border-bottom: none; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); }
             
             #list-container { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; align-items: stretch; padding: 20px; }
             .card { margin-bottom: 0; height: auto; display: flex; flex-direction: column; }
@@ -151,12 +184,7 @@
         .badge-today { background-color: #E53935; }
         .badge-open { background-color: #2ecc71; }
         .badge-close { background-color: #F06292; }
-        .badge-hot { 
-            background-color: #ffebee; 
-            color: #d32f2f; 
-            border-radius: 20px; 
-            padding: 3px 4px 3px 8px;
-        }
+        .badge-hot { background-color: #ffebee; color: #d32f2f; border-radius: 20px; padding: 3px 4px 3px 8px; }
 
         .view-count { display: flex; align-items: center; gap: 3px; font-size: 0.7rem; color: #aaa; font-weight: 500; flex-shrink: 0; margin-left: 8px; margin-top: 2px; }
         .view-count svg { width: 14px; height: 14px; fill: currentColor; }
@@ -175,12 +203,7 @@
         .img-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; padding-bottom: 65px; box-sizing: border-box; }
         .img-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
         
-        .img-modal-wrapper { 
-            position: relative; 
-            max-width: min(90%, 600px); 
-            max-height: calc(100% - 100px); 
-            display: inline-block; 
-        }
+        .img-modal-wrapper { position: relative; max-width: min(90%, 600px); max-height: calc(100% - 100px); display: inline-block; }
         .img-modal-scroll-area { max-height: calc(100vh - 100px); overflow-y: auto; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); background: #fff; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
         
         .img-modal-scroll-area::-webkit-scrollbar { width: 6px; }
@@ -248,6 +271,10 @@
                 </div>
 
                 <div class="header-buttons-row">
+                    <button class="btn-share" onclick="window.open('https://forms.gle/AqfmQTt3SGxzugQq9', '_blank')">
+                        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                        문의
+                    </button>
                     <button class="btn-share" onclick="sharePage()">
                         <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
                         공유
@@ -258,24 +285,49 @@
             <div class="notice-container"><a id="notice-link"></a></div>
         </header>
 
-        <div class="search-container">
-            <input type="text" id="search-input" class="search-input" placeholder="검색어를 입력하세요 (예: 도서관, 과학, 공연)" onkeyup="applyFilters()" />
-        </div>
+        <div class="view-section active" data-view="A">
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-input" placeholder="검색어를 입력하세요 (예: 도서관, 과학, 공연)" onkeyup="applyFilters()" />
+            </div>
 
-        <div class="tabs">
-            <div class="tab" onclick="changeTab(this, 'ongoing')">사전예약 중</div>
-            <div class="tab" onclick="changeTab(this, 'always')">상시/현장접수</div>
-            <div class="tab active" onclick="changeTab(this, 'affiliate')">제휴/이벤트</div>
-        </div>
+            <div class="tabs">
+                <div class="tab" onclick="changeTab(this, 'ongoing')">사전예약 중</div>
+                <div class="tab" onclick="changeTab(this, 'always')">상시/현장접수</div>
+                <div class="tab active" onclick="changeTab(this, 'affiliate')">제휴/이벤트</div>
+            </div>
 
-        <div class="filter-wrapper">
-            <div class="checkbox-group" id="combined-filter-group" onscroll="handleFilterScroll(this)"></div>
-            <div class="fade-right" id="filter-fade"></div>
+            <div class="filter-wrapper">
+                <div class="checkbox-group" id="combined-filter-group" onscroll="handleFilterScroll(this)"></div>
+                <div class="fade-right" id="filter-fade"></div>
+            </div>
         </div>
     </div>
 
-    <div class="content" id="list-container">
-        <div class="loading-state">데이터를 불러오는 중입니다... ⏳</div>
+    <div class="view-section active" data-view="A">
+        <div class="content" id="list-container">
+            <div class="loading-state">데이터를 불러오는 중입니다... ⏳</div>
+        </div>
+    </div>
+
+    <div class="view-section" data-view="B">
+        <div class="placeholder-content">
+            <h2>후기 & 꿀팁</h2>
+            <p>준비 중인 화면입니다.</p>
+        </div>
+    </div>
+
+    <div class="view-section" data-view="C">
+        <div class="placeholder-content">
+            <h2>멤버십</h2>
+            <p>준비 중인 화면입니다.</p>
+        </div>
+    </div>
+
+    <div class="view-section" data-view="D">
+        <div class="placeholder-content">
+            <h2>즐겨찾기</h2>
+            <p>준비 중인 화면입니다.</p>
+        </div>
     </div>
 </div>
 
@@ -296,6 +348,25 @@
         </div>
     </div>
 </div>
+
+<nav class="bottom-nav">
+    <div class="nav-item active" data-target="A" onclick="switchMainTab('A')">
+        <svg viewBox="0 0 24 24"><path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"/></svg>
+        <span>링크모음</span>
+    </div>
+    <div class="nav-item" data-target="B" onclick="switchMainTab('B')">
+        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 14v-2h12v2H6zm0-3v-2h12v2H6zm0-3V6h12v2H6z"/></svg>
+        <span>후기&꿀팁</span>
+    </div>
+    <div class="nav-item" data-target="C" onclick="switchMainTab('C')">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        <span>멤버십</span>
+    </div>
+    <div class="nav-item" data-target="D" onclick="switchMainTab('D')">
+        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <span>즐겨찾기</span>
+    </div>
+</nav>
 
 <div class="img-modal-overlay" id="imageModal">
     <div class="img-modal-wrapper">
@@ -329,7 +400,6 @@
       storageBucket: "heycj-55b6a.firebasestorage.app",
       messagingSenderId: "147201792706",
       appId: "1:147201792706:web:3b3130a47cd0f50ce5b95b",
-      // 👇 여기를 진짜 주소로 변경! (끝에 json이나 / 안 붙임)
       databaseURL: "https://heycj-55b6a-default-rtdb.firebaseio.com" 
     };
 
@@ -343,10 +413,8 @@
         console.warn("방화벽/광고차단기로 인해 파이어베이스 로딩이 제한되었습니다. 조회수 없이 행사를 정상 로딩합니다.", error);
     }
 
-    // 텍스트 속 모든 줄바꿈 기호를 <br> 태그로 예쁘게 바꿔주는 함수 (팝업창 용)
     function nl2br(str) {
         if (!str) return '';
-        // 실제 줄바꿈(\n)이나 구글시트에서 넘어온 텍스트 줄바꿈 기호를 모두 찾아 바꿉니다.
         return str.replace(/(?:\r\n|\r|\n|\\n)/g, '<br>');
     }
 
@@ -465,7 +533,7 @@
     function sharePopupLink(eventId) {
         const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
         const shareUrl = window.location.origin + window.location.pathname + '?id=' + encodeURIComponent(eventId);
-        const shareTitle = item ? item.title.replace(/(?:\r\n|\r|\n|\\n)/g, ' ') : '헤이청주 일정 공유'; // 줄바꿈을 공백으로 변경하여 공유
+        const shareTitle = item ? item.title.replace(/(?:\r\n|\r|\n|\\n)/g, ' ') : '헤이청주 일정 공유'; 
         const shareData = {
             title: shareTitle,
             text: '이 행사 어때요? 일정을 확인해보세요!',
@@ -476,6 +544,30 @@
         } else {
             navigator.clipboard.writeText(shareUrl).then(() => alert('팝업 링크가 복사되었습니다!\n원하는 곳에 붙여넣기 해주세요.'));
         }
+    }
+
+    // 💡 [추가된 기능] 메인 하단 탭 전환 함수
+    function switchMainTab(viewName) {
+        // 하단 버튼 색상 활성화
+        document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+            if(item.getAttribute('data-target') === viewName) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+
+        // 뷰 숨김/표시 처리
+        document.querySelectorAll('.view-section').forEach(section => {
+            if(section.getAttribute('data-view') === viewName) {
+                section.classList.add('active');
+            } else {
+                section.classList.remove('active');
+            }
+        });
+
+        // 탭 전환시 맨 위로 스크롤
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     const imgModal = document.getElementById('imageModal');
@@ -512,15 +604,12 @@
     let eventData = [];
     let currentTab = 'affiliate'; 
     
-    // [업데이트 2 무한스크롤 준비] 데이터를 쪼개서 로딩하기 위한 변수들
     let currentFilteredData = [];
     let itemsRendered = 0;
     const ITEMS_PER_PAGE = 20;
 
-    // [변경된 부분] 구글 시트 대신 파이어베이스에서 데이터를 직접 가져오도록 수정
     async function fetchEventData() {
         try {
-            // 1. 파이어베이스에서 이벤트 데이터를 0.1초만에 가져옵니다.
             if (!db) throw new Error("파이어베이스 연결이 준비되지 않았습니다.");
             
             const snapshot = await db.ref('events_data').once('value');
@@ -531,7 +620,6 @@
                 return;
             }
 
-            // 2. 파이어베이스 데이터를 자바스크립트 배열로 변환
             eventData = Array.isArray(data) ? data : Object.values(data);
 
             processEventDates();
@@ -540,7 +628,6 @@
             processNewItems();
             updateTabNewBadges();
 
-            // 3. 기존 개별 행사 조회수 데이터 가져오기
             let viewsData = {};
             if (db) {
                 try {
@@ -557,7 +644,6 @@
                 item.isHot = item.viewCount >= 200; 
             });
 
-            // 4. URL 파라미터 확인 및 화면 렌더링
             const urlParams = new URLSearchParams(window.location.search);
             const eventId = urlParams.get('id') || urlParams.get('event');
 
@@ -866,23 +952,20 @@
             });
         }
 
-        // 새롭게 걸러진 데이터를 전역 변수에 저장 (무한 스크롤용)
         currentFilteredData = filteredData;
         itemsRendered = 0;
-        container.innerHTML = ''; // 기존 목록 완전 초기화
+        container.innerHTML = ''; 
 
         if (currentFilteredData.length === 0) {
             container.innerHTML = '<div class="empty-state">해당하는 행사가 없습니다. 조건이나 검색어를 변경해 보세요! 😥</div>';
             return;
         }
 
-        // 첫 20개 로딩 함수 호출
         renderMoreItems();
     }
 
-    // [업데이트 2] 무한스크롤 로딩 함수
     function renderMoreItems() {
-        if (itemsRendered >= currentFilteredData.length) return; // 더 이상 부를 게 없으면 종료
+        if (itemsRendered >= currentFilteredData.length) return;
 
         const container = document.getElementById('list-container');
         const itemsToRender = currentFilteredData.slice(itemsRendered, itemsRendered + ITEMS_PER_PAGE);
@@ -922,7 +1005,6 @@
 
             const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
             
-            // [업데이트 3] 리스트의 메인 제목은 1줄로 표시하기 위해 줄바꿈(엔터) 기호를 단순 띄어쓰기(공백)으로 모두 치환
             const cardTitle = (item.title || '').replace(/(?:\r\n|\r|\n|\\n)/g, ' '); 
 
             const cardHTML = `
@@ -948,7 +1030,7 @@
                         <span class="card-more-text">+ 더보기</span>
                     </div>
                     
-<div class="card-bottom-info">
+                    <div class="card-bottom-info">
                         <span style="flex-shrink:0;">📍 ${item.place ? item.place : '장소미정'}</span>
                         <span style="color:#ddd;">|</span>
                         <span style="flex:1;">🗓️ ${item.date ? item.date : '일정미정'}</span>
@@ -958,15 +1040,12 @@
             htmlBuffer += cardHTML;
         });
 
-        // 생성된 20개의 카드를 기존 목록 맨 아래에 추가합니다.
         container.insertAdjacentHTML('beforeend', htmlBuffer);
         itemsRendered += itemsToRender.length;
     }
 
-    // [업데이트 2] 스크롤 이벤트 감지 리스너 (화면 끝에 도달하면 다음 20개를 렌더링)
     window.addEventListener('scroll', () => {
         const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-        // 스크롤이 맨 바닥에서 300px 이내로 닿았을 때 함수 실행
         if (scrollTop + clientHeight >= scrollHeight - 300) {
             renderMoreItems();
         }
@@ -993,7 +1072,6 @@
             }
         }
 
-        // [업데이트 3] 팝업창에서 제목에 띄어쓰기가 적용되게 nl2br 사용
         const popupTitleHTML = nl2br(item.title);
         document.getElementById('popupTitle').innerHTML = `${popupTitleHTML} ${item.isNew ? `<span class="card-new-badge" style="vertical-align: middle;">N</span>` : ''}`;
         document.getElementById('popupShareBtn').setAttribute('onclick', `sharePopupLink('${eventId}')`);
@@ -1011,7 +1089,6 @@
             `;
         }
 
-        // [업데이트 3] 메모, 장소, 대상 등 모든 정보에 대해 구글시트 줄바꿈을 반영
         const popupPlace = nl2br(item.place || '정보 없음');
         const popupAge = nl2br(item.age || '누구나');
         const popupCost = nl2br(item.costType || '정보 없음');
@@ -1120,7 +1197,6 @@
         initVisitCounters();
         fetchEventData(); 
         
-        // 썸네일 노출을 피하기 위해 자바스크립트로 이미지 주입
         const fallbackBanner = document.getElementById('fallback-banner');
         if (fallbackBanner) {
             fallbackBanner.innerHTML = '<img src="https://firebasestorage.googleapis.com/v0/b/heycj-55b6a.firebasestorage.app/o/%EC%A0%95%EC%84%9C%EB%AE%A4%EC%A7%81%EC%95%84%ED%8A%B8%ED%81%B4%EB%9E%98%EC%8A%A4%20%EA%B4%91%EA%B3%A0%EB%B0%B0%EB%84%88.png?alt=media&token=2c1a1aed-5bc3-4f57-a6c5-dffb209d5598" alt="상단 배너" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px;" />';
