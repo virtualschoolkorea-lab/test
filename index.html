@@ -22,27 +22,32 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
     <style>
-        :root { --primary-color: #4CAF50; --bg-color: #f4f7f6; --card-bg: #ffffff; --text-main: #333333; --text-sub: #666666; --border-color: #e0e0e0; }
+        /* CSS는 기존 코드 완벽 동일하게 유지 (디자인 변동 없음) */
+        :root {
+            --primary-color: #4CAF50;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-sub: #666666;
+            --border-color: #e0e0e0;
+        }
         body { font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; display: flex; justify-content: center; }
         body.modal-open { overflow: hidden; }
 
-        /* 하단 탭 공간을 위해 padding-bottom 확보 */
-        .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; padding-bottom: 120px; }
+        .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; padding-bottom: 50px; }
         .sticky-wrapper { position: sticky; top: 0; z-index: 100; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: inherit; }
 
         header { background-color: var(--primary-color); color: white; padding: 12px 16px 8px 16px; display: flex; flex-direction: column; border-radius: inherit; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
         h1 { margin: 0 0 6px 0; font-size: 1.25rem; font-weight: 700; text-align: center; line-height: 1.2; }
         .sub-header { font-size: 0.65rem; opacity: 0.85; margin: 0 0 4px 0; text-align: center; line-height: 1; } 
         .header-action-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 0px; margin-bottom: 2px; }
-        
         .header-stats { display: flex; flex-direction: row; gap: 12px; font-size: 0.65rem; line-height: 1; opacity: 0.95; align-items: flex-end; margin-bottom: 2px; }
         .header-stats div { display: flex; align-items: baseline; }
         .header-stats span { font-weight: 700; color: #fff; margin-left: 4px; font-size: 0.75rem; }
 
-        .header-buttons-row { display: flex; gap: 6px; align-items: center; }
+        .header-buttons-row { display: flex; gap: 8px; align-items: center; }
         .btn-share { background: rgba(255, 255, 255, 0.25); border: none; color: white; padding: 4px 8px; border-radius: 20px; cursor: pointer; font-size: 0.65rem; font-weight: 700; display: flex; align-items: center; gap: 4px; transition: background 0.2s; margin: 0; }
         .btn-share:hover { background: rgba(255, 255, 255, 0.35); }
         .btn-share svg { width: 10px; height: 10px; fill: currentColor; }
@@ -50,23 +55,7 @@
         .notice-container { background: rgba(0, 0, 0, 0.15); border-radius: 6px; padding: 4px 8px; text-align: center; font-size: 0.7rem; font-weight: 500; height: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 5px; }
         .notice-container a { color: #fff; text-decoration: none; transition: opacity 0.3s ease-in-out; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
 
-        /* 뷰 전환 및 하단 네비게이션 CSS */
-        .view-section { display: none; }
-        .view-section.active { display: block; }
-        
-        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; height: 60px; background-color: #ffffff; display: flex; box-shadow: 0 -2px 10px rgba(0,0,0,0.08); z-index: 100001; border-top: 1px solid var(--border-color); }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.65rem; color: #999; cursor: pointer; transition: color 0.2s; gap: 4px; }
-        .nav-item svg { width: 22px; height: 22px; fill: currentColor; transition: transform 0.2s; }
-        .nav-item.active { color: var(--primary-color); font-weight: 700; }
-        .nav-item.active svg { transform: translateY(-2px); }
-
-        /* 하단 배너: 하단 탭 위로 배치 (bottom: 60px) */
-        .promo-area-wrap { position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; height: 54px; background-color: #fff; padding: 5px 10px; box-sizing: border-box; border-top: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; z-index: 100000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
-
-        .placeholder-content { text-align: center; padding: 60px 20px; color: #666; }
-        .placeholder-content h2 { font-size: 1.2rem; margin-bottom: 10px; color: var(--primary-color); }
-        .placeholder-content p { font-size: 0.9rem; }
-
+        .promo-area-wrap { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; height: 54px; background-color: #fff; padding: 5px 10px;  box-sizing: border-box; border-top: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; z-index: 100000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
         .search-container { padding: 6px 15px; background-color: #fff; border-bottom: 1px solid var(--border-color); }
         .search-input { width: 100%; padding: 6px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.85rem; outline: none; box-sizing: border-box; background-color: #f9f9f9; transition: all 0.2s; }
         .search-input:focus { border-color: var(--primary-color); background-color: #fff; box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2); }
@@ -91,7 +80,7 @@
 
         @media (min-width: 768px) {
             body { padding-top: 30px; padding-bottom: 30px; background-color: #e9ecef; }
-            .app-container { max-width: 800px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; padding-bottom: 150px; }
+            .app-container { max-width: 800px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; padding-bottom: 75px; }
             header { border-radius: 16px 16px 0 0; padding: 20px 24px 15px 24px; }
             .sticky-wrapper { border-radius: 16px 16px 0 0; }
             h1 { font-size: 1.6rem; margin-bottom: 8px; }
@@ -100,9 +89,8 @@
             .header-stats span { font-size: 1rem; }
             .search-input { font-size: 1rem; padding: 10px 15px; }
             .tab { font-size: 1rem; padding: 10px 0; }
-            .bottom-nav { max-width: 800px; border-radius: 0 0 16px 16px; }
-            .promo-area-wrap { max-width: 800px; height: 78px; padding: 8px 20px; bottom: 60px; border: 1px solid var(--border-color); border-bottom: none; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); }
-            #list-container, #fav-list-container { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; align-items: stretch; padding: 20px; }
+            .promo-area-wrap { max-width: 800px; height: 78px; padding: 8px 20px; bottom: 0; border-radius: 16px 16px 0 0; border: 1px solid var(--border-color); border-bottom: none; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); }
+            #list-container { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; align-items: stretch; padding: 20px; }
             .card { margin-bottom: 0; height: auto; display: flex; flex-direction: column; }
             .card-title-row { margin-top: auto; padding-top: 10px; }
         }
@@ -132,6 +120,7 @@
         .card-title-row { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 2px; min-width: 0; }
         .card-title-row .title { font-size: 1rem; font-weight: 700; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; padding-right: 4px; }
         .card-more-text { flex-shrink: 0; font-size: 0.65rem; color: #999; font-weight: 500; background: #f4f4f4; padding: 2px 6px; border-radius: 4px; }
+
         .card-bottom-info { margin-top: 8px; font-size: 0.7rem; color: #888; display: flex; flex-direction: row; align-items: center; flex-wrap: nowrap; gap: 6px; overflow: hidden; min-width: 0; }
         .card-bottom-info span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 3px; }
 
@@ -176,20 +165,12 @@
 
         .event-modal-footer { padding: 15px 20px; border-top: 1px solid #eee; background: #fafafa; display: flex; flex-direction: column; gap: 10px; }
         .footer-btn-row { display: flex; gap: 10px; width: 100%; }
-        
         .btn-link { display: flex; align-items: center; justify-content: center; text-align: center; background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); text-decoration: none; padding: 10px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; transition: all 0.2s; box-sizing: border-box; cursor: pointer; font-family: inherit; width: 100%; flex: 1; margin: 0; }
         .btn-link:hover { background-color: #388E3C; }
         .btn-disabled { background-color: #f2f2f2 !important; color: #888 !important; border: 1px solid #ddd !important; cursor: default !important; pointer-events: auto; }
         .btn-disabled:hover { background-color: #f2f2f2 !important; }
         .btn-benefit { display: flex; align-items: center; justify-content: center; background-color: #E53935; color: white; border: none; padding: 10px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; width: 100%; cursor: pointer; transition: all 0.2s; box-sizing: border-box; font-family: inherit; }
         .btn-benefit:hover { background-color: #C62828; }
-        .btn-favorite { background-color: #fff; color: #f39c12; border: 1px solid #f39c12; padding: 10px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; width: 100%; cursor: pointer; transition: all 0.2s; }
-        .btn-favorite:hover { background-color: #fcf3e3; }
-        .btn-favorite.active { background-color: #f39c12; color: #fff; }
-
-        .review-card { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 12px; margin-bottom: 10px; font-size: 0.9rem; }
-        .review-header { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.8rem; color: #888; }
-        .review-author { font-weight: bold; color: #444; }
     </style>
 </head>
 <body>
@@ -207,80 +188,34 @@
                 </div>
 
                 <div class="header-buttons-row">
-                    <button class="btn-share" id="auth-btn" onclick="toggleAuth()">
-                        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                        <span id="auth-btn-text">로그인</span>
-                    </button>
-                    <button class="btn-share" onclick="window.open('https://forms.gle/AqfmQTt3SGxzugQq9', '_blank')">
-                        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-                        문의
-                    </button>
                     <button class="btn-share" onclick="sharePage()">
                         <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
                         공유
                     </button>
                 </div>
             </div>
+
             <div class="notice-container"><a id="notice-link"></a></div>
         </header>
 
-        <div class="view-section active" data-view="A">
-            <div class="search-container">
-                <input type="text" id="search-input" class="search-input" placeholder="검색어를 입력하세요 (예: 도서관, 과학, 공연)" onkeyup="applyFilters()" />
-            </div>
-            <div class="tabs">
-                <div class="tab" onclick="changeTab(this, 'ongoing')">사전예약 중</div>
-                <div class="tab" onclick="changeTab(this, 'always')">상시/현장접수</div>
-                <div class="tab active" onclick="changeTab(this, 'affiliate')">제휴/이벤트</div>
-            </div>
-            <div class="filter-wrapper">
-                <div class="checkbox-group" id="combined-filter-group" onscroll="handleFilterScroll(this)"></div>
-                <div class="fade-right" id="filter-fade"></div>
-            </div>
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-input" placeholder="검색어를 입력하세요 (예: 도서관, 과학, 공연)" onkeyup="applyFilters()" />
+        </div>
+
+        <div class="tabs">
+            <div class="tab" onclick="changeTab(this, 'ongoing')">사전예약 중</div>
+            <div class="tab" onclick="changeTab(this, 'always')">상시/현장접수</div>
+            <div class="tab active" onclick="changeTab(this, 'affiliate')">제휴/이벤트</div>
+        </div>
+
+        <div class="filter-wrapper">
+            <div class="checkbox-group" id="combined-filter-group" onscroll="handleFilterScroll(this)"></div>
+            <div class="fade-right" id="filter-fade"></div>
         </div>
     </div>
 
-    <div class="view-section active" data-view="A">
-        <div class="content" id="list-container">
-            <div class="loading-state">데이터를 불러오는 중입니다... ⏳</div>
-        </div>
-    </div>
-
-    <div class="view-section" data-view="B">
-        <div id="review-auth-prompt" class="placeholder-content">
-            <h2>후기 & 꿀팁</h2>
-            <p>로그인 후 우리 지역 행사에 대한 꿀팁을 나누어보세요!</p>
-            <button class="btn-link" style="width:auto; padding:8px 16px; margin:15px auto;" onclick="loginWithGoogle()">구글 로그인하기</button>
-        </div>
-        <div id="review-content" style="display:none; padding: 20px;">
-            <div style="background:#fff; padding:15px; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.05); margin-bottom:20px;">
-                <input type="text" id="review-input" class="search-input" style="margin-bottom:10px;" placeholder="다녀오신 행사 이름과 꿀팁을 남겨주세요!" />
-                <button class="btn-link" onclick="submitReview()">게시글 등록</button>
-            </div>
-            <h3 style="font-size:1rem; margin-bottom:10px; color:var(--text-main);">실시간 후기</h3>
-            <div id="review-list-container">
-                <div class="loading-state" style="padding: 20px 0; font-size:0.9rem;">후기를 불러오는 중입니다...</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="view-section" data-view="C">
-        <div class="placeholder-content">
-            <h2>멤버십</h2>
-            <p>조만간 특별한 혜택으로 찾아올게요!</p>
-        </div>
-    </div>
-
-    <div class="view-section" data-view="D" style="padding:15px;">
-        <div id="fav-auth-prompt" class="placeholder-content">
-            <h2>즐겨찾기</h2>
-            <p>로그인 후 원하는 행사를 저장해 보세요!</p>
-            <button class="btn-link" style="width:auto; padding:8px 16px; margin:15px auto;" onclick="loginWithGoogle()">구글 로그인하기</button>
-        </div>
-        <div id="fav-content" style="display:none;">
-            <h2 style="font-size:1.1rem; margin-bottom:15px; padding-left:5px;">내 즐겨찾기 목록 ⭐</h2>
-            <div id="fav-list-container"></div>
-        </div>
+    <div class="content" id="list-container">
+        <div class="loading-state">데이터를 불러오는 중입니다... ⏳</div>
     </div>
 </div>
 
@@ -288,30 +223,16 @@
     <div style="position: relative; width: 100%; height: 100%;">
         <a href="https://헤이청주.com/?id=A067" id="fallback-banner" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; display: flex; justify-content: center; align-items: center; text-decoration: none;"></a>
         <div id="adsense-banner" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;">
-            <ins class="adsbygoogle" style="display:inline-block; width:100%; height:100%;" data-ad-client="ca-pub-2755313313061030" data-ad-slot="여기에_발급받은_광고단위ID_입력"></ins>
-            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            <ins class="adsbygoogle"
+                 style="display:inline-block; width:100%; height:100%;"
+                 data-ad-client="ca-pub-2755313313061030"
+                 data-ad-slot="여기에_발급받은_광고단위ID_입력"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
         </div>
     </div>
 </div>
-
-<nav class="bottom-nav">
-    <div class="nav-item active" data-target="A" onclick="switchMainTab('A')">
-        <svg viewBox="0 0 24 24"><path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"/></svg>
-        <span>링크모음</span>
-    </div>
-    <div class="nav-item" data-target="B" onclick="switchMainTab('B')">
-        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 14v-2h12v2H6zm0-3v-2h12v2H6zm0-3V6h12v2H6z"/></svg>
-        <span>후기&꿀팁</span>
-    </div>
-    <div class="nav-item" data-target="C" onclick="switchMainTab('C')">
-        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-        <span>멤버십</span>
-    </div>
-    <div class="nav-item" data-target="D" onclick="switchMainTab('D')">
-        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-        <span>즐겨찾기</span>
-    </div>
-</nav>
 
 <div class="img-modal-overlay" id="imageModal">
     <div class="img-modal-wrapper">
@@ -337,191 +258,39 @@
 </div>
 
 <script>
-    // 💡 파이어베이스 설정
+    // [보안/Firebase 연동 설정] 기존 파이어베이스 연결 정보 유지
     const firebaseConfig = {
-      apiKey: "AIzaSyAAcLTj-cYITigtCl354lrr4lfVGOFZPK0",
-      authDomain: "test-2ebbf.firebaseapp.com",
-      databaseURL: "https://test-2ebbf-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "test-2ebbf",
-      storageBucket: "test-2ebbf.firebasestorage.app",
-      messagingSenderId: "702080235125",
-      appId: "1:702080235125:web:58a64ce59e44b67bc56a3c",
-      measurementId: "G-S9W0HXWKMQ"
+      apiKey: "AIzaSyBZg-wKztuG-Ak7-WqWSAYe9UIj874fYAY",
+      authDomain: "heycj-55b6a.firebaseapp.com",
+      projectId: "heycj-55b6a",
+      storageBucket: "heycj-55b6a.firebasestorage.app",
+      messagingSenderId: "147201792706",
+      appId: "1:147201792706:web:3b3130a47cd0f50ce5b95b"
     };
 
     let db = null;
-    let auth = null;
-    let currentUser = null;
-    let myFavorites = {};
-
     try {
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        db = firebase.database();
-        auth = firebase.auth();
-        
-        auth.onAuthStateChanged((user) => {
-            currentUser = user;
-            const btnText = document.getElementById('auth-btn-text');
-            if (user) {
-                btnText.innerText = '로그아웃';
-                document.getElementById('review-auth-prompt').style.display = 'none';
-                document.getElementById('review-content').style.display = 'block';
-                document.getElementById('fav-auth-prompt').style.display = 'none';
-                document.getElementById('fav-content').style.display = 'block';
-                loadFavorites();
-                loadReviews();
-            } else {
-                btnText.innerText = '로그인';
-                document.getElementById('review-auth-prompt').style.display = 'block';
-                document.getElementById('review-content').style.display = 'none';
-                document.getElementById('fav-auth-prompt').style.display = 'block';
-                document.getElementById('fav-content').style.display = 'none';
-                myFavorites = {};
-            }
-        });
-    } catch (error) {
-        console.warn("파이어베이스 초기화 에러", error);
-    }
-
-    function toggleAuth() {
-        if (currentUser) {
-            if(confirm("로그아웃 하시겠습니까?")) auth.signOut();
-        } else {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).catch(error => alert("로그인 에러: " + error.message));
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
         }
+        db = firebase.database();
+    } catch (error) {
+        console.warn("방화벽/광고차단기로 인해 파이어베이스 로딩이 제한되었습니다.", error);
     }
-    function loginWithGoogle() { toggleAuth(); }
 
-    function initVisitCounters() {
-        if (!db) return;
+    function nl2br(str) {
+        if (!str) return '';
+        return str.replace(/(?:\r\n|\r|\n|\\n)/g, '<br>');
+    }
+
+    function getTodayStr() {
         const kstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
         const yyyy = kstNow.getFullYear();
         const mm = String(kstNow.getMonth() + 1).padStart(2, '0');
         const dd = String(kstNow.getDate()).padStart(2, '0');
-        const todayStr = `${yyyy}${mm}${dd}`;
-
-        const visitRef = db.ref('visits');
-        const totalRef = visitRef.child('total');
-        const todayRef = visitRef.child(`today_${todayStr}`);
-
-        const hasVisited = sessionStorage.getItem('heycheongju_visited');
-        if (!hasVisited) {
-            totalRef.set(firebase.database.ServerValue.increment(1));
-            todayRef.set(firebase.database.ServerValue.increment(1));
-            sessionStorage.setItem('heycheongju_visited', 'true');
-        }
-
-        totalRef.on('value', snap => { document.getElementById('count-total').innerText = snap.val() || 0; });
-        todayRef.on('value', snap => { document.getElementById('count-today').innerText = snap.val() || 0; });
+        return `${yyyy}${mm}${dd}`;
     }
 
-    function loadFavorites() {
-        if (!currentUser || !db) return;
-        db.ref(`users/${currentUser.uid}/favorites`).on('value', snap => {
-            myFavorites = snap.val() || {};
-            renderFavorites();
-            updatePopupFavoriteBtn(); 
-        });
-    }
-
-    function toggleFavorite(eventId) {
-        if (!currentUser) return alert("로그인이 필요한 기능입니다.");
-        const isFav = myFavorites[eventId];
-        const ref = db.ref(`users/${currentUser.uid}/favorites/${eventId}`);
-        if (isFav) ref.remove(); else ref.set(true);
-    }
-
-    function updatePopupFavoriteBtn() {
-        const btn = document.getElementById('btn-fav-popup');
-        if (!btn) return;
-        const eventId = btn.getAttribute('data-id');
-        if (myFavorites[eventId]) {
-            btn.classList.add('active');
-            btn.innerHTML = '⭐ 즐겨찾기 취소';
-        } else {
-            btn.classList.remove('active');
-            btn.innerHTML = '⭐ 즐겨찾기 추가';
-        }
-    }
-
-    function renderFavorites() {
-        const container = document.getElementById('fav-list-container');
-        if (!container) return;
-        const favIds = Object.keys(myFavorites);
-        if (favIds.length === 0) {
-            container.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">아직 추가된 즐겨찾기가 없습니다. 별모양을 눌러 추가해보세요!</div>';
-            return;
-        }
-
-        const favItems = eventData.filter(item => favIds.includes(String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex)));
-        let htmlBuffer = '';
-        favItems.forEach(item => {
-            const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
-            const cardTitle = (item.title || '').replace(/(?:\r\n|\r|\n|\\n)/g, ' '); 
-            htmlBuffer += `
-                <div class="card" onclick="openEventPopup('${eventUniqueId}')">
-                    <div class="card-title-row" style="margin-top:0;">
-                        <h2 class="title">${cardTitle}</h2>
-                    </div>
-                    <div class="card-bottom-info">
-                        <span style="flex-shrink:0;">📍 ${item.place ? item.place : '장소미정'}</span>
-                    </div>
-                </div>
-            `;
-        });
-        container.innerHTML = htmlBuffer;
-    }
-
-    function submitReview() {
-        if (!currentUser || !db) return;
-        const input = document.getElementById('review-input');
-        const text = input.value.trim();
-        if (!text) return alert('내용을 입력해주세요.');
-
-        db.ref('global_reviews').push({
-            uid: currentUser.uid,
-            name: currentUser.displayName || '익명',
-            text: text,
-            timestamp: firebase.database.ServerValue.TIMESTAMP
-        }).then(() => {
-            input.value = '';
-            alert('후기가 등록되었습니다!');
-        }).catch(err => alert('등록 중 에러가 발생했습니다.'));
-    }
-
-    function loadReviews() {
-        if (!db) return;
-        db.ref('global_reviews').orderByChild('timestamp').limitToLast(50).on('value', snap => {
-            const container = document.getElementById('review-list-container');
-            if (!container) return;
-            const reviews = [];
-            snap.forEach(child => { reviews.push(child.val()); });
-            reviews.reverse();
-
-            if (reviews.length === 0) {
-                container.innerHTML = '<div class="empty-state">아직 등록된 후기가 없습니다. 첫 후기를 남겨주세요!</div>';
-                return;
-            }
-
-            let html = '';
-            reviews.forEach(r => {
-                const date = new Date(r.timestamp);
-                const dateStr = `${date.getMonth()+1}/${date.getDate()} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
-                html += `
-                    <div class="review-card">
-                        <div class="review-header">
-                            <span class="review-author">${r.name}</span><span>${dateStr}</span>
-                        </div>
-                        <div style="line-height:1.4;">${nl2br(r.text)}</div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        });
-    }
-
-    // [복구 완료] 상단 공지사항 롤링 기능
     const noticeData = [
         { text: "[⚡내일오픈/마감,긴급정보 실시간 알림 오픈챗 입장하기👆] ", link: "https://open.kakao.com/o/gAUqOrai" },
         { text: "[헤이청주에 ☎️ 협업문의/제안/건의하기] 👆", link: "https://forms.gle/h8KLaLkfsU55aH5T9" },
@@ -532,7 +301,6 @@
     function initNotice() {
         let currentIndex = 0;
         const noticeLink = document.getElementById('notice-link');
-        if (!noticeLink) return;
 
         function updateNotice() {
             noticeLink.style.opacity = '0';
@@ -556,10 +324,8 @@
         setInterval(updateNotice, 4000);
     }
 
-    // [복구 완료] 상단 최근 업데이트 시간 기능
     function initLastUpdated() {
         const updateElem = document.getElementById('last-updated-text');
-        if (!updateElem) return;
         const lm = new Date(document.lastModified);
         const y = lm.getFullYear();
         const m = lm.getMonth() + 1;
@@ -569,66 +335,155 @@
         updateElem.innerText = `최근 업데이트: ${y}/${m}/${d} ${h}:${min}`;
     }
 
-    function nl2br(str) { return !str ? '' : str.replace(/(?:\r\n|\r|\n|\\n)/g, '<br>'); }
-    
-    function switchMainTab(viewName) {
-        document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
-            if(item.getAttribute('data-target') === viewName) item.classList.add('active');
-            else item.classList.remove('active');
-        });
-        document.querySelectorAll('.view-section').forEach(section => {
-            if(section.getAttribute('data-view') === viewName) section.classList.add('active');
-            else section.classList.remove('active');
-        });
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    // [업데이트] 방문자 통계를 Counter API에서 Firebase로 완벽 교체
+    async function initVisitCounters() {
+        if (!db) return;
+
+        const todayStr = getTodayStr();
+
+        try {
+            const totalRef = db.ref('stats/total_visits');
+            const todayRef = db.ref(`stats/daily_visits/${todayStr}`);
+
+            // Total 조회수 +1
+            await totalRef.set(firebase.database.ServerValue.increment(1));
+            totalRef.once('value').then(snap => {
+                document.getElementById('count-total').innerText = snap.val() || 0;
+            });
+
+            // Today 조회수 +1
+            await todayRef.set(firebase.database.ServerValue.increment(1));
+            todayRef.once('value').then(snap => {
+                document.getElementById('count-today').innerText = snap.val() || 0;
+            });
+        } catch (e) {
+            console.warn("방문자 통계 연동 실패 (보안 규칙 등을 확인하세요)", e);
+            document.getElementById('count-total').innerText = '-';
+            document.getElementById('count-today').innerText = '-';
+        }
+    }
+
+    function trackEventAndOpen(e, url, title, btnType) {
+        if (e) e.preventDefault();
+        if (title) {
+            const actionName = (btnType === 'detail') ? '상세보기_클릭' : '신청하기_클릭';
+            gtag('event', actionName, { event_category: '버튼클릭', event_label: title, transport_type: 'beacon' });
+        }
+        setTimeout(() => { window.open(url, '_blank'); }, 200);
+    }
+
+    function trackEventClick(title, btnType) {
+        if (!title) return;
+        const actionName = (btnType === 'detail') ? '상세보기_클릭' : '신청하기_클릭';
+        gtag('event', actionName, { event_category: '버튼클릭', event_label: title, transport_type: 'beacon' });
+    }
+
+    function sharePage() {
+        const shareData = {
+            title: '헤이청주 📢 교육/체험 링크모음',
+            text: '우리 지역 체험 행사 일정을 한눈에 확인하세요!',
+            url: window.location.href
+        };
+        if (navigator.share) {
+            navigator.share(shareData).catch(console.error);
+        } else {
+            navigator.clipboard.writeText(window.location.href).then(() => alert('링크가 복사되었습니다!'));
+        }
+    }
+
+    function sharePopupLink(eventId) {
+        const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
+        const shareUrl = window.location.origin + window.location.pathname + '?id=' + encodeURIComponent(eventId);
+        const shareTitle = item ? item.title.replace(/(?:\r\n|\r|\n|\\n)/g, ' ') : '헤이청주 일정 공유';
+        const shareData = {
+            title: shareTitle,
+            text: '이 행사 어때요? 일정을 확인해보세요!',
+            url: shareUrl
+        };
+        if (navigator.share) {
+            navigator.share(shareData).catch(console.error);
+        } else {
+            navigator.clipboard.writeText(shareUrl).then(() => alert('팝업 링크가 복사되었습니다!\n원하는 곳에 붙여넣기 해주세요.'));
+        }
+    }
+
+    const imgModal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('imageModalImg');
+    const imgModalScroll = document.getElementById('imageModalScroll');
+
+    imgModal.addEventListener('click', function(e) {
+        if (e.target === imgModal || e.target.id === 'closeModalBtn') {
+            imgModal.classList.remove('active');
+            setTimeout(() => { modalImg.src = ""; }, 200);
+        }
+    });
+
+    document.addEventListener('click', function(e) {
+        const imgBtn = e.target.closest('.btn-img-modal');
+        if (imgBtn) {
+            const url = imgBtn.getAttribute('data-url');
+            const title = imgBtn.getAttribute('data-title');
+            
+            if (imgModalScroll) imgModalScroll.scrollTop = 0;
+            
+            modalImg.src = url;
+            imgModal.classList.add('active');
+            trackEventClick(title, 'detail');
+        }
+    });
+
+    function handleFilterScroll(element) {
+        const fade = document.getElementById('filter-fade');
+        if (element.scrollWidth - element.clientWidth <= element.scrollLeft + 5) fade.style.opacity = '0';
+        else fade.style.opacity = '1';
     }
 
     let eventData = [];
-    let currentTab = 'ongoing';
+    let currentTab = 'affiliate'; 
+    
     let currentFilteredData = [];
     let itemsRendered = 0;
     const ITEMS_PER_PAGE = 20;
 
+    // [업데이트] 구글 CSV 파싱 구조 삭제 및 Firebase 데이터 직접 호출로 변경
     async function fetchEventData() {
-        if (!db) return;
+        if (!db) {
+            document.getElementById('list-container').innerHTML = '<div class="empty-state">데이터베이스 연결에 실패했습니다.</div>';
+            return;
+        }
+
         try {
-            const snapshot = await db.ref('events_data').once('value');
-            const data = snapshot.val();
-            
-            if (!data) {
-                document.getElementById('list-container').innerHTML = '<div class="empty-state">행사 정보를 불러오고 있습니다. 앱스스크립트에서 전송을 완료해주세요. ⏳</div>';
+            // 구글 시트 대신 Firebase에서 전체 행사 목록 로딩
+            const snapshot = await db.ref('events').once('value');
+            const rawData = snapshot.val();
+
+            if (!rawData) {
+                document.getElementById('list-container').innerHTML = '<div class="empty-state">등록된 행사 정보가 없습니다.</div>';
                 return;
             }
+
+            // 구글 앱 스크립트에서 보낸 배열/오브젝트 데이터를 안전하게 배열로 변환
+            if (Array.isArray(rawData)) {
+                eventData = rawData.filter(item => item !== null);
+            } else {
+                eventData = Object.values(rawData).filter(item => item !== null);
+            }
+
+            // 개별 행사 조회수 가져오기
+            let viewsData = {};
+            try {
+                const viewsSnapshot = await db.ref('event_views_total').once('value');
+                viewsData = viewsSnapshot.val() || {};
+            } catch (viewError) {
+                console.warn("조회수를 불러오는 데 실패했습니다.", viewError);
+            }
             
-            let rawData = Array.isArray(data) ? data : Object.values(data);
-            eventData = rawData.filter(item => item && Object.keys(item).length > 0);
-
-            // 데이터 호환성 매핑
-            eventData = eventData.map((item, index) => {
-                item.originalIndex = index;
-                item.id = item['ID'] || item['id'] || item['고유번호'] || index;
-                
-                let rawType = item.type || item['분류'] || item['구분'] || item['탭'] || '';
-                if (rawType.includes('상시')) item.type = 'always';
-                else if (rawType.includes('제휴') || rawType.includes('이벤트')) item.type = 'affiliate';
-                else item.type = 'ongoing';
-
-                item.title = item.title || item['행사명'] || item['제목'] || '제목 없음';
-                item.loc = item.loc || item['지역'] || item['구/군'] || '';
-                item.place = item.place || item['장소'] || item['기관명'] || '';
-                item.ageFilter = item.ageFilter || item['대상'] || item['연령'] || '누구나';
-                item.age = item.ageFilter;
-                
-                item.applyStart = item.applyStart || item['접수시작'] || item['접수일'] || '';
-                item.applyEnd = item.applyEnd || item['접수마감'] || '';
-                item.applyNote = item.applyNote || item['접수상태'] || item['참고'] || '';
-                item.costType = item.costType || item['비용'] || item['참가비'] || '';
-                item.date = item.date || item['행사일정'] || item['일정'] || '';
-                item.image = item.image || item['이미지'] || item['포스터'] || item['썸네일'] || '';
-                item.link = item.link || item['링크'] || item['상세정보'] || '';
-                item.applyLink = item.applyLink || item['신청링크'] || item['예약링크'] || '';
-
-                return item;
+            eventData.forEach((item, index) => {
+                // 고유번호 및 인덱스 세팅
+                const eventId = String(item['ID'] || item['id'] || item['고유번호'] || index);
+                item.originalIndex = index; 
+                item.viewCount = viewsData[eventId] || 0;
+                item.isHot = item.viewCount >= 200; 
             });
 
             processEventDates();
@@ -637,18 +492,21 @@
             processNewItems();
             updateTabNewBadges();
 
-            let viewsData = {};
-            try { viewsData = (await db.ref('event_views_total').once('value')).val() || {}; } catch(e){}
-            eventData.forEach((item, index) => {
-                const eventId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex || index);
-                item.viewCount = viewsData[eventId] || 0;
-                item.isHot = item.viewCount >= 200; 
-            });
-
-            document.querySelector('.tab[onclick*="ongoing"]').click(); 
-
             const urlParams = new URLSearchParams(window.location.search);
             const eventIdParam = urlParams.get('id') || urlParams.get('event');
+
+            if (eventIdParam !== null) {
+                const targetItem = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventIdParam));
+                if (targetItem && targetItem.type) {
+                    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+                    const targetTabElem = document.querySelector(`.tab[onclick*="${targetItem.type}"]`);
+                    if (targetTabElem) targetTabElem.classList.add('active');
+                    currentTab = targetItem.type;
+                }
+            }
+
+            applyFilters();
+
             if (eventIdParam !== null) {
                 setTimeout(() => {
                     const targetCard = document.getElementById('card-' + eventIdParam);
@@ -657,7 +515,8 @@
                 }, 300);
             }
         } catch (error) {
-            console.error("데이터 로딩 에러:", error);
+            console.error(error);
+            document.getElementById('list-container').innerHTML = '<div class="empty-state">행사 정보를 불러오는데 실패했습니다. 새로고침을 해주세요. 😥</div>';
         }
     }
 
@@ -802,8 +661,10 @@
         if (!dateStr) return false;
         const val = parseDateValue(dateStr);
         if (val === 9999) return false;
+        
         const today = new Date();
         const todayVal = (today.getMonth() + 1) * 100 + today.getDate();
+        
         return val < todayVal;
     }
 
@@ -826,6 +687,7 @@
             }
             return new Date(year, month, day, hour, minute).getTime();
         }
+
         let parsed = new Date(s).getTime();
         return isNaN(parsed) ? 0 : parsed;
     }
@@ -834,8 +696,7 @@
         const now = Date.now();
         const ONE_DAY = 24 * 60 * 60 * 1000;
 
-        eventData.forEach((item, index) => {
-            item.originalIndex = index;
+        eventData.forEach(item => {
             item.isNew = false;
             const regDateMs = parseRegDate(item['등록일']);
             if (regDateMs > 0) {
@@ -889,6 +750,7 @@
                     (item.place && item.place.toLowerCase().includes(keyword)) ||
                     (item.loc && item.loc.toLowerCase().includes(keyword));
             }
+
             return matchTab && matchLoc && matchAge && matchSearch;
         });
 
@@ -916,6 +778,7 @@
             filteredData.sort((a, b) => {
                 if (a.isHot && !b.isHot) return -1;
                 if (!a.isHot && b.isHot) return 1;
+                
                 if (a.isNew && !b.isNew) return -1;
                 if (!a.isNew && b.isNew) return 1;
 
@@ -928,6 +791,7 @@
             filteredData.sort((a, b) => {
                 if (a.isHot && !b.isHot) return -1;
                 if (!a.isHot && b.isHot) return 1;
+                
                 if (a.isNew && !b.isNew) return -1;
                 if (!a.isNew && b.isNew) return 1;
                 return a.originalIndex - b.originalIndex;
@@ -947,7 +811,7 @@
     }
 
     function renderMoreItems() {
-        if (itemsRendered >= currentFilteredData.length) return;
+        if (itemsRendered >= currentFilteredData.length) return; 
 
         const container = document.getElementById('list-container');
         const itemsToRender = currentFilteredData.slice(itemsRendered, itemsRendered + ITEMS_PER_PAGE);
@@ -972,7 +836,7 @@
             let cardClass = 'card';
             let overlayHTML = '';
             
-            let statusVal = item['커밍순'] ? String(item['커밍순']).replace(/\s+/g, '') : '';
+            let statusVal = item['커밍순'] ? item['커밍순'].replace(/\s+/g, '') : '';
             if (isDatePassed(item['행사마감일'] || item.eventEnd)) {
                 statusVal = '마감';
             }
@@ -1041,19 +905,24 @@
         if (db) {
             try {
                 const specificEventRef = db.ref(`event_views_total/${eventId}`);
-                
                 specificEventRef.set(firebase.database.ServerValue.increment(1)).then(() => {
                     specificEventRef.once('value').then(snap => {
                         const countElem = document.getElementById(`view-count-${eventId}`);
                         if (countElem) countElem.innerText = snap.val() || 0;
                     });
                 });
-            } catch (e) {}
+            } catch (e) {
+                console.warn('조회수 업데이트가 차단되었습니다.', e);
+            }
         }
 
         const popupTitleHTML = nl2br(item.title);
         document.getElementById('popupTitle').innerHTML = `${popupTitleHTML} ${item.isNew ? `<span class="card-new-badge" style="vertical-align: middle;">N</span>` : ''}`;
-        
+        document.getElementById('popupShareBtn').setAttribute('onclick', `sharePopupLink('${eventId}')`);
+
+        let applyTextStyle = '';
+        if (item.isTodayClose) applyTextStyle = 'color:#E53935; font-weight:700;';
+
         let popupImgHtml = '';
         const popupImgUrl = item['이미지'] || item.image || item.Image || ''; 
         if (popupImgUrl && popupImgUrl.trim() !== '') {
@@ -1063,9 +932,6 @@
                 </div>
             `;
         }
-
-        let applyTextStyle = '';
-        if (item.isTodayClose) applyTextStyle = 'color:#E53935; font-weight:700;';
 
         const popupPlace = nl2br(item.place || '정보 없음');
         const popupAge = nl2br(item.age || '누구나');
@@ -1090,7 +956,10 @@
 
         if (detailUrl && detailUrl.trim() !== '') {
             const lowerUrl = detailUrl.trim().toLowerCase();
-            isImageUrl = /\.(jpeg|jpg|gif|png|webp)(?:[\?#].*)?$/i.test(lowerUrl) || lowerUrl.includes('drive.google.com/uc?') || lowerUrl.includes('phinf.pstatic.net');
+            isImageUrl =
+                /\.(jpeg|jpg|gif|png|webp)(?:[\?#].*)?$/i.test(lowerUrl) ||
+                lowerUrl.includes('drive.google.com/uc?') ||
+                lowerUrl.includes('phinf.pstatic.net');
         }
 
         const whiteLinkIcon = `<svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor; margin-left:4px; vertical-align:text-bottom;"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>`;
@@ -1100,6 +969,7 @@
         if (detailUrl && detailUrl.trim() !== '') {
             const safeUrl = detailUrl.trim().replace(/"/g, '&quot;');
             const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/(?:\r\n|\r|\n|\\n)/g, ' ');
+            
             if (isImageUrl) {
                 btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">상세정보 확인${colorImgIcon}</button>`;
             } else {
@@ -1137,10 +1007,7 @@
             btnBenefit = `<button type="button" class="btn-benefit btn-img-modal" data-url="${safeBenefitUrl}" data-title="혜택받기">🎁 혜택받기 (쿠폰/할인권)</button>`;
         }
 
-        const btnFav = `<button id="btn-fav-popup" data-id="${eventId}" class="btn-favorite" onclick="toggleFavorite('${eventId}')">⭐ 즐겨찾기 추가</button>`;
-
         document.getElementById('popupFooter').innerHTML = `
-            ${btnFav}
             ${btnBenefit}
             <div class="footer-btn-row">
                 ${btnDetails}
@@ -1148,47 +1015,31 @@
             </div>
         `;
 
-        updatePopupFavoriteBtn();
         document.getElementById('eventModal').classList.add('active');
 
         try {
             history.pushState({ eventPopup: true }, '', '?id=' + encodeURIComponent(eventId));
-        } catch (e) {}
+        } catch (e) {
+            console.log("로컬 환경이라 URL이 변경되지 않습니다.");
+        }
     }
 
     function closeEventPopup(e) {
         if (e && e.target !== e.currentTarget && !e.target.classList.contains('event-modal-close-btn')) return;
+        
         document.body.classList.remove('modal-open');
         document.getElementById('eventModal').classList.remove('active');
-        try { history.pushState(null, '', window.location.pathname); } catch (e) {}
+        
+        try {
+            history.pushState(null, '', window.location.pathname);
+        } catch (e) {}
     }
-
-    const imgModal = document.getElementById('imageModal');
-    const modalImg = document.getElementById('imageModalImg');
-    const imgModalScroll = document.getElementById('imageModalScroll');
-
-    imgModal.addEventListener('click', function(e) {
-        if (e.target === imgModal || e.target.id === 'closeModalBtn') {
-            imgModal.classList.remove('active');
-            setTimeout(() => { modalImg.src = ""; }, 200);
-        }
-    });
-
-    document.addEventListener('click', function(e) {
-        const imgBtn = e.target.closest('.btn-img-modal');
-        if (imgBtn) {
-            const url = imgBtn.getAttribute('data-url');
-            if (imgModalScroll) imgModalScroll.scrollTop = 0;
-            modalImg.src = url;
-            imgModal.classList.add('active');
-        }
-    });
 
     document.addEventListener('DOMContentLoaded', () => {
         initNotice();
         initLastUpdated();
-        initVisitCounters();
-        fetchEventData(); 
+        initVisitCounters(); // 이제 Firebase에서 통계 계산
+        fetchEventData();    // 이제 Firebase에서 전체 데이터 호출
         
         const fallbackBanner = document.getElementById('fallback-banner');
         if (fallbackBanner) {
