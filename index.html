@@ -24,7 +24,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        /* CSS는 기존 코드 완벽 동일하게 유지 (디자인 변동 없음) */
         :root {
             --primary-color: #4CAF50;
             --bg-color: #f4f7f6;
@@ -258,7 +257,11 @@
 </div>
 
 <script>
-    // [보안/Firebase 연동 설정] 기존 파이어베이스 연결 정보 유지
+    // 💡 [중요] 기존 통계 숫자를 여기에 입력해 주세요! 💡
+    const PAST_TOTAL_VIEWS = 15000; // 기존에 쌓여있던 누적 TOTAL 조회수를 입력하세요 (예: 15000)
+    const PAST_TODAY_VIEWS = 0;     // 만약 오늘 날짜로 이미 쌓여있던 조회수가 있다면 입력하세요 (보통 0)
+
+    // [보안/Firebase 연동 설정]
     const firebaseConfig = {
       apiKey: "AIzaSyBZg-wKztuG-Ak7-WqWSAYe9UIj874fYAY",
       authDomain: "heycj-55b6a.firebaseapp.com",
@@ -335,29 +338,36 @@
         updateElem.innerText = `최근 업데이트: ${y}/${m}/${d} ${h}:${min}`;
     }
 
-    // [업데이트] 방문자 통계를 Counter API에서 Firebase로 완벽 교체
+    // [업데이트] 방문자 통계 (새로고침 무한증가 방지 및 과거 누적데이터 반영)
     async function initVisitCounters() {
         if (!db) return;
 
         const todayStr = getTodayStr();
+        const sessionKey = 'visited_' + todayStr;
 
         try {
             const totalRef = db.ref('stats/total_visits');
             const todayRef = db.ref(`stats/daily_visits/${todayStr}`);
 
-            // Total 조회수 +1
-            await totalRef.set(firebase.database.ServerValue.increment(1));
+            // 방문자가 오늘 처음 접속했을 때만 +1 처리 (새로고침 방어)
+            if (!sessionStorage.getItem(sessionKey)) {
+                await totalRef.set(firebase.database.ServerValue.increment(1));
+                await todayRef.set(firebase.database.ServerValue.increment(1));
+                sessionStorage.setItem(sessionKey, 'true'); // 방문 기록 남기기
+            }
+
+            // 과거 기록과 합산하여 화면에 출력
             totalRef.once('value').then(snap => {
-                document.getElementById('count-total').innerText = snap.val() || 0;
+                const fbTotal = snap.val() || 0;
+                document.getElementById('count-total').innerText = (fbTotal + PAST_TOTAL_VIEWS).toLocaleString();
             });
 
-            // Today 조회수 +1
-            await todayRef.set(firebase.database.ServerValue.increment(1));
             todayRef.once('value').then(snap => {
-                document.getElementById('count-today').innerText = snap.val() || 0;
+                const fbToday = snap.val() || 0;
+                document.getElementById('count-today').innerText = (fbToday + PAST_TODAY_VIEWS).toLocaleString();
             });
         } catch (e) {
-            console.warn("방문자 통계 연동 실패 (보안 규칙 등을 확인하세요)", e);
+            console.warn("방문자 통계 연동 실패", e);
             document.getElementById('count-total').innerText = '-';
             document.getElementById('count-today').innerText = '-';
         }
@@ -445,7 +455,7 @@
     let itemsRendered = 0;
     const ITEMS_PER_PAGE = 20;
 
-    // [업데이트] 구글 CSV 파싱 구조 삭제 및 Firebase 데이터 직접 호출로 변경
+    // [업데이트] 데이터 호출 및 구글 시트 헤더 오타/공백 방어 로직 추가
     async function fetchEventData() {
         if (!db) {
             document.getElementById('list-container').innerHTML = '<div class="empty-state">데이터베이스 연결에 실패했습니다.</div>';
@@ -453,7 +463,6 @@
         }
 
         try {
-            // 구글 시트 대신 Firebase에서 전체 행사 목록 로딩
             const snapshot = await db.ref('events').once('value');
             const rawData = snapshot.val();
 
@@ -462,12 +471,27 @@
                 return;
             }
 
-            // 구글 앱 스크립트에서 보낸 배열/오브젝트 데이터를 안전하게 배열로 변환
+            let rawArray = [];
             if (Array.isArray(rawData)) {
-                eventData = rawData.filter(item => item !== null);
+                rawArray = rawData.filter(item => item !== null);
             } else {
-                eventData = Object.values(rawData).filter(item => item !== null);
+                rawArray = Object.values(rawData).filter(item => item !== null);
             }
+
+            // 구글 시트 헤더에 미세한 공백이나 대소문자가 섞여있을 경우를 대비해 데이터를 정제(정규화)합니다.
+            eventData = rawArray.map((item, index) => {
+                let safeItem = {};
+                for (let key in item) {
+                    safeItem[key.trim()] = item[key]; // 키 값의 앞뒤 공백 강제 제거
+                }
+                
+                // type 열이 소문자가 아니어도 강제로 잡아냅니다.
+                safeItem.type = (safeItem.type || safeItem.Type || safeItem['타입'] || 'ongoing').trim();
+                safeItem.originalIndex = index;
+                safeItem['ID'] = String(safeItem['ID'] || safeItem['id'] || safeItem['고유번호'] || index);
+                
+                return safeItem;
+            });
 
             // 개별 행사 조회수 가져오기
             let viewsData = {};
@@ -478,10 +502,8 @@
                 console.warn("조회수를 불러오는 데 실패했습니다.", viewError);
             }
             
-            eventData.forEach((item, index) => {
-                // 고유번호 및 인덱스 세팅
-                const eventId = String(item['ID'] || item['id'] || item['고유번호'] || index);
-                item.originalIndex = index; 
+            eventData.forEach((item) => {
+                const eventId = item['ID'];
                 item.viewCount = viewsData[eventId] || 0;
                 item.isHot = item.viewCount >= 200; 
             });
@@ -496,7 +518,7 @@
             const eventIdParam = urlParams.get('id') || urlParams.get('event');
 
             if (eventIdParam !== null) {
-                const targetItem = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventIdParam));
+                const targetItem = eventData.find(d => String(d['ID']) === String(eventIdParam));
                 if (targetItem && targetItem.type) {
                     document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
                     const targetTabElem = document.querySelector(`.tab[onclick*="${targetItem.type}"]`);
@@ -849,7 +871,7 @@
                 overlayHTML = `<div class="status-overlay"><div class="status-stamp closed">마감</div></div>`;
             }
 
-            const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
+            const eventUniqueId = item['ID'];
             const cardTitle = (item.title || '').replace(/(?:\r\n|\r|\n|\\n)/g, ' '); 
 
             const cardHTML = `
@@ -897,7 +919,7 @@
     });
 
     async function openEventPopup(eventId) {
-        const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
+        const item = eventData.find(d => String(d['ID']) === String(eventId));
         if (!item) return;
 
         document.body.classList.add('modal-open');
@@ -1038,8 +1060,8 @@
     document.addEventListener('DOMContentLoaded', () => {
         initNotice();
         initLastUpdated();
-        initVisitCounters(); // 이제 Firebase에서 통계 계산
-        fetchEventData();    // 이제 Firebase에서 전체 데이터 호출
+        initVisitCounters(); 
+        fetchEventData();    
         
         const fallbackBanner = document.getElementById('fallback-banner');
         if (fallbackBanner) {
