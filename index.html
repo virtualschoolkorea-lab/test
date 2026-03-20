@@ -329,7 +329,7 @@
       storageBucket: "heycj-55b6a.firebasestorage.app",
       messagingSenderId: "147201792706",
       appId: "1:147201792706:web:3b3130a47cd0f50ce5b95b",
-      databaseURL: "https://heycj-55b6a-default-rtdb.firebaseio.com" // [추가됨] 파이어베이스 데이터베이스 URL
+      databaseURL: "https://heycj-55b6a-default-rtdb.asia-northeast3.firebasedatabase.app" // [추가됨] 파이어베이스 데이터베이스 URL
     };
 
     let db = null;
@@ -401,39 +401,19 @@
         updateElem.innerText = `최근 업데이트: ${y}/${m}/${d} ${h}:${min}`;
     }
 
-async function initVisitCounters() {
-        if (!db) {
-            document.getElementById('count-total').innerText = '-';
-            document.getElementById('count-today').innerText = '-';
-            return;
-        }
-
-        const todayStr = getTodayStr(); // 예: 20260320
-        const totalRef = db.ref('site_views/total');
-        const todayRef = db.ref(`site_views/today_${todayStr}`);
+    async function initVisitCounters() {
+        const namespace = 'heycheongju_v1'; 
+        const todayStr = getTodayStr();
 
         try {
-            // 1. 브라우저 세션 스토리지를 확인하여, 창을 닫기 전까지는 새로고침해도 조회수가 중복으로 안 올라가게 방지 (어뷰징 방지)
-            const hasVisited = sessionStorage.getItem('visited_today_' + todayStr);
-            if (!hasVisited) {
-                // 오늘 처음 방문한 거라면 파이어베이스 조회수 +1 증가
-                await totalRef.set(firebase.database.ServerValue.increment(1));
-                await todayRef.set(firebase.database.ServerValue.increment(1));
-                sessionStorage.setItem('visited_today_' + todayStr, 'true');
-            }
+            const resTotal = await fetch(`https://api.counterapi.dev/v1/${namespace}/total/up`, { cache: 'no-store' });
+            const totalJson = await resTotal.json();
+            document.getElementById('count-total').innerText = getCounterNumber(totalJson);
 
-            // 2. 실시간(.on)으로 파이어베이스에서 조회수를 가져와서 화면에 표시!
-            // 누군가 접속해서 숫자가 오르면 내 화면도 새로고침 없이 바로 숫자가 바뀝니다.
-            totalRef.on('value', snap => {
-                document.getElementById('count-total').innerText = snap.val() || 0;
-            });
-            
-            todayRef.on('value', snap => {
-                document.getElementById('count-today').innerText = snap.val() || 0;
-            });
-
-        } catch (error) {
-            console.warn("방문자 수 로딩 실패", error);
+            const resToday = await fetch(`https://api.counterapi.dev/v1/${namespace}/today_${todayStr}/up`, { cache: 'no-store' });
+            const todayJson = await resToday.json();
+            document.getElementById('count-today').innerText = getCounterNumber(todayJson);
+        } catch (e) {
             document.getElementById('count-total').innerText = '-';
             document.getElementById('count-today').innerText = '-';
         }
