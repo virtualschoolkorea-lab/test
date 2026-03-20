@@ -184,7 +184,6 @@
         .btn-favorite:hover { background-color: #fcf3e3; }
         .btn-favorite.active { background-color: #f39c12; color: #fff; }
 
-        /* 후기 게시판 스타일 */
         .review-card { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 12px; margin-bottom: 10px; font-size: 0.9rem; }
         .review-header { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.8rem; color: #888; }
         .review-author { font-weight: bold; color: #444; }
@@ -335,15 +334,17 @@
 </div>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyAAcLTj-cYITigtCl354lrr4lfvGOFZPK0",
-  authDomain: "test-2ebbf.firebaseapp.com",
-  projectId: "test-2ebbf",
-  storageBucket: "test-2ebbf.firebasestorage.app",
-  messagingSenderId: "702080235125",
-  appId: "1:702080235125:web:58a64ce59e44b67bc56a3c",
-  measurementId: "G-S9W0HXWKMQ"
-};
+    // 💡 테스트용 파이어베이스 키 (작동 확인 후 운영용으로 변경하세요)
+    const firebaseConfig = {
+      apiKey: "AIzaSyAAcLTj-cYITigtCl354lrr4lfVGOFZPK0",
+      authDomain: "test-2ebbf.firebaseapp.com",
+      databaseURL: "https://test-2ebbf-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "test-2ebbf",
+      storageBucket: "test-2ebbf.firebasestorage.app",
+      messagingSenderId: "702080235125",
+      appId: "1:702080235125:web:58a64ce59e44b67bc56a3c",
+      measurementId: "G-S9W0HXWKMQ"
+    };
 
     let db = null;
     let auth = null;
@@ -355,25 +356,19 @@ const firebaseConfig = {
         db = firebase.database();
         auth = firebase.auth();
         
-        // 인증 상태 감지 로직
         auth.onAuthStateChanged((user) => {
             currentUser = user;
             const btnText = document.getElementById('auth-btn-text');
-            
             if (user) {
                 btnText.innerText = '로그아웃';
-                // 화면 UI 상태 업데이트
                 document.getElementById('review-auth-prompt').style.display = 'none';
                 document.getElementById('review-content').style.display = 'block';
                 document.getElementById('fav-auth-prompt').style.display = 'none';
                 document.getElementById('fav-content').style.display = 'block';
-                
-                // 유저 데이터 불러오기
                 loadFavorites();
                 loadReviews();
             } else {
                 btnText.innerText = '로그인';
-                // 화면 UI 상태 업데이트
                 document.getElementById('review-auth-prompt').style.display = 'block';
                 document.getElementById('review-content').style.display = 'none';
                 document.getElementById('fav-auth-prompt').style.display = 'block';
@@ -382,55 +377,58 @@ const firebaseConfig = {
             }
         });
     } catch (error) {
-        console.warn("파이어베이스 로딩 제한", error);
+        console.warn("파이어베이스 초기화 에러", error);
     }
 
-    // 로그인 / 로그아웃 제어
     function toggleAuth() {
         if (currentUser) {
             if(confirm("로그아웃 하시겠습니까?")) auth.signOut();
         } else {
-            loginWithGoogle();
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch(error => alert("로그인 에러: " + error.message));
         }
     }
+    function loginWithGoogle() { toggleAuth(); }
 
-    function loginWithGoogle() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).catch(error => {
-            console.error("로그인 에러:", error);
-            alert("로그인 중 문제가 발생했습니다.");
-        });
+    function initVisitCounters() {
+        if (!db) return;
+        const kstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
+        const yyyy = kstNow.getFullYear();
+        const mm = String(kstNow.getMonth() + 1).padStart(2, '0');
+        const dd = String(kstNow.getDate()).padStart(2, '0');
+        const todayStr = `${yyyy}${mm}${dd}`;
+
+        const visitRef = db.ref('visits');
+        const totalRef = visitRef.child('total');
+        const todayRef = visitRef.child(`today_${todayStr}`);
+
+        const hasVisited = sessionStorage.getItem('heycheongju_visited');
+        if (!hasVisited) {
+            totalRef.set(firebase.database.ServerValue.increment(1));
+            todayRef.set(firebase.database.ServerValue.increment(1));
+            sessionStorage.setItem('heycheongju_visited', 'true');
+        }
+
+        totalRef.on('value', snap => { document.getElementById('count-total').innerText = snap.val() || 0; });
+        todayRef.on('value', snap => { document.getElementById('count-today').innerText = snap.val() || 0; });
     }
 
-    // 즐겨찾기 불러오기
     function loadFavorites() {
         if (!currentUser || !db) return;
         db.ref(`users/${currentUser.uid}/favorites`).on('value', snap => {
             myFavorites = snap.val() || {};
             renderFavorites();
-            // 현재 열려있는 팝업이 있다면 즐겨찾기 버튼 상태 갱신
             updatePopupFavoriteBtn(); 
         });
     }
 
-    // 즐겨찾기 토글(추가/삭제)
     function toggleFavorite(eventId) {
-        if (!currentUser) {
-            alert("로그인이 필요한 기능입니다.");
-            loginWithGoogle();
-            return;
-        }
+        if (!currentUser) return alert("로그인이 필요한 기능입니다.");
         const isFav = myFavorites[eventId];
         const ref = db.ref(`users/${currentUser.uid}/favorites/${eventId}`);
-        
-        if (isFav) {
-            ref.remove();
-        } else {
-            ref.set(true);
-        }
+        if (isFav) ref.remove(); else ref.set(true);
     }
 
-    // 팝업 내 즐겨찾기 버튼 UI 업데이트
     function updatePopupFavoriteBtn() {
         const btn = document.getElementById('btn-fav-popup');
         if (!btn) return;
@@ -444,31 +442,22 @@ const firebaseConfig = {
         }
     }
 
-    // 즐겨찾기 탭(D) 렌더링
     function renderFavorites() {
         const container = document.getElementById('fav-list-container');
         if (!container) return;
-        container.innerHTML = '';
-
         const favIds = Object.keys(myFavorites);
         if (favIds.length === 0) {
             container.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">아직 추가된 즐겨찾기가 없습니다. 별모양을 눌러 추가해보세요!</div>';
             return;
         }
 
-        const favItems = eventData.filter(item => {
-            const id = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
-            return favIds.includes(id);
-        });
-
+        const favItems = eventData.filter(item => favIds.includes(String(item.id)));
         let htmlBuffer = '';
         favItems.forEach(item => {
-            const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
-            const cardTitle = (item.title || '').replace(/(?:\r\n|\r|\n|\\n)/g, ' '); 
             htmlBuffer += `
-                <div class="card" onclick="openEventPopup('${eventUniqueId}')">
+                <div class="card" onclick="openEventPopup('${item.id}')">
                     <div class="card-title-row" style="margin-top:0;">
-                        <h2 class="title">${cardTitle}</h2>
+                        <h2 class="title">${(item.title||'').replace(/(?:\r\n|\r|\n|\\n)/g, ' ')}</h2>
                     </div>
                     <div class="card-bottom-info">
                         <span style="flex-shrink:0;">📍 ${item.place ? item.place : '장소미정'}</span>
@@ -479,39 +468,31 @@ const firebaseConfig = {
         container.innerHTML = htmlBuffer;
     }
 
-    // 후기 작성
     function submitReview() {
         if (!currentUser || !db) return;
         const input = document.getElementById('review-input');
         const text = input.value.trim();
         if (!text) return alert('내용을 입력해주세요.');
 
-        const reviewData = {
+        db.ref('global_reviews').push({
             uid: currentUser.uid,
             name: currentUser.displayName || '익명',
             text: text,
             timestamp: firebase.database.ServerValue.TIMESTAMP
-        };
-
-        db.ref('global_reviews').push(reviewData).then(() => {
+        }).then(() => {
             input.value = '';
             alert('후기가 등록되었습니다!');
-        }).catch(err => {
-            console.error(err);
-            alert('등록 중 에러가 발생했습니다.');
-        });
+        }).catch(err => alert('등록 중 에러가 발생했습니다.'));
     }
 
-    // 후기 목록 불러오기
     function loadReviews() {
         if (!db) return;
         db.ref('global_reviews').orderByChild('timestamp').limitToLast(50).on('value', snap => {
             const container = document.getElementById('review-list-container');
             if (!container) return;
-            
             const reviews = [];
             snap.forEach(child => { reviews.push(child.val()); });
-            reviews.reverse(); // 최신순
+            reviews.reverse();
 
             if (reviews.length === 0) {
                 container.innerHTML = '<div class="empty-state">아직 등록된 후기가 없습니다. 첫 후기를 남겨주세요!</div>';
@@ -525,8 +506,7 @@ const firebaseConfig = {
                 html += `
                     <div class="review-card">
                         <div class="review-header">
-                            <span class="review-author">${r.name}</span>
-                            <span>${dateStr}</span>
+                            <span class="review-author">${r.name}</span><span>${dateStr}</span>
                         </div>
                         <div style="line-height:1.4;">${nl2br(r.text)}</div>
                     </div>
@@ -536,9 +516,6 @@ const firebaseConfig = {
         });
     }
 
-    // ==========================================
-    // 기존 기능 및 UI 렌더링 함수들 (유지)
-    // ==========================================
     function nl2br(str) { return !str ? '' : str.replace(/(?:\r\n|\r|\n|\\n)/g, '<br>'); }
     
     function switchMainTab(viewName) {
@@ -553,9 +530,142 @@ const firebaseConfig = {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // 이벤트 팝업 로직 (즐겨찾기 버튼이 추가되었습니다!)
+    let eventData = [];
+    let currentTab = 'ongoing'; // 기본 탭 변경
+    let currentFilteredData = [];
+    let itemsRendered = 0;
+    const ITEMS_PER_PAGE = 20;
+
+    async function fetchEventData() {
+        if (!db) return;
+        try {
+            const snapshot = await db.ref('events_data').once('value');
+            const data = snapshot.val();
+            
+            if (!data) {
+                document.getElementById('list-container').innerHTML = '<div class="empty-state">등록된 행사가 없습니다. 구글시트에서 데이터를 전송해주세요.</div>';
+                return;
+            }
+            
+            const rawArray = Array.isArray(data) ? data : Object.values(data);
+            
+            // 💡 [중요 호환성 패치] 한글 시트 열 이름이 달라도 프로그램이 인식하도록 매핑합니다.
+            eventData = rawArray.map((rawItem, index) => {
+                let item = { ...rawItem };
+                item.originalIndex = index;
+                item.id = item['ID'] || item['id'] || item['고유번호'] || index;
+                
+                // 1. 분류 (type) - 없으면 ongoing 탭에 강제 표시
+                let rawType = item.type || item['분류'] || item['구분'] || item['탭'] || '';
+                if (rawType.includes('상시')) item.type = 'always';
+                else if (rawType.includes('제휴') || rawType.includes('이벤트')) item.type = 'affiliate';
+                else item.type = 'ongoing'; // 기본값
+
+                // 2. 제목, 지역, 장소, 연령
+                item.title = item.title || item['행사명'] || item['제목'] || '제목 없음';
+                item.loc = item.loc || item['지역'] || item['구/군'] || '';
+                item.place = item.place || item['장소'] || item['기관명'] || '';
+                item.ageFilter = item.ageFilter || item['대상'] || item['연령'] || '누구나';
+                item.age = item.ageFilter;
+                
+                // 3. 접수/비용/링크/이미지 등
+                item.applyStart = item.applyStart || item['접수시작'] || item['접수일'] || '';
+                item.applyEnd = item.applyEnd || item['접수마감'] || '';
+                item.applyNote = item.applyNote || item['접수상태'] || item['참고'] || '';
+                item.costType = item.costType || item['비용'] || item['참가비'] || '';
+                item.date = item.date || item['행사일정'] || item['일정'] || '';
+                item.image = item.image || item['이미지'] || item['포스터'] || item['썸네일'] || '';
+                item.link = item.link || item['링크'] || item['상세정보'] || '';
+                item.applyLink = item.applyLink || item['신청링크'] || item['예약링크'] || '';
+
+                return item;
+            });
+
+            processEventDates();
+            processEventAges();
+            generateFilters();
+            
+            let viewsData = {};
+            try { viewsData = (await db.ref('event_views_total').once('value')).val() || {}; } catch(e){}
+            eventData.forEach(item => {
+                item.viewCount = viewsData[item.id] || 0;
+                item.isHot = item.viewCount >= 200; 
+            });
+
+            // 화면 그리기
+            document.querySelector('.tab').click(); // 첫 번째 탭 강제 클릭하여 그리기
+            applyFilters();
+
+        } catch (error) {
+            console.error("데이터 로딩 중 에러", error);
+        }
+    }
+
+    function processEventDates() {
+        const todayStr = `${new Date().getMonth() + 1}/${new Date().getDate()}`;
+        eventData.forEach(item => {
+            if (item.type === 'affiliate' || item.type === 'always') { item.displayText = item.applyNote; return; }
+            item.isTodayOpen = item.applyStart && item.applyStart.includes(todayStr);
+            item.isTodayClose = item.applyEnd && item.applyEnd.includes(todayStr);
+            item.displayText = item.applyStart && item.applyEnd ? `${item.applyStart} ~ ${item.applyEnd}` : '상시 접수';
+        });
+    }
+
+    function processEventAges() { 
+        eventData.forEach(item => { 
+            item.mappedAges = item.ageFilter ? item.ageFilter.split(',').map(s=>s.trim()) : ['미취학', '초등', '중고등', '성인']; 
+        }); 
+    }
+    
+    function generateFilters() { /* 간소화 - 기존 로직 유지 */ }
+
+    function applyFilters() {
+        const keyword = document.getElementById('search-input').value.trim().toLowerCase();
+        
+        currentFilteredData = eventData.filter(item => {
+            const matchTab = item.type === currentTab;
+            const matchSearch = keyword === '' || (item.title||'').toLowerCase().includes(keyword) || (item.place||'').toLowerCase().includes(keyword);
+            return matchTab && matchSearch;
+        });
+        
+        document.getElementById('list-container').innerHTML = '';
+        itemsRendered = 0;
+        
+        if(currentFilteredData.length === 0) {
+            document.getElementById('list-container').innerHTML = '<div class="empty-state">해당하는 행사가 없습니다.</div>';
+        } else {
+            renderMoreItems();
+        }
+    }
+
+    function changeTab(element, type) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        element.classList.add('active');
+        currentTab = type;
+        applyFilters();
+    }
+
+    function renderMoreItems() {
+        if (itemsRendered >= currentFilteredData.length) return;
+        const container = document.getElementById('list-container');
+        const itemsToRender = currentFilteredData.slice(itemsRendered, itemsRendered + ITEMS_PER_PAGE);
+        let htmlBuffer = '';
+        
+        itemsToRender.forEach(item => {
+            htmlBuffer += `
+                <div class="card" onclick="openEventPopup('${item.id}')">
+                    <div class="card-header"><div class="badges"><span class="badge badge-loc">${item.loc || ''}</span></div>
+                    <div class="view-count">조회 ${item.viewCount}</div></div>
+                    <div class="card-title-row"><h2 class="title">${(item.title||'').replace(/(?:\r\n|\r|\n)/g, ' ')}</h2></div>
+                    <div class="card-bottom-info"><span>📍 ${item.place||'미정'}</span><span>|</span><span>🗓️ ${item.date||'미정'}</span></div>
+                </div>`;
+        });
+        container.insertAdjacentHTML('beforeend', htmlBuffer);
+        itemsRendered += itemsToRender.length;
+    }
+
     async function openEventPopup(eventId) {
-        const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
+        const item = eventData.find(d => String(d.id) === String(eventId));
         if (!item) return;
 
         document.body.classList.add('modal-open');
@@ -573,54 +683,30 @@ const firebaseConfig = {
         }
 
         const popupTitleHTML = nl2br(item.title);
-        document.getElementById('popupTitle').innerHTML = `${popupTitleHTML} ${item.isNew ? `<span class="card-new-badge" style="vertical-align: middle;">N</span>` : ''}`;
-        document.getElementById('popupShareBtn').setAttribute('onclick', `sharePopupLink('${eventId}')`);
+        document.getElementById('popupTitle').innerHTML = popupTitleHTML;
 
         let popupImgHtml = '';
-        const popupImgUrl = item['이미지'] || item.image || item.Image || ''; 
-        if (popupImgUrl && popupImgUrl.trim() !== '') {
-            popupImgHtml = `<div class="popup-img-container"><img src="${popupImgUrl.trim()}" alt="행사 썸네일" referrerpolicy="no-referrer" onerror="this.style.display='none'" /></div>`;
+        if (item.image && item.image.trim() !== '') {
+            popupImgHtml = `<div class="popup-img-container"><img src="${item.image.trim()}" alt="행사 썸네일" referrerpolicy="no-referrer" onerror="this.style.display='none'" /></div>`;
         }
 
         document.getElementById('popupBody').innerHTML = `
             ${popupImgHtml}
-            <div class="info-row"><span class="info-label">장소</span><span class="info-divider">|</span><span class="info-desc">${nl2br(item.place || '정보 없음')}</span></div>
-            <div class="info-row"><span class="info-label">대상</span><span class="info-divider">|</span><span class="info-desc">${nl2br(item.age || '누구나')}</span></div>
-            <div class="info-row"><span class="info-label">비용</span><span class="info-divider">|</span><span class="info-desc">${nl2br(item.costType || '정보 없음')}</span></div>
-            <div class="info-row"><span class="info-label">접수</span><span class="info-divider">|</span><span class="info-desc" style="${item.isTodayClose ? 'color:#E53935; font-weight:700;' : ''}">${nl2br(item.displayText || '')}</span></div>
-            <div class="info-row"><span class="info-label">일정</span><span class="info-divider">|</span><span class="info-desc">${nl2br(item.date || '해당정보 없음')}</span></div>
+            <div class="info-row"><span class="info-label">장소</span><span class="info-divider">|</span><span class="info-desc">${nl2br(item.place)}</span></div>
+            <div class="info-row"><span class="info-label">대상</span><span class="info-divider">|</span><span class="info-desc">${nl2br(item.age)}</span></div>
+            <div class="info-row"><span class="info-label">비용</span><span class="info-divider">|</span><span class="info-desc">${nl2br(item.costType)}</span></div>
+            <div class="info-row"><span class="info-label">접수</span><span class="info-divider">|</span><span class="info-desc" style="${item.isTodayClose ? 'color:#E53935; font-weight:700;' : ''}">${nl2br(item.displayText)}</span></div>
+            <div class="info-row"><span class="info-label">일정</span><span class="info-divider">|</span><span class="info-desc">${nl2br(item.date)}</span></div>
             ${item['꿀팁'] ? `<div class="info-row"><span class="info-label">메모</span><span class="info-divider">|</span><span class="info-desc" style="font-weight:bold; color:var(--text-main);">${nl2br(item['꿀팁'].trim())}</span></div>` : ''}
         `;
 
-        // 기존 버튼 (상세정보, 예약) 생성 로직 생략 없이 간소화 적용
-        let btnDetails = '';
-        const detailUrl = item.link || item['링크'];
-        if (detailUrl && detailUrl.trim() !== '') {
-            btnDetails = `<a href="${detailUrl.trim()}" target="_blank" class="btn-link">상세정보</a>`;
-        } else {
-            btnDetails = `<button class="btn-link btn-disabled">정보 없음</button>`;
-        }
+        let btnDetails = item.link ? `<a href="${item.link.trim()}" target="_blank" class="btn-link">상세정보</a>` : `<button class="btn-link btn-disabled">정보 없음</button>`;
+        let btnApply = item.applyLink ? `<a href="${item.applyLink.trim()}" target="_blank" class="btn-link">예약하기👆</a>` : `<button class="btn-link btn-disabled">현장접수</button>`;
+        const btnFav = `<button id="btn-fav-popup" data-id="${item.id}" class="btn-favorite" onclick="toggleFavorite('${item.id}')">⭐ 즐겨찾기 추가</button>`;
 
-        let btnApply = '';
-        const applyUrl = item['신청링크'] || item.applyLink;
-        if (applyUrl && applyUrl.trim() !== '') {
-            btnApply = `<a href="${applyUrl.trim()}" target="_blank" class="btn-link">예약하기👆</a>`;
-        } else {
-            btnApply = `<button class="btn-link btn-disabled">현장접수</button>`;
-        }
-
-        // 즐겨찾기 버튼 (신규 추가!)
-        const btnFav = `<button id="btn-fav-popup" data-id="${eventId}" class="btn-favorite" onclick="toggleFavorite('${eventId}')">⭐ 즐겨찾기 추가</button>`;
-
-        document.getElementById('popupFooter').innerHTML = `
-            ${btnFav}
-            <div class="footer-btn-row">
-                ${btnDetails}
-                ${btnApply}
-            </div>
-        `;
-
-        updatePopupFavoriteBtn(); // 상태 동기화
+        document.getElementById('popupFooter').innerHTML = `${btnFav}<div class="footer-btn-row">${btnDetails}${btnApply}</div>`;
+        
+        updatePopupFavoriteBtn();
         document.getElementById('eventModal').classList.add('active');
     }
 
@@ -630,92 +716,14 @@ const firebaseConfig = {
         document.getElementById('eventModal').classList.remove('active');
     }
 
-    // 기타 초기화 로직 (이전과 동일)
-    let eventData = [];
-    let currentTab = 'affiliate'; 
-    let currentFilteredData = [];
-    let itemsRendered = 0;
-    const ITEMS_PER_PAGE = 20;
-
-    async function fetchEventData() {
-        if (!db) return;
-        const snapshot = await db.ref('events_data').once('value');
-        const data = snapshot.val();
-        if (!data) return;
-        
-        eventData = Array.isArray(data) ? data : Object.values(data);
-        // Date, Age, Filter 처리 로직
-        processEventDates();
-        processEventAges();
-        generateFilters();
-        processNewItems();
-        
-        let viewsData = {};
-        try { viewsData = (await db.ref('event_views_total').once('value')).val() || {}; } catch(e){}
-        eventData.forEach(item => {
-            const id = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
-            item.viewCount = viewsData[id] || 0;
-            item.isHot = item.viewCount >= 200; 
-        });
-
-        applyFilters();
-    }
-
-    function processEventDates() { /* 생략 - 기존과 동일하게 작동하도록 내부 로직 유지 */
-        const todayStr = `${new Date().getMonth() + 1}/${new Date().getDate()}`;
-        eventData.forEach(item => {
-            if (item.type === 'affiliate' || item.type === 'always') { item.displayText = item.applyNote; return; }
-            item.isTodayOpen = item.applyStart && item.applyStart.includes(todayStr);
-            item.isTodayClose = item.applyEnd && item.applyEnd.includes(todayStr);
-            item.displayText = item.applyStart && item.applyEnd ? `${item.applyStart} ~ ${item.applyEnd}` : '상시 접수';
-        });
-    }
-
-    function processEventAges() { eventData.forEach(item => { item.mappedAges = item.ageFilter ? item.ageFilter.split(',') : ['미취학', '초등', '중고등', '성인']; }); }
-    function generateFilters() { /* 간소화 처리 */ }
-    function processNewItems() { eventData.forEach((item, idx) => { item.originalIndex = idx; item.isNew = false; }); }
-
-    function applyFilters() {
-        const keyword = document.getElementById('search-input').value.trim().toLowerCase();
-        currentFilteredData = eventData.filter(item => (keyword ? true : item.type === currentTab) && (!keyword || (item.title||'').toLowerCase().includes(keyword)));
-        
-        document.getElementById('list-container').innerHTML = '';
-        itemsRendered = 0;
-        if(currentFilteredData.length === 0) document.getElementById('list-container').innerHTML = '<div class="empty-state">행사가 없습니다.</div>';
-        else renderMoreItems();
-    }
-
-    function changeTab(element, type) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        element.classList.add('active');
-        currentTab = type;
-        applyFilters();
-    }
-
-    function renderMoreItems() {
-        if (itemsRendered >= currentFilteredData.length) return;
-        const container = document.getElementById('list-container');
-        const itemsToRender = currentFilteredData.slice(itemsRendered, itemsRendered + ITEMS_PER_PAGE);
-        let htmlBuffer = '';
-        itemsToRender.forEach(item => {
-            const id = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
-            htmlBuffer += `
-                <div class="card" onclick="openEventPopup('${id}')">
-                    <div class="card-header"><div class="badges"><span class="badge badge-loc">${item.loc || ''}</span></div>
-                    <div class="view-count">조회 ${item.viewCount}</div></div>
-                    <div class="card-title-row"><h2 class="title">${(item.title||'').replace(/(?:\r\n|\r|\n)/g, ' ')}</h2></div>
-                    <div class="card-bottom-info"><span>📍 ${item.place||'미정'}</span><span>|</span><span>🗓️ ${item.date||'미정'}</span></div>
-                </div>`;
-        });
-        container.insertAdjacentHTML('beforeend', htmlBuffer);
-        itemsRendered += itemsToRender.length;
-    }
-
     window.addEventListener('scroll', () => {
         if (document.documentElement.scrollTop + document.documentElement.clientHeight >= document.documentElement.scrollHeight - 300) renderMoreItems();
     });
 
-    document.addEventListener('DOMContentLoaded', () => { fetchEventData(); });
+    document.addEventListener('DOMContentLoaded', () => { 
+        initVisitCounters(); // TODAY / TOTAL 활성화
+        fetchEventData(); // 리스트 불러오기
+    });
 </script>
 </body>
 </html>
