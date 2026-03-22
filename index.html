@@ -62,7 +62,7 @@
         .notice-container { background: rgba(0, 0, 0, 0.15); border-radius: 6px; padding: 4px 8px; text-align: center; font-size: 0.7rem; font-weight: 500; height: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 5px; }
         .notice-container a { color: #fff; text-decoration: none; transition: opacity 0.3s ease-in-out; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
 
-        /* 하단 배너 광고영역 (기존 세로폭 유지) */
+        /* 하단 배너 영역 */
         .promo-area-wrap {
             position: fixed;
             bottom: 0;
@@ -70,7 +70,7 @@
             transform: translateX(-50%);
             width: 100%;
             max-width: 500px;
-            height: 54px; /* 모바일 기존 높이 */
+            height: 54px;
             background-color: #fff;
             padding: 5px 10px; 
             box-sizing: border-box;
@@ -120,7 +120,7 @@
 
             .promo-area-wrap { 
                 max-width: 800px; 
-                height: 78px; /* PC 기존 높이 */
+                height: 78px; 
                 padding: 8px 20px; 
                 bottom: 0; 
                 border-radius: 16px 16px 0 0; 
@@ -151,12 +151,7 @@
         .badge-today { background-color: #E53935; }
         .badge-open { background-color: #2ecc71; }
         .badge-close { background-color: #F06292; }
-        .badge-hot { 
-            background-color: #ffebee; 
-            color: #d32f2f; 
-            border-radius: 20px; 
-            padding: 3px 4px 3px 8px;
-        }
+        .badge-hot { background-color: #ffebee; color: #d32f2f; border-radius: 20px; padding: 3px 4px 3px 8px; }
 
         .view-count { display: flex; align-items: center; gap: 3px; font-size: 0.7rem; color: #aaa; font-weight: 500; flex-shrink: 0; margin-left: 8px; margin-top: 2px; }
         .view-count svg { width: 14px; height: 14px; fill: currentColor; }
@@ -175,19 +170,12 @@
         .img-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; padding-bottom: 65px; box-sizing: border-box; }
         .img-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
         
-        .img-modal-wrapper { 
-            position: relative; 
-            max-width: min(90%, 600px); 
-            max-height: calc(100% - 100px); 
-            display: inline-block; 
-        }
+        .img-modal-wrapper { position: relative; max-width: min(90%, 600px); max-height: calc(100% - 100px); display: inline-block; }
         .img-modal-scroll-area { max-height: calc(100vh - 100px); overflow-y: auto; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); background: #fff; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
         
         .img-modal-scroll-area::-webkit-scrollbar { width: 6px; }
         .img-modal-scroll-area::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
-        
         .img-modal-content { display: block; width: 100%; height: auto; }
-        
         .img-modal-close { position: absolute; top: -14px; right: -14px; background: #fff; color: #111; border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 1.6rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); z-index: 100; line-height: 1; padding: 0 0 2px 0; }
 
         .event-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding-bottom: 0; box-sizing: border-box; }
@@ -232,31 +220,16 @@
         .btn-benefit { display: flex; align-items: center; justify-content: center; background-color: #E53935; color: white; border: none; padding: 10px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; width: 100%; cursor: pointer; transition: all 0.2s; box-sizing: border-box; font-family: inherit; }
         .btn-benefit:hover { background-color: #C62828; }
 
-        /* 심플하고 컴팩트해진 리뷰 영역 디자인 (한 줄 세팅 & 시각적 구분 완료) */
-        .review-section { margin-top: 15px; border-top: 1px dashed #ddd; padding-top: 10px; }
-        .review-header { font-size: 0.85rem; font-weight: 700; color: #555; margin-bottom: 8px; display: flex; align-items: center; gap: 4px; }
-        .review-header span.count { color: var(--primary-color); }
-        .review-form { margin-bottom: 10px; }
-        .review-input-group { display: flex; gap: 4px; }
-        .review-nickname { width: 60px; padding: 6px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.8rem; outline: none; }
-        .review-content { flex: 1; padding: 6px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.8rem; outline: none; min-width: 0; }
-        .review-nickname:focus, .review-content:focus { border-color: var(--primary-color); }
-        .btn-submit-review { background: var(--primary-color); color: #fff; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: 0.2s; }
-        .btn-submit-review:hover { background: #388E3C; }
-
-        .review-list { display: flex; flex-direction: column; gap: 6px; max-height: 140px; overflow-y: auto; padding-right: 2px; overscroll-behavior: contain; }
-        .review-list::-webkit-scrollbar { width: 4px; }
-        .review-list::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
-        
-        /* [핵심] 한 줄 댓글창의 시각적 구분 디자인 */
-        .review-card { display: flex; align-items: baseline; gap: 6px; background: none; padding: 0; }
-        /* 1. 닉네임: 연녹색 라벨 스타일 */
-        .review-card-author { font-weight: 700; color: var(--primary-color); font-size: 0.75rem; background-color: #e8f5e9; padding: 2px 6px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
-        /* 2. 내용: 하얀색 캡슐 박스 스타일 */
-        .review-card-text { font-size: 0.8rem; color: #333; line-height: 1.3; word-break: break-all; flex-grow: 1; margin: 0; background-color: #fff; border: 1px solid #eee; padding: 4px 8px; border-radius: 6px; }
-        /* 3. 날짜: 심플한 회색 텍스트 */
-        .review-card-date { font-size: 0.65rem; color: #aaa; white-space: nowrap; flex-shrink: 0; }
-        .empty-review { text-align: center; color: #999; font-size: 0.8rem; padding: 10px 0; background: #fafafa; border-radius: 6px; }
+        /* [추가됨] 깔끔한 좋아요/싫어요 투표 영역 디자인 */
+        .vote-section { margin-top: 20px; border-top: 1px dashed #ddd; padding-top: 15px; text-align: center; }
+        .vote-title { font-size: 0.95rem; font-weight: 700; color: #444; margin-bottom: 12px; }
+        .vote-buttons { display: flex; justify-content: center; gap: 10px; }
+        .btn-vote { flex: 1; max-width: 140px; padding: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 6px; font-family: inherit; }
+        .btn-like { color: #1976D2; border-color: #BBDEFB; background-color: #E3F2FD; }
+        .btn-like:hover { background-color: #BBDEFB; }
+        .btn-dislike { color: #D32F2F; border-color: #FFCDD2; background-color: #FFEBEE; }
+        .btn-dislike:hover { background-color: #FFCDD2; }
+        .btn-vote span { background: rgba(255,255,255,0.7); padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; display: inline-block; min-width: 14px; }
     </style>
 </head>
 <body>
@@ -308,7 +281,9 @@
 <div class="promo-area-wrap" id="main-promo-wrap">
     <div style="position: relative; width: 100%; height: 100%;">
         
-        <a href="https://헤이청주.com/?id=A067" id="fallback-banner" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; display: flex; justify-content: center; align-items: center; text-decoration: none;">
+        <a href="https://헤이청주.com/?id=A067" target="_blank" id="fallback-banner" 
+           onclick="gtag('event', '배너_클릭', { 'event_category': '하단광고', 'event_label': '정서뮤직아트배너' });" 
+           style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; display: block; text-decoration: none;">
         </a>
 
         <div id="adsense-banner" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;">
@@ -347,17 +322,15 @@
 </div>
 
 <script>
-    // [보안 업데이트 1] 파이어베이스 로딩 에러 방어코드
-const firebaseConfig = {
-  apiKey: "AIzaSyAAcLTj-cYITigtCl354lrr4lfvGOFZPK0",
-  authDomain: "test-2ebbf.firebaseapp.com",
-  databaseURL: "https://test-2ebbf-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "test-2ebbf",
-  storageBucket: "test-2ebbf.firebasestorage.app",
-  messagingSenderId: "702080235125",
-  appId: "1:702080235125:web:58a64ce59e44b67bc56a3c",
-  measurementId: "G-S9W0HXWKMQ"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyBZg-wKztuG-Ak7-WqWSAYe9UIj874fYAY",
+      authDomain: "heycj-55b6a.firebaseapp.com",
+      databaseURL: "https://heycj-55b6a-default-rtdb.firebaseio.com",
+      projectId: "heycj-55b6a",
+      storageBucket: "heycj-55b6a.firebasestorage.app",
+      messagingSenderId: "147201792706",
+      appId: "1:147201792706:web:3b3130a47cd0f50ce5b95b"
+    };
 
     let db = null;
     try {
@@ -366,15 +339,9 @@ const firebaseConfig = {
         }
         db = firebase.database();
     } catch (error) {
-        console.warn("방화벽/광고차단기로 인해 파이어베이스 로딩이 제한되었습니다. 조회수 없이 행사를 정상 로딩합니다.", error);
+        console.warn("방화벽/광고차단기로 인해 파이어베이스 로딩이 제한되었습니다.", error);
     }
 
-    // 보안: 비회원 입력창에 HTML/스크립트 태그 입력 방지 (리뷰용)
-    function escapeHtml(text) {
-        return (text || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-    }
-
-    // 텍스트 속 모든 줄바꿈 기호를 <br> 태그로 예쁘게 바꿔주는 함수 (팝업창 용)
     function nl2br(str) {
         if (!str) return '';
         return str.replace(/(?:\r\n|\r|\n|\\n)/g, '<br>');
@@ -451,33 +418,9 @@ const firebaseConfig = {
                 sessionStorage.setItem('visited_today_' + todayStr, 'true');
             }
 
-            totalRef.on('value', snap => {
-                document.getElementById('count-total').innerText = snap.val() || 0;
-            });
-            
-            todayRef.on('value', snap => {
-                document.getElementById('count-today').innerText = snap.val() || 0;
-            });
-
-        } catch (error) {
-            console.warn("방문자 수 로딩 실패", error);
-            document.getElementById('count-total').innerText = '-';
-            document.getElementById('count-today').innerText = '-';
-        }
-    }
-
-    function getCounterNumber(payload) {
-        if (payload == null) return 0;
-        if (typeof payload === 'number') return payload;
-        if (typeof payload.value === 'number') return payload.value;
-        if (typeof payload.count === 'number') return payload.count;
-        if (payload.data) {
-            if (typeof payload.data.value === 'number') return payload.data.value;
-            if (typeof payload.data.count === 'number') return payload.data.count;
-        }
-        if (typeof payload.value === 'string' && !isNaN(Number(payload.value))) return Number(payload.value);
-        if (typeof payload.count === 'string' && !isNaN(Number(payload.count))) return Number(payload.count);
-        return 0;
+            totalRef.on('value', snap => { document.getElementById('count-total').innerText = snap.val() || 0; });
+            todayRef.on('value', snap => { document.getElementById('count-today').innerText = snap.val() || 0; });
+        } catch (error) {}
     }
 
     function trackEventAndOpen(e, url, title, btnType) {
@@ -512,11 +455,7 @@ const firebaseConfig = {
         const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
         const shareUrl = window.location.origin + window.location.pathname + '?id=' + encodeURIComponent(eventId);
         const shareTitle = item ? item.title.replace(/(?:\r\n|\r|\n|\\n)/g, ' ') : '헤이청주 일정 공유'; 
-        const shareData = {
-            title: shareTitle,
-            text: '이 행사 어때요? 일정을 확인해보세요!',
-            url: shareUrl
-        };
+        const shareData = { title: shareTitle, text: '이 행사 어때요? 일정을 확인해보세요!', url: shareUrl };
         if (navigator.share) {
             navigator.share(shareData).catch(console.error);
         } else {
@@ -540,9 +479,7 @@ const firebaseConfig = {
         if (imgBtn) {
             const url = imgBtn.getAttribute('data-url');
             const title = imgBtn.getAttribute('data-title');
-            
             if (imgModalScroll) imgModalScroll.scrollTop = 0;
-            
             modalImg.src = url;
             imgModal.classList.add('active');
             trackEventClick(title, 'detail');
@@ -557,7 +494,6 @@ const firebaseConfig = {
 
     let eventData = [];
     let currentTab = 'affiliate'; 
-    
     let currentFilteredData = [];
     let itemsRendered = 0;
     const ITEMS_PER_PAGE = 20;
@@ -565,7 +501,6 @@ const firebaseConfig = {
     async function fetchEventData() {
         try {
             if (!db) throw new Error("파이어베이스 연결이 준비되지 않았습니다.");
-            
             const snapshot = await db.ref('events_data').once('value');
             const data = snapshot.val();
 
@@ -575,7 +510,6 @@ const firebaseConfig = {
             }
 
             eventData = Array.isArray(data) ? data : Object.values(data);
-
             processEventDates();
             processEventAges();
             generateFilters();
@@ -583,14 +517,10 @@ const firebaseConfig = {
             updateTabNewBadges();
 
             let viewsData = {};
-            if (db) {
-                try {
-                    const viewSnapshot = await db.ref('event_views_total').once('value');
-                    viewsData = viewSnapshot.val() || {};
-                } catch (viewError) {
-                    console.warn("조회수를 불러오는 데 실패했습니다.", viewError);
-                }
-            }
+            try {
+                const viewSnapshot = await db.ref('event_views_total').once('value');
+                viewsData = viewSnapshot.val() || {};
+            } catch (viewError) {}
             
             eventData.forEach(item => {
                 const eventId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
@@ -659,7 +589,6 @@ const firebaseConfig = {
                 if (text) text += ` <span style="font-weight:700; font-size:0.8rem;">[${item.applyNote}]</span>`;
                 else text = `<span style="font-weight:700;">${item.applyNote}</span>`;
             }
-
             item.displayText = text || '상시 접수';
         });
     }
@@ -748,7 +677,6 @@ const firebaseConfig = {
                 filterGroup.appendChild(label);
             }
         });
-
         setTimeout(() => handleFilterScroll(filterGroup), 100);
     }
 
@@ -767,10 +695,8 @@ const firebaseConfig = {
         if (!dateStr) return false;
         const val = parseDateValue(dateStr);
         if (val === 9999) return false;
-        
         const today = new Date();
         const todayVal = (today.getMonth() + 1) * 100 + today.getDate();
-        
         return val < todayVal;
     }
 
@@ -785,15 +711,10 @@ const firebaseConfig = {
             let hour = match[4] ? parseInt(match[4], 10) : 0;
             let minute = match[5] ? parseInt(match[5], 10) : 0;
 
-            if (s.includes('오후') || s.toUpperCase().includes('PM')) {
-                if (hour < 12) hour += 12;
-            }
-            if ((s.includes('오전') || s.toUpperCase().includes('AM')) && hour === 12) {
-                hour = 0;
-            }
+            if (s.includes('오후') || s.toUpperCase().includes('PM')) { if (hour < 12) hour += 12; }
+            if ((s.includes('오전') || s.toUpperCase().includes('AM')) && hour === 12) { hour = 0; }
             return new Date(year, month, day, hour, minute).getTime();
         }
-
         let parsed = new Date(s).getTime();
         return isNaN(parsed) ? 0 : parsed;
     }
@@ -805,7 +726,6 @@ const firebaseConfig = {
         eventData.forEach((item, index) => {
             item.originalIndex = index;
             item.isNew = false;
-
             const regDateMs = parseRegDate(item['등록일']);
             if (regDateMs > 0) {
                 const timeDiff = now - regDateMs;
@@ -858,7 +778,6 @@ const firebaseConfig = {
                     (item.place && item.place.toLowerCase().includes(keyword)) ||
                     (item.loc && item.loc.toLowerCase().includes(keyword));
             }
-
             return matchTab && matchLoc && matchAge && matchSearch;
         });
 
@@ -886,7 +805,6 @@ const firebaseConfig = {
             filteredData.sort((a, b) => {
                 if (a.isHot && !b.isHot) return -1;
                 if (!a.isHot && b.isHot) return 1;
-                
                 if (a.isNew && !b.isNew) return -1;
                 if (!a.isNew && b.isNew) return 1;
 
@@ -899,7 +817,6 @@ const firebaseConfig = {
             filteredData.sort((a, b) => {
                 if (a.isHot && !b.isHot) return -1;
                 if (!a.isHot && b.isHot) return 1;
-                
                 if (a.isNew && !b.isNew) return -1;
                 if (!a.isNew && b.isNew) return 1;
                 return a.originalIndex - b.originalIndex;
@@ -929,11 +846,8 @@ const firebaseConfig = {
             let safeCost = item.costType || '';
             let costBadgeHTML = '';
             
-            if (safeCost.includes('무료')) {
-                costBadgeHTML = `<span class="badge badge-free">무료</span>`;
-            } else if (safeCost.includes('유료')) {
-                costBadgeHTML = `<span class="badge badge-paid">유료</span>`;
-            }
+            if (safeCost.includes('무료')) { costBadgeHTML = `<span class="badge badge-free">무료</span>`; } 
+            else if (safeCost.includes('유료')) { costBadgeHTML = `<span class="badge badge-paid">유료</span>`; }
 
             let dateBadges = '';
             if (item.isTodayOpen) dateBadges += `<span class="badge badge-open">오늘오픈</span> `;
@@ -945,9 +859,7 @@ const firebaseConfig = {
             let overlayHTML = '';
             
             let statusVal = item['커밍순'] ? item['커밍순'].replace(/\s+/g, '') : '';
-            if (isDatePassed(item['행사마감일'] || item.eventEnd)) {
-                statusVal = '마감';
-            }
+            if (isDatePassed(item['행사마감일'] || item.eventEnd)) { statusVal = '마감'; }
 
             if (statusVal === '커밍순') {
                 cardClass += ' disabled-card';
@@ -958,7 +870,6 @@ const firebaseConfig = {
             }
 
             const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
-            
             const cardTitle = (item.title || '').replace(/(?:\r\n|\r|\n|\\n)/g, ' '); 
 
             const cardHTML = `
@@ -977,13 +888,11 @@ const firebaseConfig = {
                             <span id="view-count-${eventUniqueId}">${item.viewCount}</span>
                         </div>
                     </div>
-                    
                     <div class="card-title-row">
                         <h2 class="title">${cardTitle}</h2>
                         ${item.isNew ? `<span class="card-new-badge">N</span>` : ''}
                         <span class="card-more-text">+ 더보기</span>
                     </div>
-                    
                     <div class="card-bottom-info">
                         <span style="flex-shrink:0;">📍 ${item.place ? item.place : '장소미정'}</span>
                         <span style="color:#ddd;">|</span>
@@ -1000,91 +909,59 @@ const firebaseConfig = {
 
     window.addEventListener('scroll', () => {
         const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-        if (scrollTop + clientHeight >= scrollHeight - 300) {
-            renderMoreItems();
-        }
+        if (scrollTop + clientHeight >= scrollHeight - 300) { renderMoreItems(); }
     });
 
-    // 💡 파이어베이스를 통해 실시간으로 리뷰를 불러옵니다.
-    function loadReviews(eventId) {
-        const reviewListContainer = document.getElementById('reviewListContainer');
-        if (!reviewListContainer || !db) return;
+    // 💡 [변경됨] 실시간으로 파이어베이스에서 좋아요/싫어요 숫자를 읽어와 화면에 반영합니다.
+    function loadVotes(eventId) {
+        const likeCountElem = document.getElementById('likeCount');
+        const dislikeCountElem = document.getElementById('dislikeCount');
+        if (!db) return;
 
-        db.ref(`event_reviews/${eventId}`).orderByChild('timestamp').on('value', (snapshot) => {
-            const reviews = [];
+        // 기존 리뷰 데이터 경로를 그대로 활용해서 숫자를 셉니다!
+        db.ref(`event_reviews/${eventId}`).on('value', (snapshot) => {
+            let likes = 0;
+            let dislikes = 0;
+            
             snapshot.forEach(child => {
-                reviews.push({ id: child.key, ...child.val() });
+                const val = child.val();
+                if (val.type === 'like' || val.nickname === 'LIKE') likes++;
+                if (val.type === 'dislike' || val.nickname === 'DISLIKE') dislikes++;
             });
             
-            reviews.reverse(); // 최신순 정렬
-            
-            const countElem = document.getElementById('reviewCount');
-            if(countElem) countElem.innerText = reviews.length;
-
-            if (reviews.length === 0) {
-                reviewListContainer.innerHTML = '<div class="empty-review">아직 등록된 후기가 없습니다.<br>첫 번째 후기를 남겨주세요! 😃</div>';
-                return;
-            }
-
-            let html = '';
-            reviews.forEach(review => {
-                const dateObj = new Date(review.timestamp);
-                const dateStr = `${dateObj.getFullYear()}.${String(dateObj.getMonth()+1).padStart(2,'0')}.${String(dateObj.getDate()).padStart(2,'0')}`;
-                
-                // [수정된 부분] 한 줄Comment 구조로 변경 (닉네임 - 내용 - 날짜)
-                html += `
-                    <div class="review-card">
-                        <span class="review-card-author">👤 ${escapeHtml(review.nickname)}</span>
-                        <span class="review-card-text">${escapeHtml(review.content)}</span>
-                        <span class="review-card-date">${dateStr}</span>
-                    </div>
-                `;
-            });
-            reviewListContainer.innerHTML = html;
+            if(likeCountElem) likeCountElem.innerText = likes;
+            if(dislikeCountElem) dislikeCountElem.innerText = dislikes;
         });
     }
 
-    // 💡 리뷰 작성: 보안을 위해 파이어베이스에 직접 안 쓰고, 앱스크립트 웹 앱을 우회해서 보냅니다.
-    function submitReview(eventId) {
-        const nicknameInput = document.getElementById('reviewNickname');
-        const contentInput = document.getElementById('reviewContent');
-        
-        const nickname = nicknameInput.value.trim();
-        const content = contentInput.value.trim();
+    // 💡 [변경됨] 좋아요/싫어요 버튼 클릭 시 실행되는 함수
+    function submitVote(eventId, voteType) {
+        // 도배 방지용 (브라우저 세션에 기록)
+        if (sessionStorage.getItem(`voted_${eventId}`)) {
+            return alert('이미 투표에 참여하셨습니다. 감사합니다! 😊');
+        }
+        sessionStorage.setItem(`voted_${eventId}`, 'true');
 
-        if (!nickname) return alert('닉네임을 입력해주세요.');
-        if (!content) return alert('내용을 입력해주세요.');
+        // 1. 파이어베이스에 직접 기록 (화면 숫자 즉시 0.1초만에 올라감!)
+        if (db) {
+            const reviewRef = db.ref(`event_reviews/${eventId}`).push();
+            reviewRef.set({
+                type: voteType, // 'like' 또는 'dislike'
+                nickname: voteType.toUpperCase(), // 구글 시트에 들어갈 이름
+                content: '투표',
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            }).catch(e => console.error("투표 오류:", e));
+        }
 
-        // 버튼 상태 변경
-        const btn = document.querySelector('.btn-submit-review');
-        btn.disabled = true;
-        btn.innerText = '등록 중...';
-
-        // ⚠️ 주의: 반드시 이전에 알려드린 2단계에서 만든 '구글 앱스크립트 웹앱 주소'로 교체하세요!
+        // 2. 기존 구글 앱스크립트로 전송하여 구글 시트에 백업!
+        // ⚠️ 꼭 본인의 앱스크립트 주소로 교체하세요!
         const scriptUrl = "https://script.google.com/macros/s/AKfycbw-a4MQEcaCa1KMSU0IoN_8yZGZk5WfUadbP9SL9DlW0ZJInExl8SVaTbd-wgQBffV7Ow/exec"; 
-
         const formData = new URLSearchParams();
         formData.append('eventId', eventId);
-        formData.append('nickname', nickname);
-        formData.append('content', content);
+        formData.append('nickname', voteType.toUpperCase());
+        formData.append('content', '투표');
 
-        fetch(scriptUrl, {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.text())
-        .then(result => {
-            // 앱스크립트 처리가 끝나면 파이어베이스 감지기(loadReviews)가 자동으로 화면을 갱신합니다.
-            contentInput.value = ''; 
-        })
-        .catch(error => {
-            console.error('리뷰 전송 실패:', error);
-            alert('등록 중 통신 오류가 발생했습니다.');
-        })
-        .finally(() => {
-            btn.disabled = false;
-            btn.innerText = '등록';
-        });
+        fetch(scriptUrl, { method: 'POST', body: formData }).catch(e => console.log(e));
     }
 
     async function openEventPopup(eventId) {
@@ -1096,16 +973,13 @@ const firebaseConfig = {
         if (db) {
             try {
                 const specificEventRef = db.ref(`event_views_total/${eventId}`);
-                
                 specificEventRef.set(firebase.database.ServerValue.increment(1)).then(() => {
                     specificEventRef.once('value').then(snap => {
                         const countElem = document.getElementById(`view-count-${eventId}`);
                         if (countElem) countElem.innerText = snap.val() || 0;
                     });
                 });
-            } catch (e) {
-                console.warn('조회수 업데이트가 차단되었습니다.', e);
-            }
+            } catch (e) {}
         }
 
         const popupTitleHTML = nl2br(item.title);
@@ -1132,21 +1006,17 @@ const firebaseConfig = {
         const popupDate = nl2br(item.date || '해당정보 없음');
         const tipText = nl2br((item['꿀팁'] || '').trim());
 
-        // 💡 팝업창 내 리뷰 UI 구성 요소
-        const reviewSectionHtml = `
-            <div class="review-section">
-                <div class="review-header">
-                    💬 한줄 기대평/후기 (<span class="count" id="reviewCount">0</span>)
-                </div>
-                <div class="review-form">
-                    <div class="review-input-group">
-                        <input type="text" id="reviewNickname" class="review-nickname" placeholder="닉네임" maxlength="8" />
-                        <input type="text" id="reviewContent" class="review-content" placeholder="행사 어떠셨나요? 기대평도 좋아요!" onkeypress="if(event.key==='Enter') submitReview('${eventId}')" />
-                        <button class="btn-submit-review" onclick="submitReview('${eventId}')">등록</button>
-                    </div>
-                </div>
-                <div class="review-list" id="reviewListContainer">
-                    <div class="empty-review">리뷰를 불러오는 중...</div>
+        // 💡 [변경됨] 팝업창 내 좋아요/싫어요 투표 버튼 영역 (기존 후기란 삭제)
+        const voteSectionHtml = `
+            <div class="vote-section">
+                <div class="vote-title">이 행사가 마음에 드시나요?</div>
+                <div class="vote-buttons">
+                    <button class="btn-vote btn-like" onclick="submitVote('${eventId}', 'like')">
+                        👍 좋아요 <span id="likeCount">0</span>
+                    </button>
+                    <button class="btn-vote btn-dislike" onclick="submitVote('${eventId}', 'dislike')">
+                        👎 별로예요 <span id="dislikeCount">0</span>
+                    </button>
                 </div>
             </div>
         `;
@@ -1159,7 +1029,7 @@ const firebaseConfig = {
             <div class="info-row"><span class="info-label">접수</span><span class="info-divider">|</span><span class="info-desc" style="${applyTextStyle}">${popupDisplayTxt}</span></div>
             <div class="info-row"><span class="info-label">일정</span><span class="info-divider">|</span><span class="info-desc">${popupDate}</span></div>
             ${tipText ? `<div class="info-row"><span class="info-label">메모</span><span class="info-divider">|</span><span class="info-desc" style="font-weight:bold; color:var(--text-main);">${tipText}</span></div>` : ''}
-            ${reviewSectionHtml}
+            ${voteSectionHtml}
         `;
 
         let btnDetails = '';
@@ -1168,10 +1038,7 @@ const firebaseConfig = {
 
         if (detailUrl && detailUrl.trim() !== '') {
             const lowerUrl = detailUrl.trim().toLowerCase();
-            isImageUrl =
-                /\.(jpeg|jpg|gif|png|webp)(?:[\?#].*)?$/i.test(lowerUrl) ||
-                lowerUrl.includes('drive.google.com/uc?') ||
-                lowerUrl.includes('phinf.pstatic.net');
+            isImageUrl = /\.(jpeg|jpg|gif|png|webp)(?:[\?#].*)?$/i.test(lowerUrl) || lowerUrl.includes('drive.google.com/uc?') || lowerUrl.includes('phinf.pstatic.net');
         }
 
         const whiteLinkIcon = `<svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor; margin-left:4px; vertical-align:text-bottom;"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>`;
@@ -1181,7 +1048,6 @@ const firebaseConfig = {
         if (detailUrl && detailUrl.trim() !== '') {
             const safeUrl = detailUrl.trim().replace(/"/g, '&quot;');
             const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/(?:\r\n|\r|\n|\\n)/g, ' ');
-            
             if (isImageUrl) {
                 btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">상세정보 확인${colorImgIcon}</button>`;
             } else {
@@ -1229,25 +1095,17 @@ const firebaseConfig = {
 
         document.getElementById('eventModal').classList.add('active');
 
-        // 💡 리뷰 데이터를 파이어베이스에서 실시간으로 불러와 붙이는 함수 실행
-        loadReviews(eventId);
+        // 💡 [변경됨] 팝업 열릴 때 좋아요/싫어요 숫자를 읽어옵니다.
+        loadVotes(eventId);
 
-        try {
-            history.pushState({ eventPopup: true }, '', '?id=' + encodeURIComponent(eventId));
-        } catch (e) {
-            console.log("로컬 환경이라 URL이 변경되지 않습니다.");
-        }
+        try { history.pushState({ eventPopup: true }, '', '?id=' + encodeURIComponent(eventId)); } catch (e) {}
     }
 
     function closeEventPopup(e) {
         if (e && e.target !== e.currentTarget && !e.target.classList.contains('event-modal-close-btn')) return;
-        
         document.body.classList.remove('modal-open');
         document.getElementById('eventModal').classList.remove('active');
-        
-        try {
-            history.pushState(null, '', window.location.pathname);
-        } catch (e) {}
+        try { history.pushState(null, '', window.location.pathname); } catch (e) {}
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -1256,10 +1114,10 @@ const firebaseConfig = {
         initVisitCounters();
         fetchEventData(); 
         
-        // 하단 배너 (기존 프레임 크기 유지, object-fit: cover로 이미지 꽉 채우기)
+        // [수정됨] 하단 배너 이미지가 꽉 차면서 찌그러지지 않게 object-fit: cover 및 display: block 처리 적용
         const fallbackBanner = document.getElementById('fallback-banner');
         if (fallbackBanner) {
-            fallbackBanner.innerHTML = '<img src="https://firebasestorage.googleapis.com/v0/b/heycj-55b6a.firebasestorage.app/o/%EC%A0%95%EC%84%9C%EB%AE%A4%EC%A7%81%EC%95%84%ED%8A%B8%ED%81%B4%EB%9E%98%EC%8A%A4%20%EA%B4%91%EA%B3%A0%EB%B0%B0%EB%84%88.png?alt=media&token=2c1a1aed-5bc3-4f57-a6c5-dffb209d5598" alt="상단 배너" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;" />';
+            fallbackBanner.innerHTML = '<img src="https://firebasestorage.googleapis.com/v0/b/heycj-55b6a.firebasestorage.app/o/%EC%A0%95%EC%84%9C%EB%AE%A4%EC%A7%81%EC%95%84%ED%8A%B8%ED%81%B4%EB%9E%98%EC%8A%A4%20%EA%B4%91%EA%B3%A0%EB%B0%B0%EB%84%88.png?alt=media&token=2c1a1aed-5bc3-4f57-a6c5-dffb209d5598" alt="하단 배너" style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 4px; display: block;" />';
         }
     });
 </script>
