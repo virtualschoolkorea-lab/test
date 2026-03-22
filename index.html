@@ -219,12 +219,13 @@
         .btn-benefit { display: flex; align-items: center; justify-content: center; background-color: #E53935; color: white; border: none; padding: 10px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; width: 100%; cursor: pointer; transition: all 0.2s; box-sizing: border-box; font-family: inherit; }
         .btn-benefit:hover { background-color: #C62828; }
 
-        /* [변경됨] 가운데 정렬 및 가시성을 확 높인 투표 영역 디자인 */
-        .vote-section { margin-top: 15px; border-top: 1px dashed #ddd; padding-top: 18px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .vote-buttons { display: flex; justify-content: center; gap: 15px; width: 100%; }
+        /* [변경됨] 문구 삭제 후 여백을 최소화한 슬림형 투표 영역 디자인 (가로 중앙 정렬) */
+        .vote-section { margin-top: 8px; border-top: 1px dashed #ddd; padding-top: 8px; display: flex; justify-content: center; }
+        .vote-buttons { display: flex; justify-content: center; gap: 12px; width: 100%; }
         
-        .btn-vote { padding: 6px 20px; border: 1px solid #ddd; border-radius: 20px; font-size: 1.2rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; min-width: 80px; }
-        .btn-vote span { font-weight: 700; font-size: 0.95rem; }
+        /* 버튼 세로폭 60% 축소 (padding 및 폰트 크기 조절) */
+        .btn-vote { padding: 3px 16px; border: 1px solid #ddd; border-radius: 20px; font-size: 1rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 4px; font-family: inherit; min-width: 60px; height: 32px; }
+        .btn-vote span { font-weight: 700; font-size: 0.9rem; }
         
         /* 기본 색상 (파랑/빨강 테마) */
         .btn-like { background-color: #E3F2FD; border-color: #BBDEFB; color: #1976D2; }
@@ -930,13 +931,21 @@
         if (myVote === 'dislike' && btnDislike) btnDislike.classList.add('active-dislike');
     }
 
-    // 💡 파이어베이스에서 좋아요/싫어요 숫자를 불러오면서 취소 기록도 반영합니다.
+    let currentVoteListenerRef = null;
+
+    // 💡 파이어베이스에서 좋아요/싫어요 숫자를 불러옵니다. (리스너 중복 실행 방지 기능 추가)
     function loadVotes(eventId) {
         const likeCountElem = document.getElementById('likeCount');
         const dislikeCountElem = document.getElementById('dislikeCount');
         if (!db) return;
 
-        db.ref(`event_reviews/${eventId}`).on('value', (snapshot) => {
+        // 다른 팝업을 열 때 기존 감지기가 켜져있다면 끕니다 (중복 카운트 방지)
+        if (currentVoteListenerRef) {
+            currentVoteListenerRef.off('value');
+        }
+
+        currentVoteListenerRef = db.ref(`event_reviews/${eventId}`);
+        currentVoteListenerRef.on('value', (snapshot) => {
             let likes = 0;
             let dislikes = 0;
             
@@ -979,24 +988,41 @@
         fetch(scriptUrl, { method: 'POST', body: formData }).catch(e => {});
     }
 
-    // 💡 토글 기능(투표 취소 및 변경)이 포함된 버튼 액션
+    // 💡 [변경됨] Optimistic UI: 깜빡임 딜레이를 완벽히 없앤 투표 로직
     function submitVote(eventId, voteType) {
         const currentVote = localStorage.getItem(`vote_${eventId}`);
         
+        // 깜빡임 방지용 강제 즉각 업데이트 변수 세팅
+        const likeElem = document.getElementById('likeCount');
+        const dislikeElem = document.getElementById('dislikeCount');
+        let currentLikes = parseInt(likeElem.innerText) || 0;
+        let currentDislikes = parseInt(dislikeElem.innerText) || 0;
+        
         if (currentVote === voteType) {
-            // 1. 눌렀던 버튼을 다시 누른 경우 -> [취소]
+            // 1. 눌렀던 걸 다시 누름 -> [취소]
             pushVoteRecord(eventId, `cancel_${voteType}`);
             localStorage.removeItem(`vote_${eventId}`);
+            
+            if (voteType === 'like') currentLikes = Math.max(0, currentLikes - 1);
+            if (voteType === 'dislike') currentDislikes = Math.max(0, currentDislikes - 1);
         } else {
-            // 2. 다른 버튼을 누르거나 처음 투표하는 경우
+            // 2. 다른 걸 누르거나 처음 투표 -> [변경/등록]
             if (currentVote) {
-                // 기존 투표 취소 기록 먼저 발송
+                // 기존 것부터 취소
                 pushVoteRecord(eventId, `cancel_${currentVote}`);
+                if (currentVote === 'like') currentLikes = Math.max(0, currentLikes - 1);
+                if (currentVote === 'dislike') currentDislikes = Math.max(0, currentDislikes - 1);
             }
-            // 새로운 투표 기록 발송
             pushVoteRecord(eventId, voteType);
             localStorage.setItem(`vote_${eventId}`, voteType);
+            
+            if (voteType === 'like') currentLikes++;
+            if (voteType === 'dislike') currentDislikes++;
         }
+        
+        // 통신을 기다리지 않고 화면 숫자부터 즉시 갈아끼워서 1->0->1 깜빡임 원천 차단!
+        if (likeElem) likeElem.innerText = currentLikes;
+        if (dislikeElem) dislikeElem.innerText = currentDislikes;
         
         updateVoteUI(eventId);
     }
@@ -1043,7 +1069,7 @@
         const popupDate = nl2br(item.date || '해당정보 없음');
         const tipText = nl2br((item['꿀팁'] || '').trim());
 
-        // 💡 [변경됨] 안내 문구를 없애고 버튼만 남긴 투표 영역
+        // 💡 [변경됨] 안내 문구를 지우고 기호만 남긴 슬림 투표 영역
         const voteSectionHtml = `
             <div class="vote-section">
                 <div class="vote-buttons">
@@ -1149,7 +1175,6 @@
         initVisitCounters();
         fetchEventData(); 
         
-        // [수정됨] 찌그러짐을 방지하기 위해 object-fit을 contain으로 설정하고 배경을 하얀색으로 채웠습니다!
         const fallbackBanner = document.getElementById('fallback-banner');
         if (fallbackBanner) {
             fallbackBanner.innerHTML = '<img src="https://firebasestorage.googleapis.com/v0/b/heycj-55b6a.firebasestorage.app/o/%EB%B0%B0%EB%84%883.png?alt=media&token=b2287e89-4281-4998-9182-2a741773487e" alt="하단 배너" style="width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 4px; display: block; background-color: #fff;" />';
