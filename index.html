@@ -62,7 +62,7 @@
         .notice-container { background: rgba(0, 0, 0, 0.15); border-radius: 6px; padding: 4px 8px; text-align: center; font-size: 0.7rem; font-weight: 500; height: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 5px; }
         .notice-container a { color: #fff; text-decoration: none; transition: opacity 0.3s ease-in-out; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
 
-        /* 하단 배너 영역 */
+        /* 하단 배너 광고영역 */
         .promo-area-wrap {
             position: fixed;
             bottom: 0;
@@ -70,7 +70,7 @@
             transform: translateX(-50%);
             width: 100%;
             max-width: 500px;
-            height: 54px;
+            height: 54px; 
             background-color: #fff;
             padding: 5px 10px; 
             box-sizing: border-box;
@@ -220,16 +220,18 @@
         .btn-benefit { display: flex; align-items: center; justify-content: center; background-color: #E53935; color: white; border: none; padding: 10px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; width: 100%; cursor: pointer; transition: all 0.2s; box-sizing: border-box; font-family: inherit; }
         .btn-benefit:hover { background-color: #C62828; }
 
-        /* [추가됨] 깔끔한 좋아요/싫어요 투표 영역 디자인 */
-        .vote-section { margin-top: 20px; border-top: 1px dashed #ddd; padding-top: 15px; text-align: center; }
-        .vote-title { font-size: 0.95rem; font-weight: 700; color: #444; margin-bottom: 12px; }
-        .vote-buttons { display: flex; justify-content: center; gap: 10px; }
-        .btn-vote { flex: 1; max-width: 140px; padding: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 6px; font-family: inherit; }
-        .btn-like { color: #1976D2; border-color: #BBDEFB; background-color: #E3F2FD; }
-        .btn-like:hover { background-color: #BBDEFB; }
-        .btn-dislike { color: #D32F2F; border-color: #FFCDD2; background-color: #FFEBEE; }
-        .btn-dislike:hover { background-color: #FFCDD2; }
-        .btn-vote span { background: rgba(255,255,255,0.7); padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; display: inline-block; min-width: 14px; }
+        /* [변경됨] 한 줄 가로 배치로 세로 공간 최소화한 투표 영역 디자인 */
+        .vote-section { margin-top: 15px; border-top: 1px dashed #ddd; padding-top: 12px; display: flex; align-items: center; justify-content: space-between; }
+        .vote-title { font-size: 0.9rem; font-weight: 700; color: #444; margin: 0; }
+        .vote-buttons { display: flex; gap: 8px; }
+        
+        .btn-vote { padding: 4px 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px; background: #fff; color: #666; font-family: inherit; }
+        .btn-vote:hover { background: #f5f5f5; }
+        .btn-vote span { font-weight: 700; font-size: 0.85rem; }
+        
+        /* 버튼 활성화(클릭됨) 상태 */
+        .btn-vote.active-like { background-color: #E3F2FD; border-color: #2196F3; color: #1976D2; }
+        .btn-vote.active-dislike { background-color: #FFEBEE; border-color: #F44336; color: #D32F2F; }
     </style>
 </head>
 <body>
@@ -281,8 +283,8 @@
 <div class="promo-area-wrap" id="main-promo-wrap">
     <div style="position: relative; width: 100%; height: 100%;">
         
-        <a href="https://헤이청주.com/?id=A067" target="_blank" id="fallback-banner" 
-           onclick="gtag('event', '배너_클릭', { 'event_category': '하단광고', 'event_label': '정서뮤직아트배너' });" 
+        <a href="https://blog.naver.com/hyejuousflower" target="_blank" id="fallback-banner" 
+           onclick="gtag('event', '배너_클릭', { 'event_category': '하단광고', 'event_label': '하단배너' });" 
            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; display: block; text-decoration: none;">
         </a>
 
@@ -359,7 +361,7 @@
         { text: "[⚡내일오픈/마감,긴급정보 실시간 알림 오픈챗 입장하기👆] ", link: "https://open.kakao.com/o/gAUqOrai" },
         { text: "[헤이청주에 ☎️ 협업문의/제안/건의하기] 👆", link: "https://forms.gle/h8KLaLkfsU55aH5T9" },
         { text: "📝간혹 오타가 발생하므로 상세정보확인 페이지 반드시 참고", link: "" },
-        { text: "📢[제휴/이벤트 진행중] 정서뮤직아트클래스 커피쿠폰+할인권 👇 ", link: "" }
+        { text: "📢[제휴/이벤트 준비중] 키즈원예클래스 무료체험권 👇 ", link: "" }
     ];
 
     function initNotice() {
@@ -912,13 +914,25 @@
         if (scrollTop + clientHeight >= scrollHeight - 300) { renderMoreItems(); }
     });
 
-    // 💡 [변경됨] 실시간으로 파이어베이스에서 좋아요/싫어요 숫자를 읽어와 화면에 반영합니다.
+    // 💡 [변경됨] 버튼 활성화/비활성화 시각 효과 업데이트
+    function updateVoteUI(eventId) {
+        const btnLike = document.getElementById(`btnLike_${eventId}`);
+        const btnDislike = document.getElementById(`btnDislike_${eventId}`);
+        const myVote = localStorage.getItem(`vote_${eventId}`);
+        
+        if (btnLike) btnLike.classList.remove('active-like');
+        if (btnDislike) btnDislike.classList.remove('active-dislike');
+        
+        if (myVote === 'like' && btnLike) btnLike.classList.add('active-like');
+        if (myVote === 'dislike' && btnDislike) btnDislike.classList.add('active-dislike');
+    }
+
+    // 💡 [변경됨] 파이어베이스에서 좋아요/싫어요 숫자를 불러오면서 취소(cancel) 기록도 반영합니다.
     function loadVotes(eventId) {
         const likeCountElem = document.getElementById('likeCount');
         const dislikeCountElem = document.getElementById('dislikeCount');
         if (!db) return;
 
-        // 기존 리뷰 데이터 경로를 그대로 활용해서 숫자를 셉니다!
         db.ref(`event_reviews/${eventId}`).on('value', (snapshot) => {
             let likes = 0;
             let dislikes = 0;
@@ -926,42 +940,62 @@
             snapshot.forEach(child => {
                 const val = child.val();
                 if (val.type === 'like' || val.nickname === 'LIKE') likes++;
+                if (val.type === 'cancel_like' || val.nickname === 'CANCEL_LIKE') likes--;
                 if (val.type === 'dislike' || val.nickname === 'DISLIKE') dislikes++;
+                if (val.type === 'cancel_dislike' || val.nickname === 'CANCEL_DISLIKE') dislikes--;
             });
             
-            if(likeCountElem) likeCountElem.innerText = likes;
-            if(dislikeCountElem) dislikeCountElem.innerText = dislikes;
+            if (likes < 0) likes = 0;
+            if (dislikes < 0) dislikes = 0;
+            
+            if (likeCountElem) likeCountElem.innerText = likes;
+            if (dislikeCountElem) dislikeCountElem.innerText = dislikes;
         });
+        
+        updateVoteUI(eventId);
     }
 
-    // 💡 [변경됨] 좋아요/싫어요 버튼 클릭 시 실행되는 함수
-    function submitVote(eventId, voteType) {
-        // 도배 방지용 (브라우저 세션에 기록)
-        if (sessionStorage.getItem(`voted_${eventId}`)) {
-            return alert('이미 투표에 참여하셨습니다. 감사합니다! 😊');
-        }
-        sessionStorage.setItem(`voted_${eventId}`, 'true');
-
-        // 1. 파이어베이스에 직접 기록 (화면 숫자 즉시 0.1초만에 올라감!)
+    // 💡 투표 기록을 파이어베이스와 구글 시트로 전송하는 헬퍼 함수
+    function pushVoteRecord(eventId, typeName) {
         if (db) {
-            const reviewRef = db.ref(`event_reviews/${eventId}`).push();
-            reviewRef.set({
-                type: voteType, // 'like' 또는 'dislike'
-                nickname: voteType.toUpperCase(), // 구글 시트에 들어갈 이름
+            db.ref(`event_reviews/${eventId}`).push().set({
+                type: typeName,
+                nickname: typeName.toUpperCase(),
                 content: '투표',
                 timestamp: firebase.database.ServerValue.TIMESTAMP
-            }).catch(e => console.error("투표 오류:", e));
+            }).catch(e => console.error(e));
         }
 
-        // 2. 기존 구글 앱스크립트로 전송하여 구글 시트에 백업!
         // ⚠️ 꼭 본인의 앱스크립트 주소로 교체하세요!
         const scriptUrl = "https://script.google.com/macros/s/AKfycbw-a4MQEcaCa1KMSU0IoN_8yZGZk5WfUadbP9SL9DlW0ZJInExl8SVaTbd-wgQBffV7Ow/exec"; 
         const formData = new URLSearchParams();
         formData.append('eventId', eventId);
-        formData.append('nickname', voteType.toUpperCase());
+        formData.append('nickname', typeName.toUpperCase());
         formData.append('content', '투표');
 
-        fetch(scriptUrl, { method: 'POST', body: formData }).catch(e => console.log(e));
+        fetch(scriptUrl, { method: 'POST', body: formData }).catch(e => {});
+    }
+
+    // 💡 [변경됨] 토글 기능(투표 취소 및 변경)이 포함된 버튼 액션
+    function submitVote(eventId, voteType) {
+        const currentVote = localStorage.getItem(`vote_${eventId}`);
+        
+        if (currentVote === voteType) {
+            // 1. 눌렀던 버튼을 다시 누른 경우 -> [취소(Undo)]
+            pushVoteRecord(eventId, `cancel_${voteType}`);
+            localStorage.removeItem(`vote_${eventId}`);
+        } else {
+            // 2. 다른 버튼을 누르거나 처음 투표하는 경우
+            if (currentVote) {
+                // 기존 투표 취소 기록 먼저 발송
+                pushVoteRecord(eventId, `cancel_${currentVote}`);
+            }
+            // 새로운 투표 기록 발송
+            pushVoteRecord(eventId, voteType);
+            localStorage.setItem(`vote_${eventId}`, voteType);
+        }
+        
+        updateVoteUI(eventId);
     }
 
     async function openEventPopup(eventId) {
@@ -1006,16 +1040,16 @@
         const popupDate = nl2br(item.date || '해당정보 없음');
         const tipText = nl2br((item['꿀팁'] || '').trim());
 
-        // 💡 [변경됨] 팝업창 내 좋아요/싫어요 투표 버튼 영역 (기존 후기란 삭제)
+        // 💡 [변경됨] 한 줄 가로 배치로 바뀐 투표 버튼 영역 (ID 부여)
         const voteSectionHtml = `
             <div class="vote-section">
                 <div class="vote-title">이 행사가 마음에 드시나요?</div>
                 <div class="vote-buttons">
-                    <button class="btn-vote btn-like" onclick="submitVote('${eventId}', 'like')">
-                        👍 좋아요 <span id="likeCount">0</span>
+                    <button class="btn-vote" id="btnLike_${eventId}" onclick="submitVote('${eventId}', 'like')">
+                        👍 <span id="likeCount">0</span>
                     </button>
-                    <button class="btn-vote btn-dislike" onclick="submitVote('${eventId}', 'dislike')">
-                        👎 별로예요 <span id="dislikeCount">0</span>
+                    <button class="btn-vote" id="btnDislike_${eventId}" onclick="submitVote('${eventId}', 'dislike')">
+                        👎 <span id="dislikeCount">0</span>
                     </button>
                 </div>
             </div>
@@ -1095,7 +1129,6 @@
 
         document.getElementById('eventModal').classList.add('active');
 
-        // 💡 [변경됨] 팝업 열릴 때 좋아요/싫어요 숫자를 읽어옵니다.
         loadVotes(eventId);
 
         try { history.pushState({ eventPopup: true }, '', '?id=' + encodeURIComponent(eventId)); } catch (e) {}
@@ -1114,10 +1147,10 @@
         initVisitCounters();
         fetchEventData(); 
         
-        // [수정됨] 하단 배너 이미지가 꽉 차면서 찌그러지지 않게 object-fit: cover 및 display: block 처리 적용
+        // [수정됨] PC에서 찌그러지지 않도록 (object-fit: cover, object-position: center 적용)
         const fallbackBanner = document.getElementById('fallback-banner');
         if (fallbackBanner) {
-            fallbackBanner.innerHTML = '<img src="https://firebasestorage.googleapis.com/v0/b/heycj-55b6a.firebasestorage.app/o/%EC%A0%95%EC%84%9C%EB%AE%A4%EC%A7%81%EC%95%84%ED%8A%B8%ED%81%B4%EB%9E%98%EC%8A%A4%20%EA%B4%91%EA%B3%A0%EB%B0%B0%EB%84%88.png?alt=media&token=2c1a1aed-5bc3-4f57-a6c5-dffb209d5598" alt="하단 배너" style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 4px; display: block;" />';
+            fallbackBanner.innerHTML = '<img src="https://firebasestorage.googleapis.com/v0/b/heycj-55b6a.firebasestorage.app/o/%EB%B0%B0%EB%84%883.png?alt=media&token=b2287e89-4281-4998-9182-2a741773487e" alt="하단 배너" style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 4px; display: block;" />';
         }
     });
 </script>
