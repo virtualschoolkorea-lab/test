@@ -219,13 +219,13 @@
         .btn-benefit { display: flex; align-items: center; justify-content: center; background-color: #E53935; color: white; border: none; padding: 10px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; width: 100%; cursor: pointer; transition: all 0.2s; box-sizing: border-box; font-family: inherit; }
         .btn-benefit:hover { background-color: #C62828; }
 
-        /* [변경됨] 문구 삭제 후 여백을 최소화한 슬림형 투표 영역 디자인 (가로 중앙 정렬) */
-        .vote-section { margin-top: 8px; border-top: 1px dashed #ddd; padding-top: 8px; display: flex; justify-content: center; }
+        /* [변경됨] 문구 삭제 후 여백을 최소화한 슬림형 투표 영역 (가운데 정렬) */
+        .vote-section { margin-top: 12px; border-top: 1px dashed #eee; padding-top: 12px; display: flex; justify-content: center; }
         .vote-buttons { display: flex; justify-content: center; gap: 12px; width: 100%; }
         
-        /* 버튼 세로폭 60% 축소 (padding 및 폰트 크기 조절) */
-        .btn-vote { padding: 3px 16px; border: 1px solid #ddd; border-radius: 20px; font-size: 1rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 4px; font-family: inherit; min-width: 60px; height: 32px; }
-        .btn-vote span { font-weight: 700; font-size: 0.9rem; }
+        /* 버튼 세로폭 대폭 축소 (위아래 여백 줄임) */
+        .btn-vote { padding: 4px 16px; border: 1px solid #ddd; border-radius: 20px; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; min-width: 70px; height: 34px; }
+        .btn-vote span { font-weight: 700; font-size: 0.95rem; }
         
         /* 기본 색상 (파랑/빨강 테마) */
         .btn-like { background-color: #E3F2FD; border-color: #BBDEFB; color: #1976D2; }
@@ -918,7 +918,13 @@
         if (scrollTop + clientHeight >= scrollHeight - 300) { renderMoreItems(); }
     });
 
-    // 💡 버튼 활성화/비활성화 시각 효과 업데이트
+    // 💡 투표 상태 및 깜빡임 방지용 글로벌 변수
+    let isVoting = false;
+    let voteTimeout = null;
+    let latestVoteSnapshot = null;
+    let currentVoteListenerRef = null;
+
+    // 💡 화면의 투표 관련 UI(버튼 색상 등)를 업데이트합니다.
     function updateVoteUI(eventId) {
         const btnLike = document.getElementById(`btnLike_${eventId}`);
         const btnDislike = document.getElementById(`btnDislike_${eventId}`);
@@ -931,37 +937,44 @@
         if (myVote === 'dislike' && btnDislike) btnDislike.classList.add('active-dislike');
     }
 
-    let currentVoteListenerRef = null;
-
-    // 💡 파이어베이스에서 좋아요/싫어요 숫자를 불러옵니다. (리스너 중복 실행 방지 기능 추가)
-    function loadVotes(eventId) {
+    // 💡 파이어베이스 데이터 스냅샷을 화면에 렌더링하는 함수
+    function renderVotesUI(snapshot) {
+        if (!snapshot) return;
+        let likes = 0;
+        let dislikes = 0;
+        
+        snapshot.forEach(child => {
+            const val = child.val();
+            if (val.type === 'like' || val.nickname === 'LIKE') likes++;
+            if (val.type === 'cancel_like' || val.nickname === 'CANCEL_LIKE') likes--;
+            if (val.type === 'dislike' || val.nickname === 'DISLIKE') dislikes++;
+            if (val.type === 'cancel_dislike' || val.nickname === 'CANCEL_DISLIKE') dislikes--;
+        });
+        
+        if (likes < 0) likes = 0;
+        if (dislikes < 0) dislikes = 0;
+        
         const likeCountElem = document.getElementById('likeCount');
         const dislikeCountElem = document.getElementById('dislikeCount');
-        if (!db) return;
+        
+        if (likeCountElem) likeCountElem.innerText = likes;
+        if (dislikeCountElem) dislikeCountElem.innerText = dislikes;
+    }
 
-        // 다른 팝업을 열 때 기존 감지기가 켜져있다면 끕니다 (중복 카운트 방지)
+    // 💡 파이어베이스 실시간 수신 대기 (리스너 중복 방지 + 깜빡임 방지 결합)
+    function loadVotes(eventId) {
+        if (!db) return;
+        
         if (currentVoteListenerRef) {
             currentVoteListenerRef.off('value');
         }
 
         currentVoteListenerRef = db.ref(`event_reviews/${eventId}`);
         currentVoteListenerRef.on('value', (snapshot) => {
-            let likes = 0;
-            let dislikes = 0;
-            
-            snapshot.forEach(child => {
-                const val = child.val();
-                if (val.type === 'like' || val.nickname === 'LIKE') likes++;
-                if (val.type === 'cancel_like' || val.nickname === 'CANCEL_LIKE') likes--;
-                if (val.type === 'dislike' || val.nickname === 'DISLIKE') dislikes++;
-                if (val.type === 'cancel_dislike' || val.nickname === 'CANCEL_DISLIKE') dislikes--;
-            });
-            
-            if (likes < 0) likes = 0;
-            if (dislikes < 0) dislikes = 0;
-            
-            if (likeCountElem) likeCountElem.innerText = likes;
-            if (dislikeCountElem) dislikeCountElem.innerText = dislikes;
+            latestVoteSnapshot = snapshot;
+            // 사용자가 버튼을 방금 누른 경우, 1->0->1 깜빡임을 막기 위해 서버 데이터의 화면 갱신을 0.8초간 무시합니다.
+            if (isVoting) return; 
+            renderVotesUI(snapshot);
         });
         
         updateVoteUI(eventId);
@@ -978,7 +991,6 @@
             }).catch(e => console.error(e));
         }
 
-        // ⚠️ 꼭 본인의 앱스크립트 주소로 교체하세요!
         const scriptUrl = "https://script.google.com/macros/s/AKfycbw-a4MQEcaCa1KMSU0IoN_8yZGZk5WfUadbP9SL9DlW0ZJInExl8SVaTbd-wgQBffV7Ow/exec"; 
         const formData = new URLSearchParams();
         formData.append('eventId', eventId);
@@ -988,43 +1000,46 @@
         fetch(scriptUrl, { method: 'POST', body: formData }).catch(e => {});
     }
 
-    // 💡 [변경됨] Optimistic UI: 깜빡임 딜레이를 완벽히 없앤 투표 로직
+    // 💡 [변경됨] 깜빡임(1->0->1) 지연 현상을 완벽하게 없앤 새로운 투표 제출 함수
     function submitVote(eventId, voteType) {
         const currentVote = localStorage.getItem(`vote_${eventId}`);
         
-        // 깜빡임 방지용 강제 즉각 업데이트 변수 세팅
         const likeElem = document.getElementById('likeCount');
         const dislikeElem = document.getElementById('dislikeCount');
         let currentLikes = parseInt(likeElem.innerText) || 0;
         let currentDislikes = parseInt(dislikeElem.innerText) || 0;
         
         if (currentVote === voteType) {
-            // 1. 눌렀던 걸 다시 누름 -> [취소]
+            // 1. [취소]
             pushVoteRecord(eventId, `cancel_${voteType}`);
             localStorage.removeItem(`vote_${eventId}`);
-            
             if (voteType === 'like') currentLikes = Math.max(0, currentLikes - 1);
             if (voteType === 'dislike') currentDislikes = Math.max(0, currentDislikes - 1);
         } else {
-            // 2. 다른 걸 누르거나 처음 투표 -> [변경/등록]
+            // 2. [변경 또는 신규 투표]
             if (currentVote) {
-                // 기존 것부터 취소
                 pushVoteRecord(eventId, `cancel_${currentVote}`);
                 if (currentVote === 'like') currentLikes = Math.max(0, currentLikes - 1);
                 if (currentVote === 'dislike') currentDislikes = Math.max(0, currentDislikes - 1);
             }
             pushVoteRecord(eventId, voteType);
             localStorage.setItem(`vote_${eventId}`, voteType);
-            
             if (voteType === 'like') currentLikes++;
             if (voteType === 'dislike') currentDislikes++;
         }
         
-        // 통신을 기다리지 않고 화면 숫자부터 즉시 갈아끼워서 1->0->1 깜빡임 원천 차단!
+        // 서버 응답을 기다리지 않고 화면의 숫자를 즉각! 바꿉니다 (Optimistic UI)
         if (likeElem) likeElem.innerText = currentLikes;
         if (dislikeElem) dislikeElem.innerText = currentDislikes;
-        
         updateVoteUI(eventId);
+
+        // 여기서 서버의 딜레이 업데이트(0으로 변하는 현상)를 0.8초 동안 강제로 차단합니다.
+        isVoting = true;
+        clearTimeout(voteTimeout);
+        voteTimeout = setTimeout(() => {
+            isVoting = false;
+            renderVotesUI(latestVoteSnapshot); // 0.8초 뒤 조용히 서버의 최종 데이터와 맞춰줍니다.
+        }, 800);
     }
 
     async function openEventPopup(eventId) {
@@ -1069,7 +1084,7 @@
         const popupDate = nl2br(item.date || '해당정보 없음');
         const tipText = nl2br((item['꿀팁'] || '').trim());
 
-        // 💡 [변경됨] 안내 문구를 지우고 기호만 남긴 슬림 투표 영역
+        // 💡 [변경됨] 문구가 사라지고 버튼만 가운데 정렬로 남은 슬림 투표 영역
         const voteSectionHtml = `
             <div class="vote-section">
                 <div class="vote-buttons">
@@ -1175,6 +1190,7 @@
         initVisitCounters();
         fetchEventData(); 
         
+        // PC에서 찌그러짐을 방지하기 위해 object-fit을 contain으로 설정하고 배경을 하얀색으로 채웠습니다!
         const fallbackBanner = document.getElementById('fallback-banner');
         if (fallbackBanner) {
             fallbackBanner.innerHTML = '<img src="https://firebasestorage.googleapis.com/v0/b/heycj-55b6a.firebasestorage.app/o/%EB%B0%B0%EB%84%883.png?alt=media&token=b2287e89-4281-4998-9182-2a741773487e" alt="하단 배너" style="width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 4px; display: block; background-color: #fff;" />';
