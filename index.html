@@ -62,7 +62,6 @@
         .notice-container { background: rgba(0, 0, 0, 0.15); border-radius: 6px; padding: 4px 8px; text-align: center; font-size: 0.7rem; font-weight: 500; height: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 5px; }
         .notice-container a { color: #fff; text-decoration: none; transition: opacity 0.3s ease-in-out; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
 
-        /* 하단 배너 광고영역 */
         .promo-area-wrap {
             position: fixed;
             bottom: 0;
@@ -220,18 +219,23 @@
         .btn-benefit { display: flex; align-items: center; justify-content: center; background-color: #E53935; color: white; border: none; padding: 10px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; width: 100%; cursor: pointer; transition: all 0.2s; box-sizing: border-box; font-family: inherit; }
         .btn-benefit:hover { background-color: #C62828; }
 
-        /* [변경됨] 한 줄 가로 배치로 세로 공간 최소화한 투표 영역 디자인 */
-        .vote-section { margin-top: 15px; border-top: 1px dashed #ddd; padding-top: 12px; display: flex; align-items: center; justify-content: space-between; }
-        .vote-title { font-size: 0.9rem; font-weight: 700; color: #444; margin: 0; }
-        .vote-buttons { display: flex; gap: 8px; }
+        /* [변경됨] 가운데 정렬 및 가시성을 확 높인 투표 영역 디자인 */
+        .vote-section { margin-top: 15px; border-top: 1px dashed #ddd; padding-top: 18px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .vote-title { font-size: 0.95rem; font-weight: 700; color: #444; margin: 0; }
+        .vote-buttons { display: flex; justify-content: center; gap: 15px; width: 100%; }
         
-        .btn-vote { padding: 4px 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px; background: #fff; color: #666; font-family: inherit; }
-        .btn-vote:hover { background: #f5f5f5; }
-        .btn-vote span { font-weight: 700; font-size: 0.85rem; }
+        .btn-vote { padding: 6px 20px; border: 1px solid #ddd; border-radius: 20px; font-size: 1.2rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; min-width: 80px; }
+        .btn-vote span { font-weight: 700; font-size: 0.95rem; }
         
-        /* 버튼 활성화(클릭됨) 상태 */
-        .btn-vote.active-like { background-color: #E3F2FD; border-color: #2196F3; color: #1976D2; }
-        .btn-vote.active-dislike { background-color: #FFEBEE; border-color: #F44336; color: #D32F2F; }
+        /* 기본 색상 (파랑/빨강 테마) */
+        .btn-like { background-color: #E3F2FD; border-color: #BBDEFB; color: #1976D2; }
+        .btn-like:hover { background-color: #BBDEFB; }
+        .btn-dislike { background-color: #FFEBEE; border-color: #FFCDD2; color: #D32F2F; }
+        .btn-dislike:hover { background-color: #FFCDD2; }
+        
+        /* 클릭된(활성화) 상태의 강렬한 색상 */
+        .btn-vote.active-like { background-color: #2196F3; border-color: #1E88E5; color: #fff; }
+        .btn-vote.active-dislike { background-color: #F44336; border-color: #E53935; color: #fff; }
     </style>
 </head>
 <body>
@@ -914,7 +918,7 @@
         if (scrollTop + clientHeight >= scrollHeight - 300) { renderMoreItems(); }
     });
 
-    // 💡 [변경됨] 버튼 활성화/비활성화 시각 효과 업데이트
+    // 💡 버튼 활성화/비활성화 시각 효과 업데이트
     function updateVoteUI(eventId) {
         const btnLike = document.getElementById(`btnLike_${eventId}`);
         const btnDislike = document.getElementById(`btnDislike_${eventId}`);
@@ -927,7 +931,7 @@
         if (myVote === 'dislike' && btnDislike) btnDislike.classList.add('active-dislike');
     }
 
-    // 💡 [변경됨] 파이어베이스에서 좋아요/싫어요 숫자를 불러오면서 취소(cancel) 기록도 반영합니다.
+    // 💡 파이어베이스에서 좋아요/싫어요 숫자를 불러오면서 취소 기록도 반영합니다.
     function loadVotes(eventId) {
         const likeCountElem = document.getElementById('likeCount');
         const dislikeCountElem = document.getElementById('dislikeCount');
@@ -976,12 +980,12 @@
         fetch(scriptUrl, { method: 'POST', body: formData }).catch(e => {});
     }
 
-    // 💡 [변경됨] 토글 기능(투표 취소 및 변경)이 포함된 버튼 액션
+    // 💡 토글 기능(투표 취소 및 변경)이 포함된 버튼 액션
     function submitVote(eventId, voteType) {
         const currentVote = localStorage.getItem(`vote_${eventId}`);
         
         if (currentVote === voteType) {
-            // 1. 눌렀던 버튼을 다시 누른 경우 -> [취소(Undo)]
+            // 1. 눌렀던 버튼을 다시 누른 경우 -> [취소]
             pushVoteRecord(eventId, `cancel_${voteType}`);
             localStorage.removeItem(`vote_${eventId}`);
         } else {
@@ -1040,15 +1044,15 @@
         const popupDate = nl2br(item.date || '해당정보 없음');
         const tipText = nl2br((item['꿀팁'] || '').trim());
 
-        // 💡 [변경됨] 한 줄 가로 배치로 바뀐 투표 버튼 영역 (ID 부여)
+        // 💡 [변경됨] 글자 없이 기호만 남기고 가시성을 확 높인 투표 버튼 영역
         const voteSectionHtml = `
             <div class="vote-section">
                 <div class="vote-title">이 행사가 마음에 드시나요?</div>
                 <div class="vote-buttons">
-                    <button class="btn-vote" id="btnLike_${eventId}" onclick="submitVote('${eventId}', 'like')">
+                    <button class="btn-vote btn-like" id="btnLike_${eventId}" onclick="submitVote('${eventId}', 'like')">
                         👍 <span id="likeCount">0</span>
                     </button>
-                    <button class="btn-vote" id="btnDislike_${eventId}" onclick="submitVote('${eventId}', 'dislike')">
+                    <button class="btn-vote btn-dislike" id="btnDislike_${eventId}" onclick="submitVote('${eventId}', 'dislike')">
                         👎 <span id="dislikeCount">0</span>
                     </button>
                 </div>
@@ -1147,10 +1151,10 @@
         initVisitCounters();
         fetchEventData(); 
         
-        // [수정됨] PC에서 찌그러지지 않도록 (object-fit: cover, object-position: center 적용)
+        // [수정됨] 찌그러짐을 방지하기 위해 object-fit을 contain으로 설정하고 배경을 하얀색으로 채웠습니다!
         const fallbackBanner = document.getElementById('fallback-banner');
         if (fallbackBanner) {
-            fallbackBanner.innerHTML = '<img src="https://firebasestorage.googleapis.com/v0/b/heycj-55b6a.firebasestorage.app/o/%EB%B0%B0%EB%84%883.png?alt=media&token=b2287e89-4281-4998-9182-2a741773487e" alt="하단 배너" style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 4px; display: block;" />';
+            fallbackBanner.innerHTML = '<img src="https://firebasestorage.googleapis.com/v0/b/heycj-55b6a.firebasestorage.app/o/%EB%B0%B0%EB%84%883.png?alt=media&token=b2287e89-4281-4998-9182-2a741773487e" alt="하단 배너" style="width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 4px; display: block; background-color: #fff;" />';
         }
     });
 </script>
