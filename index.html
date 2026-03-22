@@ -62,6 +62,7 @@
         .notice-container { background: rgba(0, 0, 0, 0.15); border-radius: 6px; padding: 4px 8px; text-align: center; font-size: 0.7rem; font-weight: 500; height: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 5px; }
         .notice-container a { color: #fff; text-decoration: none; transition: opacity 0.3s ease-in-out; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
 
+        /* 하단 배너 광고영역 */
         .promo-area-wrap {
             position: fixed;
             bottom: 0;
@@ -69,7 +70,7 @@
             transform: translateX(-50%);
             width: 100%;
             max-width: 500px;
-            height: 54px; 
+            height: 54px;
             background-color: #fff;
             padding: 5px 10px; 
             box-sizing: border-box;
@@ -150,7 +151,12 @@
         .badge-today { background-color: #E53935; }
         .badge-open { background-color: #2ecc71; }
         .badge-close { background-color: #F06292; }
-        .badge-hot { background-color: #ffebee; color: #d32f2f; border-radius: 20px; padding: 3px 4px 3px 8px; }
+        .badge-hot { 
+            background-color: #ffebee; 
+            color: #d32f2f; 
+            border-radius: 20px; 
+            padding: 3px 4px 3px 8px;
+        }
 
         .view-count { display: flex; align-items: center; gap: 3px; font-size: 0.7rem; color: #aaa; font-weight: 500; flex-shrink: 0; margin-left: 8px; margin-top: 2px; }
         .view-count svg { width: 14px; height: 14px; fill: currentColor; }
@@ -169,12 +175,19 @@
         .img-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; padding-bottom: 65px; box-sizing: border-box; }
         .img-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
         
-        .img-modal-wrapper { position: relative; max-width: min(90%, 600px); max-height: calc(100% - 100px); display: inline-block; }
+        .img-modal-wrapper { 
+            position: relative; 
+            max-width: min(90%, 600px); 
+            max-height: calc(100% - 100px); 
+            display: inline-block; 
+        }
         .img-modal-scroll-area { max-height: calc(100vh - 100px); overflow-y: auto; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); background: #fff; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
         
         .img-modal-scroll-area::-webkit-scrollbar { width: 6px; }
         .img-modal-scroll-area::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
+        
         .img-modal-content { display: block; width: 100%; height: auto; }
+        
         .img-modal-close { position: absolute; top: -14px; right: -14px; background: #fff; color: #111; border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 1.6rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); z-index: 100; line-height: 1; padding: 0 0 2px 0; }
 
         .event-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding-bottom: 0; box-sizing: border-box; }
@@ -219,23 +232,68 @@
         .btn-benefit { display: flex; align-items: center; justify-content: center; background-color: #E53935; color: white; border: none; padding: 10px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; width: 100%; cursor: pointer; transition: all 0.2s; box-sizing: border-box; font-family: inherit; }
         .btn-benefit:hover { background-color: #C62828; }
 
-        /* [변경됨] 문구 삭제 후 여백을 최소화한 슬림형 투표 영역 (가운데 정렬) */
-        .vote-section { margin-top: 12px; border-top: 1px dashed #eee; padding-top: 12px; display: flex; justify-content: center; }
-        .vote-buttons { display: flex; justify-content: center; gap: 12px; width: 100%; }
+        /* 리뷰 섹션 CSS */
+        .review-section { margin-top: 15px; padding-top: 10px; }
         
-        /* 버튼 세로폭 대폭 축소 (위아래 여백 줄임) */
-        .btn-vote { padding: 4px 16px; border: 1px solid #ddd; border-radius: 20px; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; min-width: 70px; height: 34px; }
-        .btn-vote span { font-weight: 700; font-size: 0.95rem; }
+        /* 댓글창 드롭다운 토글 버튼 */
+        .review-toggle-btn {
+            width: 100%;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #555;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        .review-toggle-btn:hover { background: #f1f1f1; }
+        .review-toggle-btn .count { color: var(--primary-color); }
+        .toggle-arrow { font-size: 0.8rem; transition: transform 0.3s; color: #888; }
+        .review-toggle-btn.open .toggle-arrow { transform: rotate(180deg); } 
+
+        /* 숨겨질 댓글 본문 영역 */
+        .review-collapsible {
+            display: none; 
+            padding-top: 12px;
+        }
+        .review-collapsible.open {
+            display: block; 
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(-5px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        .review-form { margin-bottom: 10px; }
+        .review-input-group { display: flex; gap: 4px; }
+        .review-nickname { width: 60px; padding: 6px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.8rem; outline: none; }
+        .review-content { flex: 1; padding: 6px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.8rem; outline: none; min-width: 0; }
+        .review-nickname:focus, .review-content:focus { border-color: var(--primary-color); }
         
-        /* 기본 색상 (파랑/빨강 테마) */
-        .btn-like { background-color: #E3F2FD; border-color: #BBDEFB; color: #1976D2; }
-        .btn-like:hover { background-color: #BBDEFB; }
-        .btn-dislike { background-color: #FFEBEE; border-color: #FFCDD2; color: #D32F2F; }
-        .btn-dislike:hover { background-color: #FFCDD2; }
+        /* 플레이스홀더 색상 연하게 변경 */
+        .review-nickname::placeholder, .review-content::placeholder {
+            color: #cccccc;
+            opacity: 1;
+        }
+
+        .btn-submit-review { background: var(--primary-color); color: #fff; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: 0.2s; }
+        .btn-submit-review:hover { background: #388E3C; }
+
+        .review-list { display: flex; flex-direction: column; gap: 6px; max-height: 140px; overflow-y: auto; padding-right: 2px; overscroll-behavior: contain; }
+        .review-list::-webkit-scrollbar { width: 4px; }
+        .review-list::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
         
-        /* 클릭된(활성화) 상태의 강렬한 색상 */
-        .btn-vote.active-like { background-color: #2196F3; border-color: #1E88E5; color: #fff; }
-        .btn-vote.active-dislike { background-color: #F44336; border-color: #E53935; color: #fff; }
+        .review-card { display: flex; align-items: baseline; gap: 6px; background: none; padding: 0; }
+        .review-card-author { font-weight: 700; color: #444; font-size: 0.75rem; white-space: nowrap; flex-shrink: 0; }
+        .review-card-text { font-size: 0.8rem; color: #333; line-height: 1.3; word-break: break-all; flex-grow: 1; margin: 0; padding: 0 4px; }
+        .review-card-date { font-size: 0.65rem; color: #aaa; white-space: nowrap; flex-shrink: 0; }
+        .empty-review { text-align: center; color: #999; font-size: 0.8rem; padding: 10px 0; background: #fafafa; border-radius: 6px; }
     </style>
 </head>
 <body>
@@ -253,6 +311,10 @@
                 </div>
 
                 <div class="header-buttons-row">
+                    <button class="btn-share" onclick="window.open('https://forms.gle/E2vPFK6P7p3R95vH8', '_blank')">
+                        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                        문의
+                    </button>
                     <button class="btn-share" onclick="sharePage()">
                         <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
                         공유
@@ -288,9 +350,9 @@
     <div style="position: relative; width: 100%; height: 100%;">
         
         <a href="https://blog.naver.com/hyejuousflower" target="_blank" id="fallback-banner" 
-           onclick="gtag('event', '배너_클릭', { 'event_category': '하단광고', 'event_label': '하단배너' });" 
-           style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; display: block; text-decoration: none;">
-        </a>
+   onclick="gtag('event', '배너_클릭', { 'event_category': '하단광고', 'event_label': '하단배너' });" 
+   style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; display: flex; justify-content: center; align-items: center; text-decoration: none;">
+</a>
 
         <div id="adsense-banner" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;">
             <ins class="adsbygoogle"
@@ -345,7 +407,11 @@
         }
         db = firebase.database();
     } catch (error) {
-        console.warn("방화벽/광고차단기로 인해 파이어베이스 로딩이 제한되었습니다.", error);
+        console.warn("방화벽/광고차단기로 인해 파이어베이스 로딩이 제한되었습니다. 조회수 없이 행사를 정상 로딩합니다.", error);
+    }
+
+    function escapeHtml(text) {
+        return (text || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
     function nl2br(str) {
@@ -424,9 +490,33 @@
                 sessionStorage.setItem('visited_today_' + todayStr, 'true');
             }
 
-            totalRef.on('value', snap => { document.getElementById('count-total').innerText = snap.val() || 0; });
-            todayRef.on('value', snap => { document.getElementById('count-today').innerText = snap.val() || 0; });
-        } catch (error) {}
+            totalRef.on('value', snap => {
+                document.getElementById('count-total').innerText = snap.val() || 0;
+            });
+            
+            todayRef.on('value', snap => {
+                document.getElementById('count-today').innerText = snap.val() || 0;
+            });
+
+        } catch (error) {
+            console.warn("방문자 수 로딩 실패", error);
+            document.getElementById('count-total').innerText = '-';
+            document.getElementById('count-today').innerText = '-';
+        }
+    }
+
+    function getCounterNumber(payload) {
+        if (payload == null) return 0;
+        if (typeof payload === 'number') return payload;
+        if (typeof payload.value === 'number') return payload.value;
+        if (typeof payload.count === 'number') return payload.count;
+        if (payload.data) {
+            if (typeof payload.data.value === 'number') return payload.data.value;
+            if (typeof payload.data.count === 'number') return payload.data.count;
+        }
+        if (typeof payload.value === 'string' && !isNaN(Number(payload.value))) return Number(payload.value);
+        if (typeof payload.count === 'string' && !isNaN(Number(payload.count))) return Number(payload.count);
+        return 0;
     }
 
     function trackEventAndOpen(e, url, title, btnType) {
@@ -461,7 +551,11 @@
         const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
         const shareUrl = window.location.origin + window.location.pathname + '?id=' + encodeURIComponent(eventId);
         const shareTitle = item ? item.title.replace(/(?:\r\n|\r|\n|\\n)/g, ' ') : '헤이청주 일정 공유'; 
-        const shareData = { title: shareTitle, text: '이 행사 어때요? 일정을 확인해보세요!', url: shareUrl };
+        const shareData = {
+            title: shareTitle,
+            text: '이 행사 어때요? 일정을 확인해보세요!',
+            url: shareUrl
+        };
         if (navigator.share) {
             navigator.share(shareData).catch(console.error);
         } else {
@@ -485,7 +579,9 @@
         if (imgBtn) {
             const url = imgBtn.getAttribute('data-url');
             const title = imgBtn.getAttribute('data-title');
+            
             if (imgModalScroll) imgModalScroll.scrollTop = 0;
+            
             modalImg.src = url;
             imgModal.classList.add('active');
             trackEventClick(title, 'detail');
@@ -500,6 +596,7 @@
 
     let eventData = [];
     let currentTab = 'affiliate'; 
+    
     let currentFilteredData = [];
     let itemsRendered = 0;
     const ITEMS_PER_PAGE = 20;
@@ -507,6 +604,7 @@
     async function fetchEventData() {
         try {
             if (!db) throw new Error("파이어베이스 연결이 준비되지 않았습니다.");
+            
             const snapshot = await db.ref('events_data').once('value');
             const data = snapshot.val();
 
@@ -516,6 +614,7 @@
             }
 
             eventData = Array.isArray(data) ? data : Object.values(data);
+
             processEventDates();
             processEventAges();
             generateFilters();
@@ -523,10 +622,14 @@
             updateTabNewBadges();
 
             let viewsData = {};
-            try {
-                const viewSnapshot = await db.ref('event_views_total').once('value');
-                viewsData = viewSnapshot.val() || {};
-            } catch (viewError) {}
+            if (db) {
+                try {
+                    const viewSnapshot = await db.ref('event_views_total').once('value');
+                    viewsData = viewSnapshot.val() || {};
+                } catch (viewError) {
+                    console.warn("조회수를 불러오는 데 실패했습니다.", viewError);
+                }
+            }
             
             eventData.forEach(item => {
                 const eventId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
@@ -595,6 +698,7 @@
                 if (text) text += ` <span style="font-weight:700; font-size:0.8rem;">[${item.applyNote}]</span>`;
                 else text = `<span style="font-weight:700;">${item.applyNote}</span>`;
             }
+
             item.displayText = text || '상시 접수';
         });
     }
@@ -683,6 +787,7 @@
                 filterGroup.appendChild(label);
             }
         });
+
         setTimeout(() => handleFilterScroll(filterGroup), 100);
     }
 
@@ -701,8 +806,10 @@
         if (!dateStr) return false;
         const val = parseDateValue(dateStr);
         if (val === 9999) return false;
+        
         const today = new Date();
         const todayVal = (today.getMonth() + 1) * 100 + today.getDate();
+        
         return val < todayVal;
     }
 
@@ -717,10 +824,15 @@
             let hour = match[4] ? parseInt(match[4], 10) : 0;
             let minute = match[5] ? parseInt(match[5], 10) : 0;
 
-            if (s.includes('오후') || s.toUpperCase().includes('PM')) { if (hour < 12) hour += 12; }
-            if ((s.includes('오전') || s.toUpperCase().includes('AM')) && hour === 12) { hour = 0; }
+            if (s.includes('오후') || s.toUpperCase().includes('PM')) {
+                if (hour < 12) hour += 12;
+            }
+            if ((s.includes('오전') || s.toUpperCase().includes('AM')) && hour === 12) {
+                hour = 0;
+            }
             return new Date(year, month, day, hour, minute).getTime();
         }
+
         let parsed = new Date(s).getTime();
         return isNaN(parsed) ? 0 : parsed;
     }
@@ -732,6 +844,7 @@
         eventData.forEach((item, index) => {
             item.originalIndex = index;
             item.isNew = false;
+
             const regDateMs = parseRegDate(item['등록일']);
             if (regDateMs > 0) {
                 const timeDiff = now - regDateMs;
@@ -784,6 +897,7 @@
                     (item.place && item.place.toLowerCase().includes(keyword)) ||
                     (item.loc && item.loc.toLowerCase().includes(keyword));
             }
+
             return matchTab && matchLoc && matchAge && matchSearch;
         });
 
@@ -811,6 +925,7 @@
             filteredData.sort((a, b) => {
                 if (a.isHot && !b.isHot) return -1;
                 if (!a.isHot && b.isHot) return 1;
+                
                 if (a.isNew && !b.isNew) return -1;
                 if (!a.isNew && b.isNew) return 1;
 
@@ -823,6 +938,7 @@
             filteredData.sort((a, b) => {
                 if (a.isHot && !b.isHot) return -1;
                 if (!a.isHot && b.isHot) return 1;
+                
                 if (a.isNew && !b.isNew) return -1;
                 if (!a.isNew && b.isNew) return 1;
                 return a.originalIndex - b.originalIndex;
@@ -852,8 +968,11 @@
             let safeCost = item.costType || '';
             let costBadgeHTML = '';
             
-            if (safeCost.includes('무료')) { costBadgeHTML = `<span class="badge badge-free">무료</span>`; } 
-            else if (safeCost.includes('유료')) { costBadgeHTML = `<span class="badge badge-paid">유료</span>`; }
+            if (safeCost.includes('무료')) {
+                costBadgeHTML = `<span class="badge badge-free">무료</span>`;
+            } else if (safeCost.includes('유료')) {
+                costBadgeHTML = `<span class="badge badge-paid">유료</span>`;
+            }
 
             let dateBadges = '';
             if (item.isTodayOpen) dateBadges += `<span class="badge badge-open">오늘오픈</span> `;
@@ -865,7 +984,9 @@
             let overlayHTML = '';
             
             let statusVal = item['커밍순'] ? item['커밍순'].replace(/\s+/g, '') : '';
-            if (isDatePassed(item['행사마감일'] || item.eventEnd)) { statusVal = '마감'; }
+            if (isDatePassed(item['행사마감일'] || item.eventEnd)) {
+                statusVal = '마감';
+            }
 
             if (statusVal === '커밍순') {
                 cardClass += ' disabled-card';
@@ -876,6 +997,7 @@
             }
 
             const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
+            
             const cardTitle = (item.title || '').replace(/(?:\r\n|\r|\n|\\n)/g, ' '); 
 
             const cardHTML = `
@@ -894,11 +1016,13 @@
                             <span id="view-count-${eventUniqueId}">${item.viewCount}</span>
                         </div>
                     </div>
+                    
                     <div class="card-title-row">
                         <h2 class="title">${cardTitle}</h2>
                         ${item.isNew ? `<span class="card-new-badge">N</span>` : ''}
                         <span class="card-more-text">+ 더보기</span>
                     </div>
+                    
                     <div class="card-bottom-info">
                         <span style="flex-shrink:0;">📍 ${item.place ? item.place : '장소미정'}</span>
                         <span style="color:#ddd;">|</span>
@@ -915,131 +1039,119 @@
 
     window.addEventListener('scroll', () => {
         const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-        if (scrollTop + clientHeight >= scrollHeight - 300) { renderMoreItems(); }
+        if (scrollTop + clientHeight >= scrollHeight - 300) {
+            renderMoreItems();
+        }
     });
 
-    // 💡 투표 상태 및 깜빡임 방지용 글로벌 변수
-    let isVoting = false;
-    let voteTimeout = null;
-    let latestVoteSnapshot = null;
-    let currentVoteListenerRef = null;
-
-    // 💡 화면의 투표 관련 UI(버튼 색상 등)를 업데이트합니다.
-    function updateVoteUI(eventId) {
-        const btnLike = document.getElementById(`btnLike_${eventId}`);
-        const btnDislike = document.getElementById(`btnDislike_${eventId}`);
-        const myVote = localStorage.getItem(`vote_${eventId}`);
+    // 💡 리뷰 창 드롭다운 토글 기능 추가
+    function toggleReviewSection() {
+        const collapsible = document.getElementById('reviewCollapsible');
+        const toggleBtn = document.getElementById('reviewToggleBtn');
         
-        if (btnLike) btnLike.classList.remove('active-like');
-        if (btnDislike) btnDislike.classList.remove('active-dislike');
-        
-        if (myVote === 'like' && btnLike) btnLike.classList.add('active-like');
-        if (myVote === 'dislike' && btnDislike) btnDislike.classList.add('active-dislike');
+        if (collapsible.classList.contains('open')) {
+            collapsible.classList.remove('open');
+            toggleBtn.classList.remove('open');
+        } else {
+            collapsible.classList.add('open');
+            toggleBtn.classList.add('open');
+        }
     }
 
-    // 💡 파이어베이스 데이터 스냅샷을 화면에 렌더링하는 함수
-    function renderVotesUI(snapshot) {
-        if (!snapshot) return;
-        let likes = 0;
-        let dislikes = 0;
-        
-        snapshot.forEach(child => {
-            const val = child.val();
-            if (val.type === 'like' || val.nickname === 'LIKE') likes++;
-            if (val.type === 'cancel_like' || val.nickname === 'CANCEL_LIKE') likes--;
-            if (val.type === 'dislike' || val.nickname === 'DISLIKE') dislikes++;
-            if (val.type === 'cancel_dislike' || val.nickname === 'CANCEL_DISLIKE') dislikes--;
+    function loadReviews(eventId) {
+        const reviewListContainer = document.getElementById('reviewListContainer');
+        if (!reviewListContainer || !db) return;
+
+        db.ref(`event_reviews/${eventId}`).orderByChild('timestamp').on('value', (snapshot) => {
+            const reviews = [];
+            snapshot.forEach(child => {
+                reviews.push({ id: child.key, ...child.val() });
+            });
+            
+            reviews.reverse(); // 최신순 정렬
+            
+            const countElem = document.getElementById('reviewCount');
+            if(countElem) countElem.innerText = reviews.length;
+
+            if (reviews.length === 0) {
+                reviewListContainer.innerHTML = '<div class="empty-review">아직 등록된 댓글이 없습니다.<br>첫 번째 댓글을 남겨주세요! 😃</div>';
+                return;
+            }
+
+            let html = '';
+            reviews.forEach(review => {
+                const dateObj = new Date(review.timestamp);
+                const dateStr = `${dateObj.getFullYear()}.${String(dateObj.getMonth()+1).padStart(2,'0')}.${String(dateObj.getDate()).padStart(2,'0')}`;
+                
+                html += `
+                    <div class="review-card">
+                        <span class="review-card-author">👤 ${escapeHtml(review.nickname)}</span>
+                        <span class="review-card-text">${escapeHtml(review.content)}</span>
+                        <span class="review-card-date">${dateStr}</span>
+                    </div>
+                `;
+            });
+            reviewListContainer.innerHTML = html;
         });
-        
-        if (likes < 0) likes = 0;
-        if (dislikes < 0) dislikes = 0;
-        
-        const likeCountElem = document.getElementById('likeCount');
-        const dislikeCountElem = document.getElementById('dislikeCount');
-        
-        if (likeCountElem) likeCountElem.innerText = likes;
-        if (dislikeCountElem) dislikeCountElem.innerText = dislikes;
     }
 
-    // 💡 파이어베이스 실시간 수신 대기 (리스너 중복 방지 + 깜빡임 방지 결합)
-    function loadVotes(eventId) {
-        if (!db) return;
+    function submitReview(eventId) {
+        const nicknameInput = document.getElementById('reviewNickname');
+        const contentInput = document.getElementById('reviewContent');
         
-        if (currentVoteListenerRef) {
-            currentVoteListenerRef.off('value');
+        const nickname = nicknameInput.value.trim();
+        const content = contentInput.value.trim();
+
+        if (!nickname) return alert('닉네임을 입력해주세요.');
+        if (!content) return alert('내용을 입력해주세요.');
+
+        /* ▼ 무관용 원칙! 확장된 비속어/악플 차단 리스트 ▼ */
+        const badWords = [
+            '씨발', '시발', '쒸발', '슈발', '쓔발', '띠발', '찌발', '씨방새', '씨부랄', '씨불', '씨팔', '십알', '씹알', '썅', '썅년', '썅놈',
+            '개새끼', '개새', '개년', '개놈', '개자식', '개소리', '개가튼', '개돼지', '개찌질',
+            '좆', '좃', '존나', '좃나', '좆나', '졸라', '죨라', '씹', '씹새', '씹새끼', '씹창', '씹덕', '좆밥', '좃밥',
+            '병신', '빙신', '븅신', '지랄', '염병', '똘추',
+            '애미', '애비', '느금마', '니미', '호로새끼', '창녀', '걸레', '맘충', '틀딱', '급식충', '김치녀', '된장녀', '한남', '메갈', '일베', '워마드', '페미년', '한녀',
+            '닥쳐', '아가리', '주둥이', '대가리', '모가지', '뒤져', '뒈져', '자살', '뒈져라', '죽어라',
+            '또라이', '미친', '미친놈', '미친년', '쓰레기', '찌질이', '관종', '호구', '빠가',
+            'ㅅㅂ', 'ㅆㅂ', 'ㅂㅅ', 'ㅄ', 'ㅈㄹ', 'ㅈㄴ', 'ㅁㅊ', 'ㄲㅈ', 'ㄷㅊ', 'ㅇㅁ', 'ㄴㄱㅁ'
+        ];
+        
+        // 닉네임이나 내용에 비속어가 포함되어 있는지 검사
+        const hasBadWord = badWords.some(word => nickname.includes(word) || content.includes(word));
+        
+        if (hasBadWord) {
+            alert('부적절한 단어가 포함되어 있어 등록할 수 없습니다.');
+            return; // 여기서 함수를 종료시켜서 서버로 전송하지 않음
         }
 
-        currentVoteListenerRef = db.ref(`event_reviews/${eventId}`);
-        currentVoteListenerRef.on('value', (snapshot) => {
-            latestVoteSnapshot = snapshot;
-            // 사용자가 버튼을 방금 누른 경우, 1->0->1 깜빡임을 막기 위해 서버 데이터의 화면 갱신을 0.8초간 무시합니다.
-            if (isVoting) return; 
-            renderVotesUI(snapshot);
-        });
-        
-        updateVoteUI(eventId);
-    }
-
-    // 💡 투표 기록을 파이어베이스와 구글 시트로 전송하는 헬퍼 함수
-    function pushVoteRecord(eventId, typeName) {
-        if (db) {
-            db.ref(`event_reviews/${eventId}`).push().set({
-                type: typeName,
-                nickname: typeName.toUpperCase(),
-                content: '투표',
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            }).catch(e => console.error(e));
-        }
+        const btn = document.querySelector('.btn-submit-review');
+        btn.disabled = true;
+        btn.innerText = '등록 중...';
 
         const scriptUrl = "https://script.google.com/macros/s/AKfycbw-a4MQEcaCa1KMSU0IoN_8yZGZk5WfUadbP9SL9DlW0ZJInExl8SVaTbd-wgQBffV7Ow/exec"; 
+
         const formData = new URLSearchParams();
         formData.append('eventId', eventId);
-        formData.append('nickname', typeName.toUpperCase());
-        formData.append('content', '투표');
+        formData.append('nickname', nickname);
+        formData.append('content', content);
 
-        fetch(scriptUrl, { method: 'POST', body: formData }).catch(e => {});
-    }
-
-    // 💡 [변경됨] 깜빡임(1->0->1) 지연 현상을 완벽하게 없앤 새로운 투표 제출 함수
-    function submitVote(eventId, voteType) {
-        const currentVote = localStorage.getItem(`vote_${eventId}`);
-        
-        const likeElem = document.getElementById('likeCount');
-        const dislikeElem = document.getElementById('dislikeCount');
-        let currentLikes = parseInt(likeElem.innerText) || 0;
-        let currentDislikes = parseInt(dislikeElem.innerText) || 0;
-        
-        if (currentVote === voteType) {
-            // 1. [취소]
-            pushVoteRecord(eventId, `cancel_${voteType}`);
-            localStorage.removeItem(`vote_${eventId}`);
-            if (voteType === 'like') currentLikes = Math.max(0, currentLikes - 1);
-            if (voteType === 'dislike') currentDislikes = Math.max(0, currentDislikes - 1);
-        } else {
-            // 2. [변경 또는 신규 투표]
-            if (currentVote) {
-                pushVoteRecord(eventId, `cancel_${currentVote}`);
-                if (currentVote === 'like') currentLikes = Math.max(0, currentLikes - 1);
-                if (currentVote === 'dislike') currentDislikes = Math.max(0, currentDislikes - 1);
-            }
-            pushVoteRecord(eventId, voteType);
-            localStorage.setItem(`vote_${eventId}`, voteType);
-            if (voteType === 'like') currentLikes++;
-            if (voteType === 'dislike') currentDislikes++;
-        }
-        
-        // 서버 응답을 기다리지 않고 화면의 숫자를 즉각! 바꿉니다 (Optimistic UI)
-        if (likeElem) likeElem.innerText = currentLikes;
-        if (dislikeElem) dislikeElem.innerText = currentDislikes;
-        updateVoteUI(eventId);
-
-        // 여기서 서버의 딜레이 업데이트(0으로 변하는 현상)를 0.8초 동안 강제로 차단합니다.
-        isVoting = true;
-        clearTimeout(voteTimeout);
-        voteTimeout = setTimeout(() => {
-            isVoting = false;
-            renderVotesUI(latestVoteSnapshot); // 0.8초 뒤 조용히 서버의 최종 데이터와 맞춰줍니다.
-        }, 800);
+        fetch(scriptUrl, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(result => {
+            contentInput.value = ''; 
+        })
+        .catch(error => {
+            console.error('리뷰 전송 실패:', error);
+            alert('등록 중 통신 오류가 발생했습니다.');
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerText = '등록';
+        });
     }
 
     async function openEventPopup(eventId) {
@@ -1051,13 +1163,16 @@
         if (db) {
             try {
                 const specificEventRef = db.ref(`event_views_total/${eventId}`);
+                
                 specificEventRef.set(firebase.database.ServerValue.increment(1)).then(() => {
                     specificEventRef.once('value').then(snap => {
                         const countElem = document.getElementById(`view-count-${eventId}`);
                         if (countElem) countElem.innerText = snap.val() || 0;
                     });
                 });
-            } catch (e) {}
+            } catch (e) {
+                console.warn('조회수 업데이트가 차단되었습니다.', e);
+            }
         }
 
         const popupTitleHTML = nl2br(item.title);
@@ -1084,16 +1199,25 @@
         const popupDate = nl2br(item.date || '해당정보 없음');
         const tipText = nl2br((item['꿀팁'] || '').trim());
 
-        // 💡 [변경됨] 문구가 사라지고 버튼만 가운데 정렬로 남은 슬림 투표 영역
-        const voteSectionHtml = `
-            <div class="vote-section">
-                <div class="vote-buttons">
-                    <button class="btn-vote btn-like" id="btnLike_${eventId}" onclick="submitVote('${eventId}', 'like')">
-                        👍 <span id="likeCount">0</span>
-                    </button>
-                    <button class="btn-vote btn-dislike" id="btnDislike_${eventId}" onclick="submitVote('${eventId}', 'dislike')">
-                        👎 <span id="dislikeCount">0</span>
-                    </button>
+        // 💡 팝업창 내 리뷰 UI 구성 요소 (드롭다운 토글 버튼 적용)
+        const reviewSectionHtml = `
+            <div class="review-section" style="border-top:none; padding-top:0; margin-top:0;">
+                <button class="review-toggle-btn" id="reviewToggleBtn" onclick="toggleReviewSection()">
+                    <span>💬 댓글 후기 보기 (<span class="count" id="reviewCount">0</span>)</span>
+                    <span class="toggle-arrow">▼</span>
+                </button>
+                
+                <div class="review-collapsible" id="reviewCollapsible">
+                    <div class="review-form">
+                        <div class="review-input-group">
+                            <input type="text" id="reviewNickname" class="review-nickname" placeholder="(닉네임)" maxlength="8" />
+                            <input type="text" id="reviewContent" class="review-content" placeholder="(후기/꿀팁 등)" onkeypress="if(event.key==='Enter') submitReview('${eventId}')" />
+                            <button class="btn-submit-review" onclick="submitReview('${eventId}')">등록</button>
+                        </div>
+                    </div>
+                    <div class="review-list" id="reviewListContainer">
+                        <div class="empty-review">리뷰를 불러오는 중...</div>
+                    </div>
                 </div>
             </div>
         `;
@@ -1106,7 +1230,7 @@
             <div class="info-row"><span class="info-label">접수</span><span class="info-divider">|</span><span class="info-desc" style="${applyTextStyle}">${popupDisplayTxt}</span></div>
             <div class="info-row"><span class="info-label">일정</span><span class="info-divider">|</span><span class="info-desc">${popupDate}</span></div>
             ${tipText ? `<div class="info-row"><span class="info-label">메모</span><span class="info-divider">|</span><span class="info-desc" style="font-weight:bold; color:var(--text-main);">${tipText}</span></div>` : ''}
-            ${voteSectionHtml}
+            ${reviewSectionHtml}
         `;
 
         let btnDetails = '';
@@ -1115,7 +1239,10 @@
 
         if (detailUrl && detailUrl.trim() !== '') {
             const lowerUrl = detailUrl.trim().toLowerCase();
-            isImageUrl = /\.(jpeg|jpg|gif|png|webp)(?:[\?#].*)?$/i.test(lowerUrl) || lowerUrl.includes('drive.google.com/uc?') || lowerUrl.includes('phinf.pstatic.net');
+            isImageUrl =
+                /\.(jpeg|jpg|gif|png|webp)(?:[\?#].*)?$/i.test(lowerUrl) ||
+                lowerUrl.includes('drive.google.com/uc?') ||
+                lowerUrl.includes('phinf.pstatic.net');
         }
 
         const whiteLinkIcon = `<svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor; margin-left:4px; vertical-align:text-bottom;"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>`;
@@ -1125,6 +1252,7 @@
         if (detailUrl && detailUrl.trim() !== '') {
             const safeUrl = detailUrl.trim().replace(/"/g, '&quot;');
             const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/(?:\r\n|\r|\n|\\n)/g, ' ');
+            
             if (isImageUrl) {
                 btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">상세정보 확인${colorImgIcon}</button>`;
             } else {
@@ -1172,16 +1300,25 @@
 
         document.getElementById('eventModal').classList.add('active');
 
-        loadVotes(eventId);
+        // 💡 리뷰 데이터를 파이어베이스에서 실시간으로 불러와 붙이는 함수 실행
+        loadReviews(eventId);
 
-        try { history.pushState({ eventPopup: true }, '', '?id=' + encodeURIComponent(eventId)); } catch (e) {}
+        try {
+            history.pushState({ eventPopup: true }, '', '?id=' + encodeURIComponent(eventId));
+        } catch (e) {
+            console.log("로컬 환경이라 URL이 변경되지 않습니다.");
+        }
     }
 
     function closeEventPopup(e) {
         if (e && e.target !== e.currentTarget && !e.target.classList.contains('event-modal-close-btn')) return;
+        
         document.body.classList.remove('modal-open');
         document.getElementById('eventModal').classList.remove('active');
-        try { history.pushState(null, '', window.location.pathname); } catch (e) {}
+        
+        try {
+            history.pushState(null, '', window.location.pathname);
+        } catch (e) {}
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -1190,10 +1327,10 @@
         initVisitCounters();
         fetchEventData(); 
         
-        // PC에서 찌그러짐을 방지하기 위해 object-fit을 contain으로 설정하고 배경을 하얀색으로 채웠습니다!
+        // 하단 배너 (기존 프레임 크기 유지, object-fit: cover로 이미지 꽉 채우기)
         const fallbackBanner = document.getElementById('fallback-banner');
         if (fallbackBanner) {
-            fallbackBanner.innerHTML = '<img src="https://firebasestorage.googleapis.com/v0/b/heycj-55b6a.firebasestorage.app/o/%EB%B0%B0%EB%84%883.png?alt=media&token=b2287e89-4281-4998-9182-2a741773487e" alt="하단 배너" style="width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 4px; display: block; background-color: #fff;" />';
+            fallbackBanner.innerHTML = '<img src="https://firebasestorage.googleapis.com/v0/b/heycj-55b6a.firebasestorage.app/o/%EB%B0%B0%EB%84%883.png?alt=media&token=b2287e89-4281-4998-9182-2a741773487e" alt="하단 배너" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;" />';
         }
     });
 </script>
