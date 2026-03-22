@@ -221,7 +221,6 @@
 
         /* [변경됨] 가운데 정렬 및 가시성을 확 높인 투표 영역 디자인 */
         .vote-section { margin-top: 15px; border-top: 1px dashed #ddd; padding-top: 18px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .vote-title { font-size: 0.95rem; font-weight: 700; color: #444; margin: 0; }
         .vote-buttons { display: flex; justify-content: center; gap: 15px; width: 100%; }
         
         .btn-vote { padding: 6px 20px; border: 1px solid #ddd; border-radius: 20px; font-size: 1.2rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; min-width: 80px; }
@@ -1044,10 +1043,9 @@
         const popupDate = nl2br(item.date || '해당정보 없음');
         const tipText = nl2br((item['꿀팁'] || '').trim());
 
-        // 💡 [변경됨] 글자 없이 기호만 남기고 가시성을 확 높인 투표 버튼 영역
+        // 💡 [변경됨] 안내 문구를 없애고 버튼만 남긴 투표 영역
         const voteSectionHtml = `
             <div class="vote-section">
-                <div class="vote-title">이 행사가 마음에 드시나요?</div>
                 <div class="vote-buttons">
                     <button class="btn-vote btn-like" id="btnLike_${eventId}" onclick="submitVote('${eventId}', 'like')">
                         👍 <span id="likeCount">0</span>
