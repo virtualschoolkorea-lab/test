@@ -151,19 +151,13 @@
         .badge-today { background-color: #E53935; }
         .badge-open { background-color: #2ecc71; }
         .badge-close { background-color: #F06292; }
-        .badge-hot { 
-            background-color: #ffebee; 
-            color: #d32f2f; 
-            border-radius: 20px; 
-            padding: 3px 4px 3px 8px;
-        }
+        .badge-hot { background-color: #ffebee; color: #d32f2f; border-radius: 20px; padding: 3px 4px 3px 8px; }
 
         .view-count { display: flex; align-items: center; gap: 3px; font-size: 0.7rem; color: #aaa; font-weight: 500; flex-shrink: 0; margin-left: 8px; margin-top: 2px; }
         .view-count svg { width: 14px; height: 14px; fill: currentColor; }
 
         .card-title-row { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 2px; min-width: 0; }
         .card-title-row .title { font-size: 1rem; font-weight: 700; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; padding-right: 4px; }
-        
         .card-more-text { flex-shrink: 0; font-size: 0.65rem; color: #999; font-weight: 500; background: #f4f4f4; padding: 2px 6px; border-radius: 4px; }
 
         .card-bottom-info { margin-top: 8px; font-size: 0.7rem; color: #888; display: flex; flex-direction: row; align-items: center; flex-wrap: nowrap; gap: 6px; overflow: hidden; min-width: 0; }
@@ -174,25 +168,15 @@
 
         .img-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; padding-bottom: 65px; box-sizing: border-box; }
         .img-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
-        
-        .img-modal-wrapper { 
-            position: relative; 
-            max-width: min(90%, 600px); 
-            max-height: calc(100% - 100px); 
-            display: inline-block; 
-        }
+        .img-modal-wrapper { position: relative; max-width: min(90%, 600px); max-height: calc(100% - 100px); display: inline-block; }
         .img-modal-scroll-area { max-height: calc(100vh - 100px); overflow-y: auto; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); background: #fff; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
-        
         .img-modal-scroll-area::-webkit-scrollbar { width: 6px; }
         .img-modal-scroll-area::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
-        
         .img-modal-content { display: block; width: 100%; height: auto; }
-        
         .img-modal-close { position: absolute; top: -14px; right: -14px; background: #fff; color: #111; border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 1.6rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); z-index: 100; line-height: 1; padding: 0 0 2px 0; }
 
         .event-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding-bottom: 0; box-sizing: border-box; }
         .event-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
-        
         .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: calc(100% - 80px); border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(120%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px 65px 10px; }
         .event-modal-overlay.active .event-modal-content-box { transform: translateY(0); }
 
@@ -207,7 +191,6 @@
         .event-modal-share-btn { position: absolute; top: 16px; right: 48px; background: none; border: none; cursor: pointer; color: #666; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s; padding: 4px; }
         .event-modal-share-btn:hover { background: #f0f0f0; }
         .event-modal-share-btn svg { width: 100%; height: 100%; fill: currentColor; }
-
         .event-modal-close-btn { position: absolute; top: 16px; right: 12px; background: none; border: none; font-size: 1.8rem; line-height: 1; cursor: pointer; color: #888; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s; }
         .event-modal-close-btn:hover { background: #f0f0f0; }
 
@@ -234,66 +217,86 @@
 
         /* 리뷰 섹션 CSS */
         .review-section { margin-top: 15px; padding-top: 10px; }
-        
-        /* 댓글창 드롭다운 토글 버튼 */
-        .review-toggle-btn {
-            width: 100%;
-            background: #f9f9f9;
-            border: 1px solid #ddd;
-            padding: 10px 12px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: #555;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.2s;
-        }
+        .review-toggle-btn { width: 100%; background: #f9f9f9; border: 1px solid #ddd; padding: 10px 12px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; color: #555; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
         .review-toggle-btn:hover { background: #f1f1f1; }
         .review-toggle-btn .count { color: var(--primary-color); }
         .toggle-arrow { font-size: 0.8rem; transition: transform 0.3s; color: #888; }
         .review-toggle-btn.open .toggle-arrow { transform: rotate(180deg); } 
-
-        /* 숨겨질 댓글 본문 영역 */
-        .review-collapsible {
-            display: none; 
-            padding-top: 12px;
-        }
-        .review-collapsible.open {
-            display: block; 
-            animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn { 
-            from { opacity: 0; transform: translateY(-5px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
+        .review-collapsible { display: none; padding-top: 12px; }
+        .review-collapsible.open { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
         .review-form { margin-bottom: 10px; }
         .review-input-group { display: flex; gap: 4px; }
         .review-nickname { width: 60px; padding: 6px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.8rem; outline: none; }
         .review-content { flex: 1; padding: 6px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.8rem; outline: none; min-width: 0; }
         .review-nickname:focus, .review-content:focus { border-color: var(--primary-color); }
-        
-        /* 플레이스홀더 색상 연하게 변경 */
-        .review-nickname::placeholder, .review-content::placeholder {
-            color: #cccccc;
-            opacity: 1;
-        }
-
+        .review-nickname::placeholder, .review-content::placeholder { color: #cccccc; opacity: 1; }
         .btn-submit-review { background: var(--primary-color); color: #fff; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: 0.2s; }
         .btn-submit-review:hover { background: #388E3C; }
 
         .review-list { display: flex; flex-direction: column; gap: 6px; max-height: 140px; overflow-y: auto; padding-right: 2px; overscroll-behavior: contain; }
         .review-list::-webkit-scrollbar { width: 4px; }
         .review-list::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
-        
         .review-card { display: flex; align-items: baseline; gap: 6px; background: none; padding: 0; }
         .review-card-author { font-weight: 700; color: #444; font-size: 0.75rem; white-space: nowrap; flex-shrink: 0; }
         .review-card-text { font-size: 0.8rem; color: #333; line-height: 1.3; word-break: break-all; flex-grow: 1; margin: 0; padding: 0 4px; }
         .review-card-date { font-size: 0.65rem; color: #aaa; white-space: nowrap; flex-shrink: 0; }
         .empty-review { text-align: center; color: #999; font-size: 0.8rem; padding: 10px 0; background: #fafafa; border-radius: 6px; }
+
+        /* 🎮 파티원 모집 (배틀넷 대기실 스타일) CSS */
+        .party-section { margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
+        .party-toggle-btn { width: 100%; background: #e3f2fd; border: 1px solid #bbdefb; padding: 10px 12px; border-radius: 8px; font-size: 0.95rem; font-weight: 700; color: #1976d2; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
+        .party-toggle-btn:hover { background: #bbdefb; }
+        .party-toggle-btn.open .toggle-arrow { transform: rotate(180deg); }
+        .party-collapsible { display: none; padding-top: 12px; }
+        .party-collapsible.open { display: block; animation: fadeIn 0.3s ease; }
+        .room-list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .room-list-title { font-size: 0.85rem; font-weight: 700; color: #555; }
+        .btn-create-room { background: #4CAF50; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; cursor: pointer; }
+        .room-list { display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; }
+        .room-card { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; border: 1px solid #ddd; padding: 10px; border-radius: 6px; }
+        .room-info { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; padding-right: 10px; }
+        .room-title-row { display: flex; align-items: center; gap: 6px; }
+        .room-status { font-size: 0.65rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; color: white; }
+        .room-status.open { background: #1976d2; }
+        .room-status.closed { background: #999; }
+        .room-title { font-size: 0.85rem; font-weight: 700; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .room-meta { font-size: 0.7rem; color: #777; }
+        .room-actions { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
+        .btn-join { background: #ff9800; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; cursor: pointer; text-decoration: none; text-align: center; }
+        .btn-close-room { background: none; border: none; color: #aaa; font-size: 0.65rem; text-decoration: underline; cursor: pointer; padding: 0; }
+        .create-room-form { background: #fff; border: 1px solid #ddd; padding: 12px; border-radius: 6px; margin-bottom: 10px; display: none; }
+        .create-room-form input, .create-room-form select { width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.8rem; box-sizing: border-box; }
+        .form-row { display: flex; gap: 8px; }
+        .form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+        .btn-cancel { background: #eee; color: #333; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; }
+        .btn-submit { background: #1976d2; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
+
+        /* 💬 실시간 채팅 플로팅 버튼 & 창 스타일 */
+        .chat-fab { position: fixed; bottom: 80px; right: 20px; background-color: #FEE500; color: #333; padding: 12px 16px; border-radius: 30px; font-weight: 800; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer; z-index: 100001; display: flex; align-items: center; gap: 6px; transition: transform 0.2s; }
+        .chat-fab:hover { transform: scale(1.05); }
+        .chat-window { position: fixed; bottom: 130px; right: 20px; width: 320px; height: 450px; background: #b2c7d9; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 100002; display: flex; flex-direction: column; overflow: hidden; transform: translateY(20px); opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .chat-window.active { transform: translateY(0); opacity: 1; pointer-events: auto; }
+        .chat-header { background: #fff; padding: 12px 15px; font-weight: 800; font-size: 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; }
+        .btn-close-chat { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #888; }
+        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .chat-messages::-webkit-scrollbar { width: 6px; }
+        .chat-messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
+        .chat-msg-row { display: flex; flex-direction: column; max-width: 85%; }
+        .chat-msg-row.my-msg { align-self: flex-end; align-items: flex-end; }
+        .chat-msg-row.other-msg { align-self: flex-start; align-items: flex-start; }
+        .chat-nick { font-size: 0.7rem; color: #555; margin-bottom: 3px; margin-left: 4px; }
+        .chat-bubble { padding: 8px 12px; border-radius: 12px; font-size: 0.85rem; line-height: 1.4; word-break: break-all; }
+        .my-msg .chat-bubble { background: #FEE500; border-top-right-radius: 2px; }
+        .other-msg .chat-bubble { background: #fff; border-top-left-radius: 2px; }
+        .chat-input-area { background: #fff; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+        .chat-nick-input { width: 80px; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.8rem; }
+        .chat-text-row { display: flex; gap: 6px; }
+        .chat-text-input { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.85rem; outline: none; }
+        .chat-text-input:focus { border-color: #FEE500; }
+        .btn-send-chat { background: #FEE500; border: none; padding: 0 15px; border-radius: 4px; font-weight: 800; cursor: pointer; }
+        @media (max-width: 500px) { .chat-window { right: 10px; left: 10px; width: auto; bottom: 140px; height: 60vh; } }
     </style>
 </head>
 <body>
@@ -389,6 +392,26 @@
     </div>
 </div>
 
+<div id="chatFab" class="chat-fab" onclick="toggleChatWindow()">
+    💬 청주 실시간 톡
+</div>
+
+<div id="chatWindow" class="chat-window">
+    <div class="chat-header">
+        헤이청주 라운지 ☕
+        <button class="btn-close-chat" onclick="toggleChatWindow()">×</button>
+    </div>
+    <div id="chatMessages" class="chat-messages">
+        </div>
+    <div class="chat-input-area">
+        <input type="text" id="chatNickInput" class="chat-nick-input" placeholder="닉네임" maxlength="8">
+        <div class="chat-text-row">
+            <input type="text" id="chatTextInput" class="chat-text-input" placeholder="메시지를 입력..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+            <button class="btn-send-chat" onclick="sendChatMessage()">전송</button>
+        </div>
+    </div>
+</div>
+
 <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBZg-wKztuG-Ak7-WqWSAYe9UIj874fYAY",
@@ -407,7 +430,22 @@
         }
         db = firebase.database();
     } catch (error) {
-        console.warn("방화벽/광고차단기로 인해 파이어베이스 로딩이 제한되었습니다. 조회수 없이 행사를 정상 로딩합니다.", error);
+        console.warn("파이어베이스 로딩 제한", error);
+    }
+
+    // 전역으로 사용할 통합 비속어 필터
+    const BAD_WORDS = [
+        '씨발', '시발', '쒸발', '슈발', '쓔발', '띠발', '찌발', '씨방새', '씨부랄', '씨불', '씨팔', '십알', '씹알', '썅', '썅년', '썅놈',
+        '개새끼', '개새', '개년', '개놈', '개자식', '개소리', '개가튼', '개돼지', '개찌질',
+        '좆', '좃', '존나', '좃나', '좆나', '졸라', '죨라', '씹', '씹새', '씹새끼', '씹창', '씹덕', '좆밥', '좃밥',
+        '병신', '빙신', '븅신', '지랄', '염병', '똘추',
+        '애미', '애비', '느금마', '니미', '호로새끼', '창녀', '걸레', '맘충', '틀딱', '급식충', '김치녀', '된장녀', '한남', '메갈', '일베', '워마드', '페미년', '한녀',
+        '닥쳐', '아가리', '주둥이', '대가리', '모가지', '뒤져', '뒈져', '자살', '뒈져라', '죽어라',
+        '또라이', '미친', '미친놈', '미친년', '쓰레기', '찌질이', '관종', '호구', '빠가',
+        'ㅅㅂ', 'ㅆㅂ', 'ㅂㅅ', 'ㅄ', 'ㅈㄹ', 'ㅈㄴ', 'ㅁㅊ', 'ㄲㅈ', 'ㄷㅊ', 'ㅇㅁ', 'ㄴㄱㅁ'
+    ];
+    function containsBadWord(text) {
+        return BAD_WORDS.some(word => text.includes(word));
     }
 
     function escapeHtml(text) {
@@ -500,23 +538,7 @@
 
         } catch (error) {
             console.warn("방문자 수 로딩 실패", error);
-            document.getElementById('count-total').innerText = '-';
-            document.getElementById('count-today').innerText = '-';
         }
-    }
-
-    function getCounterNumber(payload) {
-        if (payload == null) return 0;
-        if (typeof payload === 'number') return payload;
-        if (typeof payload.value === 'number') return payload.value;
-        if (typeof payload.count === 'number') return payload.count;
-        if (payload.data) {
-            if (typeof payload.data.value === 'number') return payload.data.value;
-            if (typeof payload.data.count === 'number') return payload.data.count;
-        }
-        if (typeof payload.value === 'string' && !isNaN(Number(payload.value))) return Number(payload.value);
-        if (typeof payload.count === 'string' && !isNaN(Number(payload.count))) return Number(payload.count);
-        return 0;
     }
 
     function trackEventAndOpen(e, url, title, btnType) {
@@ -535,32 +557,18 @@
     }
 
     function sharePage() {
-        const shareData = {
-            title: '헤이청주 📢 교육/체험 링크모음',
-            text: '우리 지역 체험 행사 일정을 한눈에 확인하세요!',
-            url: window.location.href
-        };
-        if (navigator.share) {
-            navigator.share(shareData).catch(console.error);
-        } else {
-            navigator.clipboard.writeText(window.location.href).then(() => alert('링크가 복사되었습니다!'));
-        }
+        const shareData = { title: '헤이청주 📢 교육/체험 링크모음', text: '우리 지역 체험 행사 일정을 한눈에 확인하세요!', url: window.location.href };
+        if (navigator.share) navigator.share(shareData).catch(console.error);
+        else navigator.clipboard.writeText(window.location.href).then(() => alert('링크가 복사되었습니다!'));
     }
 
     function sharePopupLink(eventId) {
         const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
         const shareUrl = window.location.origin + window.location.pathname + '?id=' + encodeURIComponent(eventId);
         const shareTitle = item ? item.title.replace(/(?:\r\n|\r|\n|\\n)/g, ' ') : '헤이청주 일정 공유'; 
-        const shareData = {
-            title: shareTitle,
-            text: '이 행사 어때요? 일정을 확인해보세요!',
-            url: shareUrl
-        };
-        if (navigator.share) {
-            navigator.share(shareData).catch(console.error);
-        } else {
-            navigator.clipboard.writeText(shareUrl).then(() => alert('팝업 링크가 복사되었습니다!\n원하는 곳에 붙여넣기 해주세요.'));
-        }
+        const shareData = { title: shareTitle, text: '이 행사 어때요? 일정을 확인해보세요!', url: shareUrl };
+        if (navigator.share) navigator.share(shareData).catch(console.error);
+        else navigator.clipboard.writeText(shareUrl).then(() => alert('팝업 링크가 복사되었습니다!\n원하는 곳에 붙여넣기 해주세요.'));
     }
 
     const imgModal = document.getElementById('imageModal');
@@ -579,9 +587,7 @@
         if (imgBtn) {
             const url = imgBtn.getAttribute('data-url');
             const title = imgBtn.getAttribute('data-title');
-            
             if (imgModalScroll) imgModalScroll.scrollTop = 0;
-            
             modalImg.src = url;
             imgModal.classList.add('active');
             trackEventClick(title, 'detail');
@@ -596,25 +602,20 @@
 
     let eventData = [];
     let currentTab = 'affiliate'; 
-    
     let currentFilteredData = [];
     let itemsRendered = 0;
     const ITEMS_PER_PAGE = 20;
 
     async function fetchEventData() {
         try {
-            if (!db) throw new Error("파이어베이스 연결이 준비되지 않았습니다.");
-            
+            if (!db) throw new Error("Firebase offline");
             const snapshot = await db.ref('events_data').once('value');
             const data = snapshot.val();
-
             if (!data) {
-                document.getElementById('list-container').innerHTML = '<div class="empty-state">등록된 행사가 없습니다. 데이터베이스 연동을 확인해주세요.</div>';
+                document.getElementById('list-container').innerHTML = '<div class="empty-state">등록된 행사가 없습니다.</div>';
                 return;
             }
-
             eventData = Array.isArray(data) ? data : Object.values(data);
-
             processEventDates();
             processEventAges();
             generateFilters();
@@ -622,14 +623,10 @@
             updateTabNewBadges();
 
             let viewsData = {};
-            if (db) {
-                try {
-                    const viewSnapshot = await db.ref('event_views_total').once('value');
-                    viewsData = viewSnapshot.val() || {};
-                } catch (viewError) {
-                    console.warn("조회수를 불러오는 데 실패했습니다.", viewError);
-                }
-            }
+            try {
+                const viewSnapshot = await db.ref('event_views_total').once('value');
+                viewsData = viewSnapshot.val() || {};
+            } catch (e) { console.warn(e); }
             
             eventData.forEach(item => {
                 const eventId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
@@ -649,9 +646,7 @@
                     currentTab = targetItem.type;
                 }
             }
-
             applyFilters();
-
             if (eventId !== null) {
                 setTimeout(() => {
                     const targetCard = document.getElementById('card-' + eventId);
@@ -661,7 +656,7 @@
             }
         } catch (error) {
             console.error(error);
-            document.getElementById('list-container').innerHTML = '<div class="empty-state">행사 정보를 불러오는데 실패했습니다. 새로고침을 해주세요. 😥</div>';
+            document.getElementById('list-container').innerHTML = '<div class="empty-state">정보를 불러오는데 실패했습니다.</div>';
         }
     }
 
@@ -669,7 +664,6 @@
         const today = new Date();
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
-
         const todayStr = `${today.getMonth() + 1}/${today.getDate()}`;
         const tomorrowStr = `${tomorrow.getMonth() + 1}/${tomorrow.getDate()}`;
 
@@ -678,12 +672,7 @@
                 item.displayText = item.applyNote;
                 return;
             }
-
-            item.isTodayOpen = false;
-            item.isTodayClose = false;
-            item.isTomorrowOpen = false;
-            item.isTomorrowClose = false;
-
+            item.isTodayOpen = item.isTodayClose = item.isTomorrowOpen = item.isTomorrowClose = false;
             if (item.applyStart && item.applyStart.includes(todayStr)) item.isTodayOpen = true;
             if (item.applyEnd && item.applyEnd.includes(todayStr)) item.isTodayClose = true;
             if (item.applyStart && item.applyStart.includes(tomorrowStr)) item.isTomorrowOpen = true;
@@ -698,7 +687,6 @@
                 if (text) text += ` <span style="font-weight:700; font-size:0.8rem;">[${item.applyNote}]</span>`;
                 else text = `<span style="font-weight:700;">${item.applyNote}</span>`;
             }
-
             item.displayText = text || '상시 접수';
         });
     }
@@ -720,7 +708,6 @@
     function generateFilters() {
         const filterGroup = document.getElementById('combined-filter-group');
         filterGroup.innerHTML = '';
-
         const presentLocs = new Set();
         const fixedLocs = ['청주', '충북', '대전', '세종', '온라인'];
         const chungbukSubRegions = ['괴산', '음성', '증평', '보은', '옥천', '충주', '제천', '진천', '단양', '영동'];
@@ -746,12 +733,10 @@
             checkbox.value = age;
             checkbox.className = 'filter-cb age-cb';
             checkbox.onchange = applyFilters;
-
             const label = document.createElement('label');
             label.htmlFor = id;
             label.className = 'cb-label age-label';
             label.innerText = age;
-
             filterGroup.appendChild(checkbox);
             filterGroup.appendChild(label);
         });
@@ -777,39 +762,42 @@
                 checkbox.value = loc;
                 checkbox.className = 'filter-cb loc-cb';
                 checkbox.onchange = applyFilters;
-
                 const label = document.createElement('label');
                 label.htmlFor = id;
                 label.className = 'cb-label';
                 label.innerText = loc;
-
                 filterGroup.appendChild(checkbox);
                 filterGroup.appendChild(label);
             }
         });
-
         setTimeout(() => handleFilterScroll(filterGroup), 100);
     }
 
     function parseDateValue(dateStr) {
-        if (!dateStr) return 9999;
-        let match = dateStr.match(/(\d{1,2})\/(\d{1,2})/);
-        if (match) return parseInt(match[1]) * 100 + parseInt(match[2]);
-        match = dateStr.match(/(\d{1,2})월\s*(\d{1,2})일/);
-        if (match) return parseInt(match[1]) * 100 + parseInt(match[2]);
-        match = dateStr.match(/(\d{1,2})월/);
-        if (match) return parseInt(match[1]) * 100;
-        return 9999;
+        if (!dateStr) return 99999999; 
+        let s = String(dateStr).trim();
+        let match = s.match(/(\d{4})[-./]\s*(\d{1,2})[-./]\s*(\d{1,2})/);
+        if (match) return parseInt(match[1]) * 10000 + parseInt(match[2]) * 100 + parseInt(match[3]);
+        match = s.match(/(\d{2})[-./]\s*(\d{1,2})[-./]\s*(\d{1,2})/);
+        if (match) {
+            let year = parseInt(match[1]) + 2000;
+            return year * 10000 + parseInt(match[2]) * 100 + parseInt(match[3]);
+        }
+        const kstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
+        const currentYear = kstNow.getFullYear();
+        match = s.match(/(\d{1,2})\/(\d{1,2})/);
+        if (match) return currentYear * 10000 + parseInt(match[1]) * 100 + parseInt(match[2]);
+        match = s.match(/(\d{1,2})월\s*(\d{1,2})일/);
+        if (match) return currentYear * 10000 + parseInt(match[1]) * 100 + parseInt(match[2]);
+        return 99999999;
     }
 
     function isDatePassed(dateStr) {
         if (!dateStr) return false;
         const val = parseDateValue(dateStr);
-        if (val === 9999) return false;
-        
-        const today = new Date();
-        const todayVal = (today.getMonth() + 1) * 100 + today.getDate();
-        
+        if (val === 99999999) return false;
+        const kstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
+        const todayVal = kstNow.getFullYear() * 10000 + (kstNow.getMonth() + 1) * 100 + kstNow.getDate();
         return val < todayVal;
     }
 
@@ -823,16 +811,10 @@
             let day = parseInt(match[3], 10);
             let hour = match[4] ? parseInt(match[4], 10) : 0;
             let minute = match[5] ? parseInt(match[5], 10) : 0;
-
-            if (s.includes('오후') || s.toUpperCase().includes('PM')) {
-                if (hour < 12) hour += 12;
-            }
-            if ((s.includes('오전') || s.toUpperCase().includes('AM')) && hour === 12) {
-                hour = 0;
-            }
+            if (s.includes('오후') || s.toUpperCase().includes('PM')) { if (hour < 12) hour += 12; }
+            if ((s.includes('오전') || s.toUpperCase().includes('AM')) && hour === 12) hour = 0;
             return new Date(year, month, day, hour, minute).getTime();
         }
-
         let parsed = new Date(s).getTime();
         return isNaN(parsed) ? 0 : parsed;
     }
@@ -840,11 +822,9 @@
     function processNewItems() {
         const now = Date.now();
         const ONE_DAY = 24 * 60 * 60 * 1000;
-
         eventData.forEach((item, index) => {
             item.originalIndex = index;
             item.isNew = false;
-
             const regDateMs = parseRegDate(item['등록일']);
             if (regDateMs > 0) {
                 const timeDiff = now - regDateMs;
@@ -889,15 +869,12 @@
             const matchTab = keyword ? true : (item.type === currentTab);
             const matchLoc = selectedLocs.length === 0 ? true : selectedLocs.some(loc => item.mappedLoc === loc);
             const matchAge = selectedAges.length === 0 ? true : selectedAges.some(age => item.mappedAges && item.mappedAges.includes(age));
-
             let matchSearch = true;
             if (keyword) {
-                matchSearch =
-                    (item.title && item.title.toLowerCase().includes(keyword)) ||
-                    (item.place && item.place.toLowerCase().includes(keyword)) ||
-                    (item.loc && item.loc.toLowerCase().includes(keyword));
+                matchSearch = (item.title && item.title.toLowerCase().includes(keyword)) ||
+                              (item.place && item.place.toLowerCase().includes(keyword)) ||
+                              (item.loc && item.loc.toLowerCase().includes(keyword));
             }
-
             return matchTab && matchLoc && matchAge && matchSearch;
         });
 
@@ -905,7 +882,6 @@
             filteredData.sort((a, b) => {
                 if (a.isHot && !b.isHot) return -1;
                 if (!a.isHot && b.isHot) return 1;
-
                 const getPriority = (item) => {
                     if (item.isTodayOpen) return 1;
                     if (item.isTodayClose) return 2;
@@ -914,21 +890,17 @@
                     if (item.isNew) return 5;
                     return 6;
                 };
-
                 const pA = getPriority(a);
                 const pB = getPriority(b);
                 if (pA !== pB) return pA - pB;
-
                 return parseDateValue(a.applyEnd) - parseDateValue(b.applyEnd);
             });
         } else if (currentTab === 'always') {
             filteredData.sort((a, b) => {
                 if (a.isHot && !b.isHot) return -1;
                 if (!a.isHot && b.isHot) return 1;
-                
                 if (a.isNew && !b.isNew) return -1;
                 if (!a.isNew && b.isNew) return 1;
-
                 const dateA = parseDateValue(a['행사마감일'] || a.eventEnd);
                 const dateB = parseDateValue(b['행사마감일'] || b.eventEnd);
                 if (dateA !== dateB) return dateA - dateB;
@@ -938,7 +910,6 @@
             filteredData.sort((a, b) => {
                 if (a.isHot && !b.isHot) return -1;
                 if (!a.isHot && b.isHot) return 1;
-                
                 if (a.isNew && !b.isNew) return -1;
                 if (!a.isNew && b.isNew) return 1;
                 return a.originalIndex - b.originalIndex;
@@ -950,10 +921,9 @@
         container.innerHTML = ''; 
 
         if (currentFilteredData.length === 0) {
-            container.innerHTML = '<div class="empty-state">해당하는 행사가 없습니다. 조건이나 검색어를 변경해 보세요! 😥</div>';
+            container.innerHTML = '<div class="empty-state">해당하는 행사가 없습니다.</div>';
             return;
         }
-
         renderMoreItems();
     }
 
@@ -967,12 +937,8 @@
         itemsToRender.forEach(item => {
             let safeCost = item.costType || '';
             let costBadgeHTML = '';
-            
-            if (safeCost.includes('무료')) {
-                costBadgeHTML = `<span class="badge badge-free">무료</span>`;
-            } else if (safeCost.includes('유료')) {
-                costBadgeHTML = `<span class="badge badge-paid">유료</span>`;
-            }
+            if (safeCost.includes('무료')) costBadgeHTML = `<span class="badge badge-free">무료</span>`;
+            else if (safeCost.includes('유료')) costBadgeHTML = `<span class="badge badge-paid">유료</span>`;
 
             let dateBadges = '';
             if (item.isTodayOpen) dateBadges += `<span class="badge badge-open">오늘오픈</span> `;
@@ -982,11 +948,10 @@
 
             let cardClass = 'card';
             let overlayHTML = '';
-            
             let statusVal = item['커밍순'] ? item['커밍순'].replace(/\s+/g, '') : '';
-            if (isDatePassed(item['행사마감일'] || item.eventEnd)) {
-                statusVal = '마감';
-            }
+            const targetDateStr = item['행사마감일'] || item.eventEnd || item.applyEnd || item['접수마감일'] || item['신청마감일'];
+
+            if (isDatePassed(targetDateStr)) statusVal = '마감';
 
             if (statusVal === '커밍순') {
                 cardClass += ' disabled-card';
@@ -997,7 +962,6 @@
             }
 
             const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
-            
             const cardTitle = (item.title || '').replace(/(?:\r\n|\r|\n|\\n)/g, ' '); 
 
             const cardHTML = `
@@ -1044,11 +1008,9 @@
         }
     });
 
-    // 💡 리뷰 창 드롭다운 토글 기능 추가
     function toggleReviewSection() {
         const collapsible = document.getElementById('reviewCollapsible');
         const toggleBtn = document.getElementById('reviewToggleBtn');
-        
         if (collapsible.classList.contains('open')) {
             collapsible.classList.remove('open');
             toggleBtn.classList.remove('open');
@@ -1064,17 +1026,14 @@
 
         db.ref(`event_reviews/${eventId}`).orderByChild('timestamp').on('value', (snapshot) => {
             const reviews = [];
-            snapshot.forEach(child => {
-                reviews.push({ id: child.key, ...child.val() });
-            });
-            
-            reviews.reverse(); // 최신순 정렬
+            snapshot.forEach(child => { reviews.push({ id: child.key, ...child.val() }); });
+            reviews.reverse(); 
             
             const countElem = document.getElementById('reviewCount');
             if(countElem) countElem.innerText = reviews.length;
 
             if (reviews.length === 0) {
-                reviewListContainer.innerHTML = '<div class="empty-review">아직 등록된 댓글이 없습니다.<br>첫 번째 댓글을 남겨주세요! 😃</div>';
+                reviewListContainer.innerHTML = '<div class="empty-review">아직 등록된 댓글이 없습니다.</div>';
                 return;
             }
 
@@ -1082,7 +1041,6 @@
             reviews.forEach(review => {
                 const dateObj = new Date(review.timestamp);
                 const dateStr = `${dateObj.getFullYear()}.${String(dateObj.getMonth()+1).padStart(2,'0')}.${String(dateObj.getDate()).padStart(2,'0')}`;
-                
                 html += `
                     <div class="review-card">
                         <span class="review-card-author">👤 ${escapeHtml(review.nickname)}</span>
@@ -1098,31 +1056,14 @@
     function submitReview(eventId) {
         const nicknameInput = document.getElementById('reviewNickname');
         const contentInput = document.getElementById('reviewContent');
-        
         const nickname = nicknameInput.value.trim();
         const content = contentInput.value.trim();
 
         if (!nickname) return alert('닉네임을 입력해주세요.');
         if (!content) return alert('내용을 입력해주세요.');
-
-        /* ▼ 무관용 원칙! 확장된 비속어/악플 차단 리스트 ▼ */
-        const badWords = [
-            '씨발', '시발', '쒸발', '슈발', '쓔발', '띠발', '찌발', '씨방새', '씨부랄', '씨불', '씨팔', '십알', '씹알', '썅', '썅년', '썅놈',
-            '개새끼', '개새', '개년', '개놈', '개자식', '개소리', '개가튼', '개돼지', '개찌질',
-            '좆', '좃', '존나', '좃나', '좆나', '졸라', '죨라', '씹', '씹새', '씹새끼', '씹창', '씹덕', '좆밥', '좃밥',
-            '병신', '빙신', '븅신', '지랄', '염병', '똘추',
-            '애미', '애비', '느금마', '니미', '호로새끼', '창녀', '걸레', '맘충', '틀딱', '급식충', '김치녀', '된장녀', '한남', '메갈', '일베', '워마드', '페미년', '한녀',
-            '닥쳐', '아가리', '주둥이', '대가리', '모가지', '뒤져', '뒈져', '자살', '뒈져라', '죽어라',
-            '또라이', '미친', '미친놈', '미친년', '쓰레기', '찌질이', '관종', '호구', '빠가',
-            'ㅅㅂ', 'ㅆㅂ', 'ㅂㅅ', 'ㅄ', 'ㅈㄹ', 'ㅈㄴ', 'ㅁㅊ', 'ㄲㅈ', 'ㄷㅊ', 'ㅇㅁ', 'ㄴㄱㅁ'
-        ];
-        
-        // 닉네임이나 내용에 비속어가 포함되어 있는지 검사
-        const hasBadWord = badWords.some(word => nickname.includes(word) || content.includes(word));
-        
-        if (hasBadWord) {
+        if (containsBadWord(nickname) || containsBadWord(content)) {
             alert('부적절한 단어가 포함되어 있어 등록할 수 없습니다.');
-            return; // 여기서 함수를 종료시켜서 서버로 전송하지 않음
+            return;
         }
 
         const btn = document.querySelector('.btn-submit-review');
@@ -1130,28 +1071,16 @@
         btn.innerText = '등록 중...';
 
         const scriptUrl = "https://script.google.com/macros/s/AKfycbw-a4MQEcaCa1KMSU0IoN_8yZGZk5WfUadbP9SL9DlW0ZJInExl8SVaTbd-wgQBffV7Ow/exec"; 
-
         const formData = new URLSearchParams();
         formData.append('eventId', eventId);
         formData.append('nickname', nickname);
         formData.append('content', content);
 
-        fetch(scriptUrl, {
-            method: 'POST',
-            body: formData
-        })
+        fetch(scriptUrl, { method: 'POST', body: formData })
         .then(response => response.text())
-        .then(result => {
-            contentInput.value = ''; 
-        })
-        .catch(error => {
-            console.error('리뷰 전송 실패:', error);
-            alert('등록 중 통신 오류가 발생했습니다.');
-        })
-        .finally(() => {
-            btn.disabled = false;
-            btn.innerText = '등록';
-        });
+        .then(result => { contentInput.value = ''; })
+        .catch(error => { alert('등록 중 통신 오류가 발생했습니다.'); })
+        .finally(() => { btn.disabled = false; btn.innerText = '등록'; });
     }
 
     async function openEventPopup(eventId) {
@@ -1163,16 +1092,13 @@
         if (db) {
             try {
                 const specificEventRef = db.ref(`event_views_total/${eventId}`);
-                
                 specificEventRef.set(firebase.database.ServerValue.increment(1)).then(() => {
                     specificEventRef.once('value').then(snap => {
                         const countElem = document.getElementById(`view-count-${eventId}`);
                         if (countElem) countElem.innerText = snap.val() || 0;
                     });
                 });
-            } catch (e) {
-                console.warn('조회수 업데이트가 차단되었습니다.', e);
-            }
+            } catch (e) {}
         }
 
         const popupTitleHTML = nl2br(item.title);
@@ -1199,14 +1125,49 @@
         const popupDate = nl2br(item.date || '해당정보 없음');
         const tipText = nl2br((item['꿀팁'] || '').trim());
 
-        // 💡 팝업창 내 리뷰 UI 구성 요소 (드롭다운 토글 버튼 적용)
+        // 🎮 파티원 모집 섹션
+        const partySectionHtml = `
+            <div class="party-section">
+                <button class="party-toggle-btn" id="partyToggleBtn" onclick="togglePartySection()">
+                    <span>🎮 파티원 모집 방 찾기 (<span class="count" id="partyCount">0</span>)</span>
+                    <span class="toggle-arrow">▼</span>
+                </button>
+                <div class="party-collapsible" id="partyCollapsible">
+                    <div class="create-room-form" id="createRoomFormContainer">
+                        <div class="form-row">
+                            <input type="text" id="partyNickname" placeholder="닉네임" style="flex:1;" />
+                            <select id="partyMaxPeople" style="flex:1;">
+                                <option value="2">2명 모집</option>
+                                <option value="3">3명 모집</option>
+                                <option value="4">4명 모집</option>
+                                <option value="5">5명 이상 모집</option>
+                            </select>
+                        </div>
+                        <input type="text" id="partyTitle" placeholder="조건/방 제목 (예: 주말 2시 4인 할인팟!)" />
+                        <input type="url" id="partyContactUrl" placeholder="카카오톡 오픈채팅방 링크 (1:1 또는 그룹)" />
+                        <input type="password" id="partyPassword" placeholder="마감용 비밀번호 4자리" maxlength="4" />
+                        <div class="form-actions">
+                            <button class="btn-cancel" onclick="toggleCreateRoomForm(false)">취소</button>
+                            <button class="btn-submit" onclick="submitPartyRoom('${eventId}')">방 개설</button>
+                        </div>
+                    </div>
+                    <div class="room-list-header">
+                        <span class="room-list-title">현재 생성된 파티</span>
+                        <button class="btn-create-room" onclick="toggleCreateRoomForm(true)">+ 방 만들기</button>
+                    </div>
+                    <div class="room-list" id="partyListContainer">
+                        <div class="empty-review">불러오는 중...</div>
+                    </div>
+                </div>
+            </div>
+        `;
+
         const reviewSectionHtml = `
             <div class="review-section" style="border-top:none; padding-top:0; margin-top:0;">
                 <button class="review-toggle-btn" id="reviewToggleBtn" onclick="toggleReviewSection()">
-                    <span>💬 댓글 후기 보기 (<span class="count" id="reviewCount">0</span>)</span>
+                    <span>💬 댓글창 열기 (<span class="count" id="reviewCount">0</span>)</span>
                     <span class="toggle-arrow">▼</span>
                 </button>
-                
                 <div class="review-collapsible" id="reviewCollapsible">
                     <div class="review-form">
                         <div class="review-input-group">
@@ -1230,6 +1191,7 @@
             <div class="info-row"><span class="info-label">접수</span><span class="info-divider">|</span><span class="info-desc" style="${applyTextStyle}">${popupDisplayTxt}</span></div>
             <div class="info-row"><span class="info-label">일정</span><span class="info-divider">|</span><span class="info-desc">${popupDate}</span></div>
             ${tipText ? `<div class="info-row"><span class="info-label">메모</span><span class="info-divider">|</span><span class="info-desc" style="font-weight:bold; color:var(--text-main);">${tipText}</span></div>` : ''}
+            ${partySectionHtml}
             ${reviewSectionHtml}
         `;
 
@@ -1239,10 +1201,7 @@
 
         if (detailUrl && detailUrl.trim() !== '') {
             const lowerUrl = detailUrl.trim().toLowerCase();
-            isImageUrl =
-                /\.(jpeg|jpg|gif|png|webp)(?:[\?#].*)?$/i.test(lowerUrl) ||
-                lowerUrl.includes('drive.google.com/uc?') ||
-                lowerUrl.includes('phinf.pstatic.net');
+            isImageUrl = /\.(jpeg|jpg|gif|png|webp)(?:[\?#].*)?$/i.test(lowerUrl) || lowerUrl.includes('drive.google.com/uc?') || lowerUrl.includes('phinf.pstatic.net');
         }
 
         const whiteLinkIcon = `<svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor; margin-left:4px; vertical-align:text-bottom;"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>`;
@@ -1252,7 +1211,6 @@
         if (detailUrl && detailUrl.trim() !== '') {
             const safeUrl = detailUrl.trim().replace(/"/g, '&quot;');
             const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/(?:\r\n|\r|\n|\\n)/g, ' ');
-            
             if (isImageUrl) {
                 btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">상세정보 확인${colorImgIcon}</button>`;
             } else {
@@ -1264,7 +1222,6 @@
 
         let btnApply = '';
         const rawApplyValue = item['신청링크'] || item.applyLink;
-
         if (rawApplyValue && rawApplyValue.trim() !== '') {
             const cleanValue = rawApplyValue.trim();
             const safeApplyValue = cleanValue.replace(/"/g, '&quot;');
@@ -1299,38 +1256,207 @@
         `;
 
         document.getElementById('eventModal').classList.add('active');
-
-        // 💡 리뷰 데이터를 파이어베이스에서 실시간으로 불러와 붙이는 함수 실행
+        
+        // 데이터 로딩 트리거
         loadReviews(eventId);
+        loadPartyRooms(eventId); // 파티 데이터 로드
 
-        try {
-            history.pushState({ eventPopup: true }, '', '?id=' + encodeURIComponent(eventId));
-        } catch (e) {
-            console.log("로컬 환경이라 URL이 변경되지 않습니다.");
-        }
+        try { history.pushState({ eventPopup: true }, '', '?id=' + encodeURIComponent(eventId)); } catch (e) {}
     }
 
     function closeEventPopup(e) {
         if (e && e.target !== e.currentTarget && !e.target.classList.contains('event-modal-close-btn')) return;
-        
         document.body.classList.remove('modal-open');
         document.getElementById('eventModal').classList.remove('active');
-        
-        try {
-            history.pushState(null, '', window.location.pathname);
-        } catch (e) {}
+        try { history.pushState(null, '', window.location.pathname); } catch (e) {}
     }
 
+    // ==========================================
+    // 🎮 파티원 모집 (LFG) 관련 로직
+    // ==========================================
+    function togglePartySection() {
+        const collapsible = document.getElementById('partyCollapsible');
+        const toggleBtn = document.getElementById('partyToggleBtn');
+        if (collapsible.classList.contains('open')) {
+            collapsible.classList.remove('open');
+            toggleBtn.classList.remove('open');
+        } else {
+            collapsible.classList.add('open');
+            toggleBtn.classList.add('open');
+        }
+    }
+
+    function toggleCreateRoomForm(show) {
+        document.getElementById('createRoomFormContainer').style.display = show ? 'block' : 'none';
+    }
+
+    function loadPartyRooms(eventId) {
+        const partyListContainer = document.getElementById('partyListContainer');
+        if (!partyListContainer || !db) return;
+
+        db.ref(`event_party/${eventId}`).orderByChild('timestamp').on('value', (snapshot) => {
+            const rooms = [];
+            snapshot.forEach(child => { rooms.push({ id: child.key, ...child.val() }); });
+            rooms.reverse(); 
+            
+            const countElem = document.getElementById('partyCount');
+            if(countElem) countElem.innerText = rooms.length;
+
+            if (rooms.length === 0) {
+                partyListContainer.innerHTML = '<div class="empty-review">생성된 파티가 없습니다.<br>첫 번째 파티장이 되어보세요! 👑</div>';
+                return;
+            }
+
+            let html = '';
+            rooms.forEach(room => {
+                const isOpen = room.status === '모집중';
+                const statusClass = isOpen ? 'open' : 'closed';
+                const statusText = isOpen ? '모집중' : '마감됨';
+                const joinBtnHtml = isOpen 
+                    ? `<button class="btn-join" onclick="window.open('${escapeHtml(room.contactUrl)}', '_blank')">입장하기</button>`
+                    : `<button class="btn-join" style="background:#ccc; cursor:not-allowed;" disabled>입장불가</button>`;
+
+                html += `
+                    <div class="room-card">
+                        <div class="room-info">
+                            <div class="room-title-row">
+                                <span class="room-status ${statusClass}">${statusText}</span>
+                                <span class="room-title">${escapeHtml(room.title)}</span>
+                            </div>
+                            <div class="room-meta">
+                                방장: ${escapeHtml(room.nickname)} | 모집: ${room.maxPeople}명
+                            </div>
+                        </div>
+                        <div class="room-actions">
+                            ${joinBtnHtml}
+                            ${isOpen ? `<button class="btn-close-room" onclick="closePartyRoom('${eventId}', '${room.id}')">마감하기</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            partyListContainer.innerHTML = html;
+        });
+    }
+
+    function submitPartyRoom(eventId) {
+        const nickname = document.getElementById('partyNickname').value.trim();
+        const maxPeople = document.getElementById('partyMaxPeople').value;
+        const title = document.getElementById('partyTitle').value.trim();
+        const contactUrl = document.getElementById('partyContactUrl').value.trim();
+        const password = document.getElementById('partyPassword').value.trim();
+
+        if (!nickname || !title || !contactUrl || !password) return alert('모든 항목을 입력해주세요.');
+        if (!contactUrl.includes('kakao.com')) return alert('올바른 카카오톡 오픈채팅 링크를 입력해주세요.');
+        if (containsBadWord(nickname) || containsBadWord(title)) return alert('부적절한 단어가 포함되어 있습니다.');
+
+        const roomData = {
+            nickname: nickname, maxPeople: maxPeople, title: title, contactUrl: contactUrl,
+            password: password, status: '모집중', timestamp: firebase.database.ServerValue.TIMESTAMP
+        };
+
+        db.ref(`event_party/${eventId}`).push(roomData)
+            .then(() => {
+                alert('파티 모집 방이 개설되었습니다!');
+                document.getElementById('partyNickname').value = '';
+                document.getElementById('partyTitle').value = '';
+                document.getElementById('partyContactUrl').value = '';
+                document.getElementById('partyPassword').value = '';
+                toggleCreateRoomForm(false);
+            })
+            .catch(error => { alert('오류가 발생했습니다.'); });
+    }
+
+    function closePartyRoom(eventId, roomId) {
+        const inputPw = prompt("방 개설 시 설정한 비밀번호 4자리를 입력해주세요.\n마감 처리된 방은 다시 열 수 없습니다.");
+        if (!inputPw) return;
+
+        const roomRef = db.ref(`event_party/${eventId}/${roomId}`);
+        roomRef.once('value').then(snapshot => {
+            const room = snapshot.val();
+            if (room.password === inputPw) {
+                roomRef.update({ status: '마감' }).then(() => alert('파티 모집이 마감 처리되었습니다.'));
+            } else {
+                alert('비밀번호가 일치하지 않습니다.');
+            }
+        });
+    }
+
+    // ==========================================
+    // 💬 실시간 글로벌 채팅 관련 로직
+    // ==========================================
+    let isChatInitialized = false;
+
+    function toggleChatWindow() {
+        const chatWindow = document.getElementById('chatWindow');
+        chatWindow.classList.toggle('active');
+        if (chatWindow.classList.contains('active') && !isChatInitialized) {
+            initRealtimeChat();
+            isChatInitialized = true;
+        }
+    }
+
+    function initRealtimeChat() {
+        if (!db) return;
+        const messagesRef = db.ref('global_chat');
+        const chatContainer = document.getElementById('chatMessages');
+        
+        const savedNick = localStorage.getItem('heycj_chat_nick');
+        if (savedNick) document.getElementById('chatNickInput').value = savedNick;
+
+        messagesRef.orderByChild('timestamp').limitToLast(50).on('child_added', (snapshot) => {
+            const msg = snapshot.val();
+            renderChatMessage(msg);
+        });
+    }
+
+    function renderChatMessage(msg) {
+        const chatContainer = document.getElementById('chatMessages');
+        const myNick = document.getElementById('chatNickInput').value.trim() || localStorage.getItem('heycj_chat_nick') || "";
+        const isMyMsg = (msg.nickname === myNick);
+        const msgTypeClass = isMyMsg ? 'my-msg' : 'other-msg';
+
+        const msgHtml = `
+            <div class="chat-msg-row ${msgTypeClass}">
+                ${!isMyMsg ? `<div class="chat-nick">${escapeHtml(msg.nickname)}</div>` : ''}
+                <div class="chat-bubble">${escapeHtml(msg.text)}</div>
+            </div>
+        `;
+        chatContainer.insertAdjacentHTML('beforeend', msgHtml);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function sendChatMessage() {
+        const nickInput = document.getElementById('chatNickInput');
+        const textInput = document.getElementById('chatTextInput');
+        const nickname = nickInput.value.trim();
+        const text = textInput.value.trim();
+
+        if (!nickname) return alert('닉네임을 입력해주세요.');
+        if (!text) return;
+        if (containsBadWord(nickname) || containsBadWord(text)) return alert('부적절한 단어가 포함되어 전송할 수 없습니다.');
+
+        localStorage.setItem('heycj_chat_nick', nickname);
+        const msgData = { nickname: nickname, text: text, timestamp: firebase.database.ServerValue.TIMESTAMP };
+
+        const sendBtn = document.querySelector('.btn-send-chat');
+        sendBtn.disabled = true;
+        
+        db.ref('global_chat').push(msgData)
+            .then(() => { textInput.value = ''; textInput.focus(); })
+            .catch(err => { alert('전송에 실패했습니다.'); })
+            .finally(() => { sendBtn.disabled = false; });
+    }
+
+    // 초기화 실행
     document.addEventListener('DOMContentLoaded', () => {
         initNotice();
         initLastUpdated();
         initVisitCounters();
         fetchEventData(); 
         
-        // 하단 배너 (기존 프레임 크기 유지, object-fit: cover로 이미지 꽉 채우기)
         const fallbackBanner = document.getElementById('fallback-banner');
         if (fallbackBanner) {
-            fallbackBanner.innerHTML = '<img src="https://firebasestorage.googleapis.com/v0/b/heycj-55b6a.firebasestorage.app/o/%EB%B0%B0%EB%84%883.png?alt=media&token=b2287e89-4281-4998-9182-2a741773487e" alt="하단 배너" style="width: 100%; height: 100%; border-radius: 4px;" />';
+            fallbackBanner.innerHTML = '<img src="https://firebasestorage.googleapis.com/v0/b/heycj-55b6a.firebasestorage.app/o/%EB%B0%B0%EB%84%883.png?alt=media&token=b2287e89-4281-4998-9182-2a741773487e" alt="하단 배너" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;" />';
         }
     });
 </script>
