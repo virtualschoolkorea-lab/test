@@ -20,24 +20,23 @@
         body { margin: 0; overflow: hidden; background-color: #000; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         #canvas-container { width: 100vw; height: 100vh; display: block; }
         
-        /* UI 오버레이 설정: 캔버스 위에 떠 있도록 구성 */
         #ui-layer {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; /* 클릭 이벤트가 캔버스로 통과하도록 설정 */
+            pointer-events: none;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             z-index: 10;
         }
         .interactive-ui {
-            pointer-events: auto; /* UI 요소들은 클릭 가능하도록 설정 */
+            pointer-events: auto;
         }
 
-        /* 🚀 VR 버튼이 무조건 눈에 띄도록 강제 디자인 적용 */
-        #VRButton {
-            z-index: 99999 !important; /* 다른 모든 UI보다 무조건 맨 위에 오도록 설정 */
-            background-color: #3b82f6 !important; /* 눈에 띄는 파란색 */
+        /* 🚀 패스스루 AR 버튼 강조 디자인 */
+        #ARButton {
+            z-index: 99999 !important;
+            background-color: #10b981 !important; /* AR 느낌의 그린 컬러 */
             color: white !important;
             font-weight: bold !important;
             padding: 18px 30px !important;
@@ -45,38 +44,39 @@
             border-radius: 12px !important;
             bottom: 40px !important;
             border: 2px solid rgba(255, 255, 255, 0.5) !important;
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.6) !important;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.6) !important;
             transition: all 0.3s ease !important;
             cursor: pointer !important;
         }
-        #VRButton:hover {
-            background-color: #2563eb !important;
+        #ARButton:hover {
+            background-color: #059669 !important;
             transform: scale(1.05) !important;
         }
     </style>
 </head>
 <body>
 
-    <!-- 3D 캔버스가 렌더링될 컨테이너 -->
     <div id="canvas-container"></div>
 
     <!-- UI 오버레이 -->
     <div id="ui-layer" class="p-6">
-        <!-- 상단 헤더 -->
         <header class="flex justify-between items-start interactive-ui">
             <div class="bg-black/60 backdrop-blur-md border border-white/20 p-5 rounded-2xl shadow-2xl max-w-md">
-                <h1 class="text-3xl font-bold mb-2 bg-gradient-to-r from-yellow-300 to-orange-500 bg-clip-text text-transparent">태양계 3D 체험</h1>
-                <p class="text-gray-300 text-sm mb-4">마우스 왼쪽 버튼으로 화면을 회전하고, 휠로 확대/축소하세요. 행성을 클릭하면 상세 정보를 볼 수 있습니다.</p>
+                <h1 class="text-3xl font-bold mb-2 bg-gradient-to-r from-yellow-300 to-orange-500 bg-clip-text text-transparent">태양계 MR 체험</h1>
+                <p class="text-gray-300 text-sm mb-4">행성을 클릭하여 정보를 보고, 슬라이더나 버튼으로 공전을 제어하세요. 퀘스트3에서는 핸드 트래킹을 지원합니다.</p>
                 
-                <!-- 시간 속도 조절 슬라이더 -->
                 <div class="mt-4">
-                    <label for="speed-slider" class="block text-sm font-medium text-gray-300 mb-2">공전 속도 조절: <span id="speed-value">1x</span></label>
+                    <label for="speed-slider" class="block text-sm font-medium text-gray-300 mb-2">기본 속도 조절: <span id="speed-value">1x</span></label>
                     <input type="range" id="speed-slider" min="0" max="5" step="0.1" value="1" class="w-full accent-blue-500">
                 </div>
+                
+                <!-- 2D 환경용 재생/일시정지 버튼 -->
+                <button id="html-play-pause-btn" class="mt-4 w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition">
+                    ⏸ 일시정지
+                </button>
             </div>
         </header>
 
-        <!-- 하단 정보 패널 (기본적으로 숨겨짐) -->
         <div class="flex justify-center interactive-ui mb-6">
             <div id="info-panel" class="hidden bg-black/70 backdrop-blur-lg border border-white/30 p-6 rounded-2xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 translate-y-4 opacity-0">
                 <div class="flex items-center gap-4 border-b border-white/20 pb-4 mb-4">
@@ -98,97 +98,97 @@
         </div>
     </div>
 
-    <!-- 모듈 타입 스크립트로 변경 -->
     <script type="module">
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-        import { VRButton } from 'three/addons/webxr/VRButton.js';
+        import { ARButton } from 'three/addons/webxr/ARButton.js'; // 패스스루를 위한 ARButton
 
-        // 전역 변수 선언
-        let scene, camera, renderer, controls;
+        // 전역 변수
+        let scene, camera, renderer, controls, starMesh;
         let time = 0;
-        let timeMultiplier = 1;
+        let baseSpeedMultiplier = 1;
+        let isPlaying = true;
         
-        // 행성 메쉬 및 데이터를 저장할 배열
         const celestialBodies = [];
-        
-        // 클릭 감지를 위한 Raycaster
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
 
-        // VR 컨트롤러 관련 변수
+        // VR/AR 컨트롤러 관련 변수
         let controller1, controller2;
         let raycasterVR = new THREE.Raycaster();
+        
+        // 3D UI 패널 관련
+        let uiPlayPauseMesh;
+        let uiTextureCanvas, uiTextureCtx, uiTexture;
 
-        // 태양계 천체 데이터
         const planetData = [
             { id: 'sun', name: '태양', color: 0xffcc00, radius: 5, distance: 0, speed: 0, type: 'star', desc: '태양계의 중심에 있는 항성입니다. 막대한 에너지를 방출하여 지구를 비롯한 행성들에 빛과 열을 공급합니다.' },
-            { id: 'mercury', name: '수성', color: 0x888888, radius: 0.5, distance: 8, speed: 0.04, type: 'planet', desc: '태양에서 가장 가까운 행성입니다. 대기가 거의 없어 일교차가 매우 큽니다.', realDist: '5,790만 km', realSize: '지구의 0.38배' },
-            { id: 'venus', name: '금성', color: 0xe3bb76, radius: 0.95, distance: 11, speed: 0.015, type: 'planet', desc: '가장 밝게 빛나는 행성으로 "샛별"이라고도 불립니다. 두꺼운 이산화탄소 대기 때문에 표면 온도가 매우 높습니다.', realDist: '1억 820만 km', realSize: '지구의 0.95배' },
-            { id: 'earth', name: '지구', color: 0x2b82c9, radius: 1, distance: 15, speed: 0.01, type: 'planet', desc: '우리가 살고 있는 푸른 행성입니다. 표면의 70%가 물로 덮여 있으며, 현재까지 생명체가 존재한다고 알려진 유일한 곳입니다.', realDist: '1억 4,960만 km', realSize: '기준 (1배)' },
-            { id: 'mars', name: '화성', color: 0xc1440e, radius: 0.53, distance: 19, speed: 0.008, type: 'planet', desc: '표면의 산화철 때문에 붉게 보이는 행성입니다. 과거에 물이 흘렀던 흔적이 있어 제2의 지구 후보로 연구되고 있습니다.', realDist: '2억 2,790만 km', realSize: '지구의 0.53배' },
-            { id: 'jupiter', name: '목성', color: 0xd39c7e, radius: 2.5, distance: 26, speed: 0.002, type: 'planet', desc: '태양계에서 가장 큰 가스 행성입니다. 표면에는 거대한 폭풍인 대적점이 존재합니다.', realDist: '7억 7,830만 km', realSize: '지구의 11.2배' },
-            { id: 'saturn', name: '토성', color: 0xead6b8, radius: 2.0, distance: 34, speed: 0.0009, type: 'planet', hasRing: true, desc: '얼음과 암석 조각으로 이루어진 아름답고 뚜렷한 고리를 가진 가스 행성입니다.', realDist: '14억 2,700만 km', realSize: '지구의 9.4배' },
-            { id: 'uranus', name: '천왕성', color: 0x4b70dd, radius: 1.5, distance: 42, speed: 0.0004, type: 'planet', desc: '자전축이 거의 90도 기울어져 있어 옆으로 누워서 자전하는 독특한 얼음 행성입니다.', realDist: '28억 7,100만 km', realSize: '지구의 4배' },
-            { id: 'neptune', name: '해왕성', color: 0x274687, radius: 1.4, distance: 49, speed: 0.0001, type: 'planet', desc: '태양계에서 가장 멀리 있는 푸른색의 얼음 행성입니다. 매우 강한 바람이 붑니다.', realDist: '44억 9,700만 km', realSize: '지구의 3.9배' }
+            { id: 'mercury', name: '수성', color: 0x888888, radius: 0.5, distance: 8, speed: 0.04, type: 'planet', desc: '태양에서 가장 가까운 행성입니다. 텍스처는 크레이터가 많은 회색 표면을 나타냅니다.', realDist: '5,790만 km', realSize: '지구의 0.38배' },
+            { id: 'venus', name: '금성', color: 0xe3bb76, radius: 0.95, distance: 11, speed: 0.015, type: 'planet', desc: '가장 밝게 빛나는 행성으로 두꺼운 이산화탄소 대기를 가지고 있습니다.', realDist: '1억 820만 km', realSize: '지구의 0.95배' },
+            { id: 'earth', name: '지구', color: 0x2b82c9, radius: 1, distance: 15, speed: 0.01, type: 'planet', desc: '푸른 바다와 대륙이 있는 우리의 행성입니다.', realDist: '1억 4,960만 km', realSize: '기준 (1배)' },
+            { id: 'mars', name: '화성', color: 0xc1440e, radius: 0.53, distance: 19, speed: 0.008, type: 'planet', desc: '붉은 산화철 표면과 어두운 화산 지형을 가진 행성입니다.', realDist: '2억 2,790만 km', realSize: '지구의 0.53배' },
+            { id: 'jupiter', name: '목성', color: 0xd39c7e, radius: 2.5, distance: 26, speed: 0.002, type: 'planet', desc: '거대한 가스 행성으로 수평 띠 형태의 강력한 폭풍 구조가 특징입니다.', realDist: '7억 7,830만 km', realSize: '지구의 11.2배' },
+            { id: 'saturn', name: '토성', color: 0xead6b8, radius: 2.0, distance: 34, speed: 0.0009, type: 'planet', hasRing: true, desc: '연한 노란빛의 띠를 지니고 있으며 웅장한 고리를 자랑합니다.', realDist: '14억 2,700만 km', realSize: '지구의 9.4배' },
+            { id: 'uranus', name: '천왕성', color: 0x4b70dd, radius: 1.5, distance: 42, speed: 0.0004, type: 'planet', desc: '연푸른 빛의 차가운 얼음 가스 행성입니다.', realDist: '28억 7,100만 km', realSize: '지구의 4배' },
+            { id: 'neptune', name: '해왕성', color: 0x274687, radius: 1.4, distance: 49, speed: 0.0001, type: 'planet', desc: '짙은 푸른색을 띠고 있으며 태양계에서 가장 멀리 있는 행성입니다.', realDist: '44억 9,700만 km', realSize: '지구의 3.9배' }
         ];
 
-        // 선택 표시용 링 메쉬
         let selectionRing;
 
-        // 초기화 함수
         function init() {
-            // 1. 씬 생성
             scene = new THREE.Scene();
             
-            // 배경 별 생성
-            createStarfield();
+            // 패스스루를 위해 배경색을 투명(0)으로 설정
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            // 현실 세계가 보이도록 클리어 컬러 투명도 0
+            renderer.setClearColor(0x000000, 0); 
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-            // 2. 카메라 설정
             camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.set(0, 30, 60);
 
-            // 3. 렌더러 설정
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            document.getElementById('canvas-container').appendChild(renderer.domElement);
+            createStarfield();
 
-            // 4. 조명 설정
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
             scene.add(ambientLight);
 
-            const sunLight = new THREE.PointLight(0xffffff, 2, 300);
+            const sunLight = new THREE.PointLight(0xffffff, 3, 300);
             scene.add(sunLight);
 
-            // 5. 천체 생성
             createSolarSystem();
 
-            // 6. 카메라 컨트롤 설정 (모듈 방식)
             controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
             controls.maxDistance = 200;
             controls.minDistance = 5;
 
-            // 🚀 VR 활성화 및 버튼 생성
+            // 🚀 ARButton (패스스루 활성화) 생성
             renderer.xr.enabled = true;
-            document.body.appendChild(VRButton.createButton(renderer));
+            document.body.appendChild(ARButton.createButton(renderer, {
+                optionalFeatures: ['dom-overlay'],
+                domOverlay: { root: document.body }
+            }));
 
-            // VR 컨트롤러 셋업
+            // AR 세션 진입 시 몰입감을 위해 배경 별 숨기기 (현실 방이 보임)
+            renderer.xr.addEventListener('sessionstart', () => { if (starMesh) starMesh.visible = false; });
+            renderer.xr.addEventListener('sessionend', () => { if (starMesh) starMesh.visible = true; });
+
             setupVRControllers();
 
-            // 7. 이벤트 리스너 등록
             window.addEventListener('resize', onWindowResize);
             window.addEventListener('click', onMouseClick);
             
             // UI 이벤트 등록
             document.getElementById('speed-slider').addEventListener('input', (e) => {
-                timeMultiplier = parseFloat(e.target.value);
-                document.getElementById('speed-value').textContent = timeMultiplier.toFixed(1) + 'x';
+                baseSpeedMultiplier = parseFloat(e.target.value);
+                document.getElementById('speed-value').textContent = baseSpeedMultiplier.toFixed(1) + 'x';
             });
+
+            document.getElementById('html-play-pause-btn').addEventListener('click', togglePlayPause);
             
-            // 선택 표시 링 생성
             const ringGeo = new THREE.RingGeometry(1.2, 1.4, 32);
             const ringMat = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.5 });
             selectionRing = new THREE.Mesh(ringGeo, ringMat);
@@ -196,8 +196,140 @@
             selectionRing.visible = false;
             scene.add(selectionRing);
 
-            // 8. 애니메이션 루프 시작 (WebXR 환경에 맞게 변경)
             renderer.setAnimationLoop(animate);
+        }
+
+        // 🚀 절차적 행성 텍스처 생성기 (외부 이미지 오류 방지)
+        function generatePlanetTexture(id) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512; canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            if (id === 'sun') {
+                const grd = ctx.createRadialGradient(256, 256, 0, 256, 256, 256);
+                grd.addColorStop(0, '#fff5b5');
+                grd.addColorStop(0.5, '#ffcc00');
+                grd.addColorStop(1, '#ff4500');
+                ctx.fillStyle = grd;
+                ctx.fillRect(0,0,512,512);
+                // 흑점/노이즈
+                for(let i=0; i<3000; i++) {
+                    ctx.fillStyle = Math.random() > 0.5 ? 'rgba(255,100,0,0.5)' : 'rgba(255,50,0,0.3)';
+                    ctx.fillRect(Math.random()*512, Math.random()*512, 4, 4);
+                }
+            } else if (id === 'earth') {
+                ctx.fillStyle = '#1e4b85'; ctx.fillRect(0,0,512,512); // 바다
+                ctx.fillStyle = '#3b854e'; // 대륙
+                for(let i=0; i<40; i++) {
+                    ctx.beginPath();
+                    ctx.arc(Math.random()*512, Math.random()*512, Math.random()*40+10, 0, Math.PI*2);
+                    ctx.fill();
+                }
+                ctx.fillStyle = 'rgba(255,255,255,0.4)'; // 구름
+                for(let i=0; i<60; i++) {
+                    ctx.beginPath();
+                    ctx.arc(Math.random()*512, Math.random()*512, Math.random()*30+5, 0, Math.PI*2);
+                    ctx.fill();
+                }
+            } else if (id === 'jupiter' || id === 'saturn' || id === 'venus') {
+                // 띠 형태의 가스 행성
+                const colors = id === 'jupiter' ? ['#c88b3a', '#e0c39a', '#a66a38', '#d39c7e', '#ffffff'] :
+                               id === 'saturn' ? ['#ead6b8', '#ceb8b8', '#e2c88d', '#f4e6c3'] :
+                               ['#e3bb76', '#c99a4e', '#f4d499'];
+                for(let y=0; y<512; y+=8) {
+                    ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+                    ctx.fillRect(0, y, 512, 8 + Math.random()*10);
+                }
+                // 대적점 (목성)
+                if(id === 'jupiter') {
+                    ctx.fillStyle = 'rgba(166, 60, 20, 0.7)';
+                    ctx.beginPath(); ctx.ellipse(256, 350, 40, 20, 0, 0, Math.PI*2); ctx.fill();
+                }
+            } else if (id === 'mars') {
+                ctx.fillStyle = '#c1440e'; ctx.fillRect(0,0,512,512);
+                ctx.fillStyle = 'rgba(100, 30, 0, 0.3)';
+                for(let i=0; i<50; i++) {
+                    ctx.beginPath(); ctx.arc(Math.random()*512, Math.random()*512, Math.random()*50, 0, Math.PI*2); ctx.fill();
+                }
+            } else if (id === 'mercury' || id === 'moon') {
+                ctx.fillStyle = '#888888'; ctx.fillRect(0,0,512,512);
+                ctx.fillStyle = 'rgba(50, 50, 50, 0.5)';
+                for(let i=0; i<100; i++) {
+                    ctx.beginPath(); ctx.arc(Math.random()*512, Math.random()*512, Math.random()*15+2, 0, Math.PI*2); ctx.fill();
+                }
+            } else {
+                // 천왕성, 해왕성 등 단색에 가까운 행성
+                ctx.fillStyle = id === 'uranus' ? '#4b70dd' : '#274687';
+                ctx.fillRect(0,0,512,512);
+                ctx.fillStyle = 'rgba(255,255,255,0.1)';
+                for(let y=0; y<512; y+=40) ctx.fillRect(0, y, 512, 10);
+            }
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.colorSpace = THREE.SRGBColorSpace;
+            return texture;
+        }
+
+        // 🚀 호버시 나타날 3D 이름표 텍스트 생성
+        function createNameSprite(name) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256; canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+            ctx.beginPath();
+            ctx.roundRect(0, 0, 256, 64, 16);
+            ctx.fill();
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 32px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(name, 128, 32);
+
+            const tex = new THREE.CanvasTexture(canvas);
+            const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }); 
+            const sprite = new THREE.Sprite(mat);
+            sprite.scale.set(3, 0.75, 1);
+            return sprite;
+        }
+
+        // 재생/일시정지 토글 함수
+        function togglePlayPause() {
+            isPlaying = !isPlaying;
+            
+            // 2D 버튼 업데이트
+            const htmlBtn = document.getElementById('html-play-pause-btn');
+            if(isPlaying) {
+                htmlBtn.textContent = '⏸ 일시정지';
+                htmlBtn.className = 'mt-4 w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition';
+            } else {
+                htmlBtn.textContent = '▶ 재생';
+                htmlBtn.className = 'mt-4 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition';
+            }
+
+            // 3D 패널 텍스처 업데이트
+            drawUiTexture();
+        }
+
+        function drawUiTexture() {
+            if(!uiTextureCtx) return;
+            uiTextureCtx.clearRect(0,0,256,128);
+            uiTextureCtx.fillStyle = isPlaying ? '#ef4444' : '#10b981'; // 일시정지(적색), 재생(녹색)
+            uiTextureCtx.beginPath();
+            uiTextureCtx.roundRect(10, 10, 236, 108, 20);
+            uiTextureCtx.fill();
+            uiTextureCtx.strokeStyle = '#ffffff';
+            uiTextureCtx.lineWidth = 5;
+            uiTextureCtx.stroke();
+
+            uiTextureCtx.fillStyle = '#ffffff';
+            uiTextureCtx.font = 'bold 36px sans-serif';
+            uiTextureCtx.textAlign = 'center';
+            uiTextureCtx.textBaseline = 'middle';
+            uiTextureCtx.fillText(isPlaying ? '⏸ 일시정지' : '▶ 재생', 128, 64);
+
+            if (uiTexture) uiTexture.needsUpdate = true;
         }
 
         function setupVRControllers() {
@@ -207,14 +339,20 @@
                 
                 if (intersections.length > 0) {
                     const object = intersections[0].object;
+                    
+                    // 🚀 3D 재생 버튼을 클릭했는지 확인
+                    if (object.userData && object.userData.isPlayPauseBtn) {
+                        togglePlayPause();
+                        return;
+                    }
+
+                    // 행성 클릭 처리
                     const data = object.userData;
-                    
-                    selectionRing.visible = true;
-                    selectionRing.scale.set(data.radius, data.radius, data.radius);
-                    
-                    celestialBodies.forEach(body => {
-                        body.isSelected = (body.mesh === object);
-                    });
+                    if(data && data.type) {
+                        selectionRing.visible = true;
+                        selectionRing.scale.set(data.radius, data.radius, data.radius);
+                        celestialBodies.forEach(body => { body.isSelected = (body.mesh === object); });
+                    }
                 } else {
                     selectionRing.visible = false;
                     celestialBodies.forEach(body => body.isSelected = false);
@@ -229,7 +367,6 @@
             controller2.addEventListener('selectstart', onSelectStart);
             scene.add(controller2);
 
-            // 컨트롤러에서 나가는 광선(포인터) 시각화
             const geometry = new THREE.BufferGeometry().setFromPoints([
                 new THREE.Vector3(0, 0, 0),
                 new THREE.Vector3(0, 0, -1)
@@ -240,6 +377,24 @@
             
             controller1.add(line.clone());
             controller2.add(line.clone());
+
+            // 🚀 왼손(또는 컨트롤러 1)에 3D 재생/일시정지 패널 부착
+            uiTextureCanvas = document.createElement('canvas');
+            uiTextureCanvas.width = 256; uiTextureCanvas.height = 128;
+            uiTextureCtx = uiTextureCanvas.getContext('2d');
+            uiTexture = new THREE.CanvasTexture(uiTextureCanvas);
+            drawUiTexture();
+
+            uiPlayPauseMesh = new THREE.Mesh(
+                new THREE.PlaneGeometry(0.2, 0.1),
+                new THREE.MeshBasicMaterial({ map: uiTexture, transparent: true, side: THREE.DoubleSide })
+            );
+            // 손목 위쪽에 떠 있도록 회전 및 위치 조정
+            uiPlayPauseMesh.rotation.x = -Math.PI / 2;
+            uiPlayPauseMesh.position.set(0, 0.08, -0.05); 
+            uiPlayPauseMesh.userData = { isPlayPauseBtn: true };
+            
+            controller1.add(uiPlayPauseMesh);
         }
 
         function getIntersections(controller) {
@@ -248,8 +403,11 @@
             raycasterVR.ray.origin.setFromMatrixPosition(controller.matrixWorld);
             raycasterVR.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
             
-            const meshes = celestialBodies.map(body => body.mesh);
-            return raycasterVR.intersectObjects(meshes);
+            // 검사 대상: 모든 행성 메쉬 + 3D UI 버튼
+            const targetMeshes = celestialBodies.map(body => body.mesh);
+            if (uiPlayPauseMesh) targetMeshes.push(uiPlayPauseMesh);
+            
+            return raycasterVR.intersectObjects(targetMeshes);
         }
 
         function createStarfield() {
@@ -269,7 +427,7 @@
                 opacity: 0.8
             });
 
-            const starMesh = new THREE.Points(starsGeometry, starsMaterial);
+            starMesh = new THREE.Points(starsGeometry, starsMaterial);
             scene.add(starMesh);
         }
 
@@ -278,20 +436,27 @@
 
             planetData.forEach((data) => {
                 let material;
+                const planetTex = generatePlanetTexture(data.id);
                 
                 if (data.type === 'star') {
-                    material = new THREE.MeshBasicMaterial({ color: data.color });
+                    material = new THREE.MeshBasicMaterial({ map: planetTex });
                 } else {
                     material = new THREE.MeshStandardMaterial({ 
-                        color: data.color,
-                        roughness: 0.7,
-                        metalness: 0.1
+                        map: planetTex,
+                        roughness: 0.8,
+                        metalness: 0.05
                     });
                 }
 
                 const mesh = new THREE.Mesh(sphereGeometry, material);
                 mesh.scale.set(data.radius, data.radius, data.radius);
                 mesh.userData = data;
+
+                // 🚀 행성 상단에 나타날 이름표 Sprite 부착 (기본 숨김)
+                const sprite = createNameSprite(data.name);
+                sprite.position.y = 1.3; // 행성 크기에 상대적으로 약간 위
+                sprite.visible = false;
+                mesh.add(sprite);
 
                 if (data.distance > 0) {
                     const orbitGeo = new THREE.BufferGeometry();
@@ -310,12 +475,32 @@
                 }
 
                 if (data.hasRing) {
-                    const ringGeo = new THREE.RingGeometry(data.radius * 1.4, data.radius * 2.2, 32);
+                    // 고리에도 텍스처 적용
+                    const ringCanvas = document.createElement('canvas');
+                    ringCanvas.width = 256; ringCanvas.height = 1;
+                    const rCtx = ringCanvas.getContext('2d');
+                    const grad = rCtx.createLinearGradient(0,0,256,0);
+                    grad.addColorStop(0, 'rgba(200, 180, 150, 0)');
+                    grad.addColorStop(0.2, 'rgba(234, 214, 184, 0.8)');
+                    grad.addColorStop(0.5, 'rgba(200, 180, 150, 0.3)');
+                    grad.addColorStop(0.8, 'rgba(234, 214, 184, 0.9)');
+                    grad.addColorStop(1, 'rgba(200, 180, 150, 0)');
+                    rCtx.fillStyle = grad; rCtx.fillRect(0,0,256,1);
+                    
+                    const ringTex = new THREE.CanvasTexture(ringCanvas);
+                    const ringGeo = new THREE.RingGeometry(data.radius * 1.4, data.radius * 2.2, 64);
+                    // UV 좌표 수정하여 링 텍스처가 예쁘게 매핑되도록 함
+                    const pos = ringGeo.attributes.position;
+                    const v3 = new THREE.Vector3();
+                    for (let i = 0; i < pos.count; i++) {
+                        v3.fromBufferAttribute(pos, i);
+                        const dist = v3.length();
+                        const uv = (dist - data.radius * 1.4) / (data.radius * 0.8);
+                        ringGeo.attributes.uv.setXY(i, uv, 0);
+                    }
+
                     const ringMat = new THREE.MeshStandardMaterial({ 
-                        color: 0xc9b79b, 
-                        side: THREE.DoubleSide,
-                        transparent: true,
-                        opacity: 0.8
+                        map: ringTex, color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.9
                     });
                     const ringMesh = new THREE.Mesh(ringGeo, ringMat);
                     ringMesh.rotation.x = Math.PI / 2 + 0.2; 
@@ -325,6 +510,7 @@
                 scene.add(mesh);
                 celestialBodies.push({
                     mesh: mesh,
+                    sprite: sprite,
                     data: data,
                     angle: Math.random() * Math.PI * 2 
                 });
@@ -338,6 +524,7 @@
         }
 
         function onMouseClick(event) {
+            // HTML UI 클릭 무시
             if(event.target.tagName !== 'CANVAS') return;
 
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -405,24 +592,56 @@
             }, 300); 
         }
 
+        // 🚀 호버 상태 업데이트 함수 (행성 가리킬 때 이름 표시)
+        function updateHoverState() {
+            // 모든 이름표 숨기기 초기화
+            celestialBodies.forEach(body => { body.sprite.visible = false; });
+
+            // VR/AR 상태일 때만 레이캐스팅 검사
+            if (!renderer.xr.isPresenting) return;
+
+            let intersects = [];
+            if (controller1) intersects = intersects.concat(getIntersections(controller1));
+            if (controller2) intersects = intersects.concat(getIntersections(controller2));
+
+            if (intersects.length > 0) {
+                const object = intersects[0].object;
+                // UI 버튼이 아닌 행성일 경우 이름 표시
+                if (!object.userData.isPlayPauseBtn) {
+                    const body = celestialBodies.find(b => b.mesh === object || (object.parent === b.mesh));
+                    if (body) {
+                        body.sprite.visible = true; // 레이저가 닿은 행성의 이름표 표시
+                    }
+                }
+            }
+        }
+
         function animate() {
-            time += 0.05 * timeMultiplier;
+            // 호버링 상태 체크
+            updateHoverState();
+
+            // isPlaying 상태에 따라 실제 적용되는 속도 결정
+            const currentSpeedMultiplier = isPlaying ? baseSpeedMultiplier : 0;
+            time += 0.05 * currentSpeedMultiplier;
 
             celestialBodies.forEach((body) => {
-                if (body.data.distance > 0 && timeMultiplier > 0) {
-                    body.angle -= body.data.speed * timeMultiplier;
+                if (body.data.distance > 0 && currentSpeedMultiplier > 0) {
+                    body.angle -= body.data.speed * currentSpeedMultiplier;
                     body.mesh.position.x = Math.cos(body.angle) * body.data.distance;
                     body.mesh.position.z = Math.sin(body.angle) * body.data.distance;
                 }
 
-                body.mesh.rotation.y += 0.01 * timeMultiplier;
+                // 자전은 멈췄을 때 같이 멈춤
+                if(currentSpeedMultiplier > 0) {
+                    body.mesh.rotation.y += 0.01 * currentSpeedMultiplier;
+                }
                 
                 if (body.isSelected) {
                     selectionRing.position.copy(body.mesh.position);
                 }
             });
 
-            if(selectionRing.visible) {
+            if(selectionRing.visible && currentSpeedMultiplier > 0) {
                 selectionRing.rotation.z -= 0.02;
             }
 
