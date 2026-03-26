@@ -5,14 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>태양계 3D 체험</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Three.js 및 OrbitControls 라이브러리 로드 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <!-- WebXR VRButton 추가 -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/webxr/VRButton.js"></script>
+    
+    <!-- 최신 모듈 방식(ES Modules)으로 Three.js 및 XR 라이브러리 로드 -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
     <style>
         body { margin: 0; overflow: hidden; background-color: #000; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         #canvas-container { width: 100vw; height: 100vh; display: block; }
+        
         /* UI 오버레이 설정: 캔버스 위에 떠 있도록 구성 */
         #ui-layer {
             position: absolute;
@@ -21,9 +28,30 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            z-index: 10;
         }
         .interactive-ui {
             pointer-events: auto; /* UI 요소들은 클릭 가능하도록 설정 */
+        }
+
+        /* 🚀 VR 버튼이 무조건 눈에 띄도록 강제 디자인 적용 */
+        #VRButton {
+            z-index: 99999 !important; /* 다른 모든 UI보다 무조건 맨 위에 오도록 설정 */
+            background-color: #3b82f6 !important; /* 눈에 띄는 파란색 */
+            color: white !important;
+            font-weight: bold !important;
+            padding: 18px 30px !important;
+            font-size: 22px !important;
+            border-radius: 12px !important;
+            bottom: 40px !important;
+            border: 2px solid rgba(255, 255, 255, 0.5) !important;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.6) !important;
+            transition: all 0.3s ease !important;
+            cursor: pointer !important;
+        }
+        #VRButton:hover {
+            background-color: #2563eb !important;
+            transform: scale(1.05) !important;
         }
     </style>
 </head>
@@ -70,7 +98,12 @@
         </div>
     </div>
 
-    <script>
+    <!-- 모듈 타입 스크립트로 변경 -->
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { VRButton } from 'three/addons/webxr/VRButton.js';
+
         // 전역 변수 선언
         let scene, camera, renderer, controls;
         let time = 0;
@@ -87,7 +120,7 @@
         let controller1, controller2;
         let raycasterVR = new THREE.Raycaster();
 
-        // 태양계 천체 데이터 (시각적 효과를 위해 크기와 거리는 실제 비율이 아닌 상대적 비율로 조정됨)
+        // 태양계 천체 데이터
         const planetData = [
             { id: 'sun', name: '태양', color: 0xffcc00, radius: 5, distance: 0, speed: 0, type: 'star', desc: '태양계의 중심에 있는 항성입니다. 막대한 에너지를 방출하여 지구를 비롯한 행성들에 빛과 열을 공급합니다.' },
             { id: 'mercury', name: '수성', color: 0x888888, radius: 0.5, distance: 8, speed: 0.04, type: 'planet', desc: '태양에서 가장 가까운 행성입니다. 대기가 거의 없어 일교차가 매우 큽니다.', realDist: '5,790만 km', realSize: '지구의 0.38배' },
@@ -122,25 +155,23 @@
             document.getElementById('canvas-container').appendChild(renderer.domElement);
 
             // 4. 조명 설정
-            // 환경광 (어두운 부분을 살짝 밝혀줌)
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
             scene.add(ambientLight);
 
-            // 점광원 (태양의 위치에서 빛을 발산)
             const sunLight = new THREE.PointLight(0xffffff, 2, 300);
             scene.add(sunLight);
 
             // 5. 천체 생성
             createSolarSystem();
 
-            // 6. 카메라 컨트롤 설정
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            // 6. 카메라 컨트롤 설정 (모듈 방식)
+            controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
-            controls.maxDistance = 200; // 최대 줌아웃 제한
-            controls.minDistance = 5;   // 최대 줌인 제한
+            controls.maxDistance = 200;
+            controls.minDistance = 5;
 
-            // VR 활성화 및 하단에 ENTER VR 버튼 추가
+            // 🚀 VR 활성화 및 버튼 생성
             renderer.xr.enabled = true;
             document.body.appendChild(VRButton.createButton(renderer));
 
@@ -157,7 +188,7 @@
                 document.getElementById('speed-value').textContent = timeMultiplier.toFixed(1) + 'x';
             });
             
-            // 선택 표시 링 생성 (초기에는 숨김)
+            // 선택 표시 링 생성
             const ringGeo = new THREE.RingGeometry(1.2, 1.4, 32);
             const ringMat = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.5 });
             selectionRing = new THREE.Mesh(ringGeo, ringMat);
@@ -169,7 +200,6 @@
             renderer.setAnimationLoop(animate);
         }
 
-        // VR 컨트롤러 설정 함수
         function setupVRControllers() {
             function onSelectStart(event) {
                 const controller = event.target;
@@ -179,7 +209,6 @@
                     const object = intersections[0].object;
                     const data = object.userData;
                     
-                    // 선택 링 표시
                     selectionRing.visible = true;
                     selectionRing.scale.set(data.radius, data.radius, data.radius);
                     
@@ -207,13 +236,12 @@
             ]);
             const line = new THREE.Line(geometry);
             line.name = 'line';
-            line.scale.z = 50; // 광선의 길이
+            line.scale.z = 50; 
             
             controller1.add(line.clone());
             controller2.add(line.clone());
         }
 
-        // VR 컨트롤러 레이캐스팅 헬퍼
         function getIntersections(controller) {
             const tempMatrix = new THREE.Matrix4();
             tempMatrix.identity().extractRotation(controller.matrixWorld);
@@ -224,14 +252,12 @@
             return raycasterVR.intersectObjects(meshes);
         }
 
-        // 별 배경 생성 함수
         function createStarfield() {
             const starsGeometry = new THREE.BufferGeometry();
             const starsCount = 2000;
             const posArray = new Float32Array(starsCount * 3);
 
             for(let i = 0; i < starsCount * 3; i++) {
-                // -200 부터 200 사이의 랜덤 위치
                 posArray[i] = (Math.random() - 0.5) * 400; 
             }
 
@@ -247,18 +273,15 @@
             scene.add(starMesh);
         }
 
-        // 태양계 구성 요소 생성 함수
         function createSolarSystem() {
             const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
 
             planetData.forEach((data) => {
                 let material;
                 
-                // 태양은 빛을 내는 기본 재질 사용 (그림자 영향 안받음)
                 if (data.type === 'star') {
                     material = new THREE.MeshBasicMaterial({ color: data.color });
                 } else {
-                    // 행성은 빛에 반응하는 표준 재질 사용
                     material = new THREE.MeshStandardMaterial({ 
                         color: data.color,
                         roughness: 0.7,
@@ -268,11 +291,8 @@
 
                 const mesh = new THREE.Mesh(sphereGeometry, material);
                 mesh.scale.set(data.radius, data.radius, data.radius);
-                
-                // userData에 데이터 저장 (클릭 이벤트시 활용)
                 mesh.userData = data;
 
-                // 궤도를 그리기 위한 경로 생성
                 if (data.distance > 0) {
                     const orbitGeo = new THREE.BufferGeometry();
                     const orbitPoints = [];
@@ -289,7 +309,6 @@
                     scene.add(orbitLine);
                 }
 
-                // 토성의 고리 추가
                 if (data.hasRing) {
                     const ringGeo = new THREE.RingGeometry(data.radius * 1.4, data.radius * 2.2, 32);
                     const ringMat = new THREE.MeshStandardMaterial({ 
@@ -299,76 +318,61 @@
                         opacity: 0.8
                     });
                     const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-                    ringMesh.rotation.x = Math.PI / 2 + 0.2; // 살짝 기울임
-                    mesh.add(ringMesh); // 행성 메쉬의 자식으로 추가하여 같이 움직이도록 함
+                    ringMesh.rotation.x = Math.PI / 2 + 0.2; 
+                    mesh.add(ringMesh); 
                 }
 
                 scene.add(mesh);
                 celestialBodies.push({
                     mesh: mesh,
                     data: data,
-                    angle: Math.random() * Math.PI * 2 // 시작 위치를 랜덤하게 분산
+                    angle: Math.random() * Math.PI * 2 
                 });
             });
         }
 
-        // 창 크기 변경 처리 함수
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        // 마우스 클릭 이벤트 처리 (Raycasting)
         function onMouseClick(event) {
-            // UI 요소를 클릭했는지 확인 (canvas 밖 클릭 무시)
             if(event.target.tagName !== 'CANVAS') return;
 
-            // 정규화된 마우스 좌표 계산 (-1 ~ +1)
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-            // 카메라와 마우스 위치를 기반으로 광선 발사
             raycaster.setFromCamera(mouse, camera);
 
-            // 메쉬들만 추출
             const meshes = celestialBodies.map(body => body.mesh);
-            
-            // 교차하는 객체 확인
             const intersects = raycaster.intersectObjects(meshes);
 
             if (intersects.length > 0) {
-                // 가장 가까운 객체 선택
                 const selectedObject = intersects[0].object;
                 const data = selectedObject.userData;
                 
                 showInfoPanel(data);
                 
-                // 선택 링 업데이트
                 selectionRing.visible = true;
                 selectionRing.scale.set(data.radius, data.radius, data.radius);
                 
-                // 선택된 객체를 따라가기 위해 userData에 표시
                 celestialBodies.forEach(body => {
                     body.isSelected = (body.mesh === selectedObject);
                 });
             } else {
-                // 허공을 클릭하면 정보 패널 숨김 및 선택 해제
                 hideInfoPanel();
                 selectionRing.visible = false;
                 celestialBodies.forEach(body => body.isSelected = false);
             }
         }
 
-        // UI 정보 패널 표시
         function showInfoPanel(data) {
             const panel = document.getElementById('info-panel');
             
-            // 데이터 채우기
             document.getElementById('info-title').textContent = data.name;
             document.getElementById('info-desc').textContent = data.desc;
             
-            // 색상 표시
             const colorHex = '#' + data.color.toString(16).padStart(6, '0');
             document.getElementById('info-color').style.backgroundColor = colorHex;
             
@@ -378,21 +382,17 @@
                 document.getElementById('info-dist').parentElement.style.display = 'block';
                 document.getElementById('info-size').parentElement.style.display = 'block';
             } else {
-                // 태양일 경우 거리 정보 숨김
                 document.getElementById('info-dist').parentElement.style.display = 'none';
                 document.getElementById('info-size').parentElement.style.display = 'none';
             }
 
-            // 애니메이션 클래스 적용하여 보이기
             panel.classList.remove('hidden');
-            // 리플로우 강제 유발을 위한 타임아웃
             setTimeout(() => {
                 panel.classList.remove('opacity-0', 'translate-y-4');
                 panel.classList.add('opacity-100', 'translate-y-0');
             }, 10);
         }
 
-        // UI 정보 패널 숨기기
         function hideInfoPanel() {
             const panel = document.getElementById('info-panel');
             panel.classList.remove('opacity-100', 'translate-y-0');
@@ -402,44 +402,34 @@
                 if(panel.classList.contains('opacity-0')) {
                     panel.classList.add('hidden');
                 }
-            }, 300); // 트랜지션 시간과 일치
+            }, 300); 
         }
 
-        // 애니메이션 루프
         function animate() {
-            // requestAnimationFrame(animate); // WebXR에서는 renderer.setAnimationLoop가 이를 대체합니다.
-
-            // 시간 업데이트
             time += 0.05 * timeMultiplier;
 
-            // 각 행성의 위치 업데이트 (공전 및 자전)
             celestialBodies.forEach((body) => {
-                // 공전 (태양 중심 원운동)
                 if (body.data.distance > 0 && timeMultiplier > 0) {
                     body.angle -= body.data.speed * timeMultiplier;
                     body.mesh.position.x = Math.cos(body.angle) * body.data.distance;
                     body.mesh.position.z = Math.sin(body.angle) * body.data.distance;
                 }
 
-                // 자전 (모든 천체는 스스로 회전함)
                 body.mesh.rotation.y += 0.01 * timeMultiplier;
                 
-                // 선택된 객체가 있다면 링도 같이 이동
                 if (body.isSelected) {
                     selectionRing.position.copy(body.mesh.position);
                 }
             });
 
-            // 선택 링 회전 애니메이션
             if(selectionRing.visible) {
                 selectionRing.rotation.z -= 0.02;
             }
 
-            controls.update(); // OrbitControls 업데이트 (Damping 적용시 필수)
+            controls.update(); 
             renderer.render(scene, camera);
         }
 
-        // DOM이 완전히 로드된 후 Three.js 초기화 시작
         window.onload = function() {
             init();
         };
