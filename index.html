@@ -2,434 +2,334 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Vision Pro AR Ping Pong</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가상현실 공기 분자 관찰기</title>
+    <!-- A-Frame 라이브러리 로드 (Vision Pro 최적화를 위해 1.5.0 버전업) -->
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <style>
-        :root {
-            --apple-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background-color: #000;
-            font-family: var(--apple-font);
-            color: white;
-        }
-        #ui-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-        }
-        /* 애플 비전프로 스타일의 Glassmorphism UI */
-        #vision-panel {
-            background: rgba(30, 30, 30, 0.4);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 40px;
-            border-radius: 24px;
-            text-align: center;
-            max-width: 400px;
-            pointer-events: auto;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            transform: translateY(-20px);
-            transition: opacity 0.5s ease;
-        }
-        h1 {
-            font-weight: 600;
-            font-size: 24px;
-            letter-spacing: 0.5px;
-            margin-top: 0;
-            margin-bottom: 10px;
-        }
-        p {
-            font-size: 15px;
-            line-height: 1.5;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 30px;
-        }
-        /* ARButton이 생성될 컨테이너 */
-        #ar-button-container {
-            display: flex;
-            justify-content: center;
-        }
+        body { margin: 0; overflow: hidden; background-color: #000; }
+        #canvas-container { display: none; }
     </style>
-    <!-- Three.js 임포트 (최신버전) -->
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    <script>
+        // 분자 데이터 정의
+        const MOLECULE_DATA = {
+            'n2': { name: '질소 (Nitrogen)', formula: 'N₂', ratio: '약 78%', color: '#1E90FF', desc: '지구 대기의 대부분을 차지하는 무색, 무취의 기체입니다. 반응성이 낮아 안정적입니다.', draw: drawN2 },
+            'o2': { name: '산소 (Oxygen)', formula: 'O₂', ratio: '약 21%', color: '#FF4500', desc: '동식물의 호흡에 필수적인 기체이며, 물질이 타는 연소 반응을 돕습니다.', draw: drawO2 },
+            'ar': { name: '아르곤 (Argon)', formula: 'Ar', ratio: '약 0.93%', color: '#9370DB', desc: '다른 물질과 거의 반응하지 않는 비활성 기체입니다. 전구 내부의 충전재로 쓰입니다.', draw: drawAr },
+            'co2': { name: '이산화탄소 (Carbon Dioxide)', formula: 'CO₂', ratio: '약 0.04%', color: '#A9A9A9', desc: '식물의 광합성에 사용되며, 온실효과를 일으키는 주요 온실가스 중 하나입니다.', draw: drawCO2 },
+            'h2o': { name: '수증기 (Water Vapor)', formula: 'H₂O', ratio: '다양함 (0~4%)', color: '#FFFFFF', desc: '기상 현상(구름, 비, 눈)을 일으키는 핵심 역할을 하며, 강력한 온실가스이기도 합니다.', draw: drawH2O }
+        };
+
+        // 2D 캔버스에 분자 구조를 그리는 함수들 (대시보드 용)
+        function drawN2(ctx, cx, cy) {
+            drawAtom(ctx, cx - 40, cy, 30, MOLECULE_DATA['n2'].color, 'N');
+            drawAtom(ctx, cx + 40, cy, 30, MOLECULE_DATA['n2'].color, 'N');
+            drawBond(ctx, cx - 20, cy - 10, cx + 20, cy - 10);
+            drawBond(ctx, cx - 20, cy, cx + 20, cy);
+            drawBond(ctx, cx - 20, cy + 10, cx + 20, cy + 10);
+        }
+        function drawO2(ctx, cx, cy) {
+            drawAtom(ctx, cx - 40, cy, 30, MOLECULE_DATA['o2'].color, 'O');
+            drawAtom(ctx, cx + 40, cy, 30, MOLECULE_DATA['o2'].color, 'O');
+            drawBond(ctx, cx - 20, cy - 5, cx + 20, cy - 5);
+            drawBond(ctx, cx - 20, cy + 5, cx + 20, cy + 5);
+        }
+        function drawAr(ctx, cx, cy) {
+            drawAtom(ctx, cx, cy, 40, MOLECULE_DATA['ar'].color, 'Ar');
+        }
+        function drawCO2(ctx, cx, cy) {
+            drawAtom(ctx, cx - 80, cy, 30, MOLECULE_DATA['o2'].color, 'O');
+            drawAtom(ctx, cx, cy, 35, MOLECULE_DATA['co2'].color, 'C');
+            drawAtom(ctx, cx + 80, cy, 30, MOLECULE_DATA['o2'].color, 'O');
+            drawBond(ctx, cx - 55, cy - 5, cx - 25, cy - 5);
+            drawBond(ctx, cx - 55, cy + 5, cx - 25, cy + 5);
+            drawBond(ctx, cx + 25, cy - 5, cx + 55, cy - 5);
+            drawBond(ctx, cx + 25, cy + 5, cx + 55, cy + 5);
+        }
+        function drawH2O(ctx, cx, cy) {
+            drawAtom(ctx, cx, cy - 20, 35, MOLECULE_DATA['o2'].color, 'O');
+            drawAtom(ctx, cx - 60, cy + 40, 20, MOLECULE_DATA['h2o'].color, 'H', '#000');
+            drawAtom(ctx, cx + 60, cy + 40, 20, MOLECULE_DATA['h2o'].color, 'H', '#000');
+            drawBond(ctx, cx - 15, cy - 5, cx - 45, cy + 25);
+            drawBond(ctx, cx + 15, cy - 5, cx + 45, cy + 25);
+        }
+        function drawAtom(ctx, x, y, radius, color, label, labelColor='#FFF') {
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = '#555';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.fillStyle = labelColor;
+            ctx.font = 'bold 24px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(label, x, y);
+        }
+        function drawBond(ctx, x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = '#FFF';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+        }
+
+        // 한국어 텍스트 자동 줄바꿈 함수
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            for(let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                const metrics = ctx.measureText(testLine);
+                const testWidth = metrics.width;
+                if (testWidth > maxWidth && n > 0) {
+                    ctx.fillText(line, x, y);
+                    line = words[n] + ' ';
+                    y += lineHeight;
+                } else {
+                    line = testLine;
+                }
+            }
+            ctx.fillText(line, x, y);
+        }
+
+        // 대시보드 캔버스 업데이트 (A-Frame 텍스처용)
+        function updateDashboard(type) {
+            const canvas = document.getElementById('dashboardCanvas');
+            const ctx = canvas.getContext('2d');
+            const data = MOLECULE_DATA[type];
+
+            // 배경 초기화
+            ctx.fillStyle = '#111827';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 테두리
+            ctx.strokeStyle = '#3B82F6';
+            ctx.lineWidth = 10;
+            ctx.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
+
+            if (!data) {
+                ctx.fillStyle = '#60A5FA';
+                ctx.font = 'bold 45px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('공기 분자를 쳐다보고 핀치(손가락 맞대기)하거나', canvas.width/2, canvas.height/2 - 30);
+                ctx.fillText('클릭하여 관찰해보세요.', canvas.width/2, canvas.height/2 + 30);
+            } else {
+                ctx.textAlign = 'left';
+                // 제목 영역
+                ctx.fillStyle = '#3B82F6';
+                ctx.fillRect(10, 10, canvas.width - 20, 100);
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = 'bold 60px sans-serif';
+                ctx.fillText(data.name, 40, 80);
+
+                // 정보 영역
+                ctx.fillStyle = '#93C5FD';
+                ctx.font = 'bold 40px sans-serif';
+                ctx.fillText('화학식:', 40, 180);
+                ctx.fillText('대기 비율:', 40, 250);
+                
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = '40px sans-serif';
+                ctx.fillText(data.formula, 220, 180);
+                ctx.fillText(data.ratio, 250, 250);
+
+                // 설명
+                ctx.fillStyle = '#D1D5DB';
+                ctx.font = '35px sans-serif';
+                wrapText(ctx, data.desc, 40, 340, canvas.width - 80, 50);
+
+                // 시각적 구조 영역 (하단 박스)
+                ctx.fillStyle = '#1F2937';
+                ctx.fillRect(40, 500, canvas.width - 80, 450);
+                ctx.fillStyle = '#93C5FD';
+                ctx.font = 'bold 35px sans-serif';
+                ctx.fillText('화학 구조식', 60, 550);
+
+                // 구조식 그리기
+                data.draw(ctx, canvas.width / 2, 750);
+            }
+
+            // A-Frame 재질 업데이트 트리거
+            const dashboardEl = document.getElementById('dashboard-plane');
+            if (dashboardEl && dashboardEl.components.material && dashboardEl.components.material.material.map) {
+                dashboardEl.components.material.material.map.needsUpdate = true;
             }
         }
-    </script>
+
+        // 컴포넌트: 분자 클릭 이벤트 처리
+        AFRAME.registerComponent('clickable-molecule', {
+            schema: { type: { type: 'string', default: 'n2' } },
+            init: function () {
+                const el = this.el;
+                const type = this.data.type;
+
+                // 마우스 오버 효과 (스케일업)
+                el.addEventListener('mouseenter', function () {
+                    el.setAttribute('scale', '1.5 1.5 1.5');
+                });
+                el.addEventListener('mouseleave', function () {
+                    el.setAttribute('scale', '1 1 1');
+                });
+
+                // 클릭 시 대시보드 업데이트 및 애니메이션
+                el.addEventListener('click', function () {
+                    updateDashboard(type);
+                    
+                    // 클릭한 분자 회전 애니메이션
+                    el.setAttribute('animation__click', {
+                        property: 'rotation',
+                        dir: 'alternate',
+                        dur: 500,
+                        to: `${Math.random()*360} ${Math.random()*360} ${Math.random()*360}`,
+                        loop: 2
+                    });
+
+                    // 사운드 피드백 (간단한 햅틱/비프 대체용)
+                    const raycasterEls = document.querySelectorAll('[raycaster]');
+                    raycasterEls.forEach(rayEl => {
+                        if(rayEl.components['haptics']) rayEl.components['haptics'].pulse(0.5, 100);
+                    });
+                });
+            }
+        });
+
+        // 컴포넌트: 무작위 떠다니기 애니메이션
+        AFRAME.registerComponent('float-behavior', {
+            init: function () {
+                this.speed = {
+                    x: (Math.random() - 0.5) * 0.01,
+                    y: (Math.random() - 0.5) * 0.01,
+                    z: (Math.random() - 0.5) * 0.01
+                };
+                this.rotSpeed = {
+                    x: (Math.random() - 0.5) * 1,
+                    y: (Math.random() - 0.5) * 1,
+                    z: (Math.random() - 0.5) * 1
+                };
+            },
+            tick: function () {
+                const el = this.el;
+                const pos = el.getAttribute('position');
+                const rot = el.getAttribute('rotation');
+
+                pos.x += this.speed.x;
+                pos.y += this.speed.y;
+                pos.z += this.speed.z;
+
+                rot.x += this.rotSpeed.x;
+                rot.y += this.rotSpeed.y;
+                rot.z += this.rotSpeed.z;
+
+                // 영역 벗어나면 반대편으로 이동 (공간 크기: -5 ~ 5, Y는 0 ~ 5)
+                if (pos.x > 5) pos.x = -5; if (pos.x < -5) pos.x = 5;
+                if (pos.y > 5) pos.y = 0;  if (pos.y < 0) pos.y = 5;
+                if (pos.z > 5) pos.z = -5; if (pos.z < -5) pos.z = 5;
+
+                el.setAttribute('position', pos);
+                el.setAttribute('rotation', rot);
+            }
+        });
+
+        // 씬 로드 시 분자 생성 및 대시보드 초기화
+        window.addEventListener('load', () => {
+            // 초기 대시보드 렌더링
+            updateDashboard(null);
+
+            const scene = document.querySelector('a-scene');
+            const moleculeCounts = { 'n2': 78, 'o2': 21, 'ar': 5, 'co2': 5, 'h2o': 5 }; // 교육 목적 시각화를 위한 조정된 비율
+            const atomSize = 0.15; // 기본 구 크기
+
+            Object.keys(moleculeCounts).forEach(type => {
+                const count = moleculeCounts[type];
+                const data = MOLECULE_DATA[type];
+
+                for (let i = 0; i < count; i++) {
+                    const moleculeEl = document.createElement('a-entity');
+                    
+                    // 무작위 초기 위치
+                    const posX = (Math.random() - 0.5) * 10;
+                    const posY = Math.random() * 4 + 0.5;
+                    const posZ = (Math.random() - 0.5) * 10;
+                    moleculeEl.setAttribute('position', `${posX} ${posY} ${posZ}`);
+                    moleculeEl.setAttribute('rotation', `${Math.random()*360} ${Math.random()*360} ${Math.random()*360}`);
+                    
+                    // 컴포넌트 추가
+                    moleculeEl.classList.add('clickable');
+                    moleculeEl.setAttribute('clickable-molecule', `type: ${type}`);
+                    moleculeEl.setAttribute('float-behavior', '');
+
+                    // 시각적 3D 모델 조립
+                    if (type === 'n2' || type === 'o2') {
+                        createAtom(moleculeEl, -atomSize*0.8, 0, 0, atomSize, data.color);
+                        createAtom(moleculeEl, atomSize*0.8, 0, 0, atomSize, data.color);
+                    } else if (type === 'ar') {
+                        createAtom(moleculeEl, 0, 0, 0, atomSize * 1.2, data.color);
+                    } else if (type === 'co2') {
+                        createAtom(moleculeEl, 0, 0, 0, atomSize, data.color); // C
+                        createAtom(moleculeEl, -atomSize*2, 0, 0, atomSize*0.9, MOLECULE_DATA['o2'].color); // O
+                        createAtom(moleculeEl, atomSize*2, 0, 0, atomSize*0.9, MOLECULE_DATA['o2'].color); // O
+                    } else if (type === 'h2o') {
+                        createAtom(moleculeEl, 0, 0, 0, atomSize, MOLECULE_DATA['o2'].color); // O
+                        createAtom(moleculeEl, -atomSize*1.2, -atomSize, 0, atomSize*0.6, data.color); // H
+                        createAtom(moleculeEl, atomSize*1.2, -atomSize, 0, atomSize*0.6, data.color); // H
+                    }
+
+                    // 클릭을 쉽게 하기 위한 투명한 충돌 감지 구역 추가
+                    const hitBox = document.createElement('a-sphere');
+                    hitBox.setAttribute('radius', '0.4');
+                    hitBox.setAttribute('material', 'visible: false');
+                    moleculeEl.appendChild(hitBox);
+
+                    scene.appendChild(moleculeEl);
+                }
+            });
+        });
+
+        // 원자 생성 헬퍼 함수
+    function createAtom(parentEl, x, y, z, radius, color) {
+        const sphere = document.createElement('a-sphere');
+        sphere.setAttribute('position', `${x} ${y} ${z}`);
+        sphere.setAttribute('radius', radius);
+        sphere.setAttribute('color', color);
+        sphere.setAttribute('material', 'metalness: 0.3; roughness: 0.4');
+        parentEl.appendChild(sphere);
+    }
+</script>
 </head>
 <body>
-    <div id="ui-layer">
-        <div id="vision-panel">
-            <h1>Spatial Ping Pong</h1>
-            <p>비전프로의 핸드 트래킹을 활용하여 현실 공간에서 직접 탁구채를 휘둘러보세요.<br><br>안전한 공간을 확보한 후 아래 버튼을 눌러 환경을 스캔하세요.</p>
-            <div id="ar-button-container"></div>
-        </div>
+    <!-- 동적 한국어 텍스트 생성을 위한 숨겨진 캔버스 -->
+    <div id="canvas-container">
+        <canvas id="dashboardCanvas" width="1024" height="1024"></canvas>
     </div>
 
-    <script type="module">
-        import * as THREE from 'three';
-        import { ARButton } from 'three/addons/webxr/ARButton.js';
+    <!-- AR 패스스루(주변 환경 보임)를 위해 배경색 제거 및 WebXR 옵션 추가 -->
+    <a-scene webxr="referenceSpaceType: local-floor; optionalFeatures: hit-test;">
+        <!-- 리소스 (캔버스를 텍스처로 사용) -->
+        <a-assets>
+            <canvas id="dashboardCanvas"></canvas>
+        </a-assets>
 
-        let camera, scene, renderer;
-        let controllerGrip1, controllerGrip2;
-        
-        // 게임 객체
-        let table, net, ball;
-        let aiPaddle;
-        let paddles = []; // 핸드 트래킹 그립(Grip) 기반 패들
-        
-        // 규격 및 물리 변수
-        const ballRadius = 0.02;
-        const tableWidth = 1.52;
-        const tableLength = 2.74;
-        const tableHeight = 0.76;
-        const tableZ = -1.5; // 사용자와 조금 더 가깝게
+        <!-- 환경: 현실 바닥이 보이도록 가상 바닥(floorGrid) 제거, 조명만 유지 -->
+        <a-light type="ambient" color="#FFF" intensity="0.8"></a-light>
+        <a-light type="directional" position="2 4 3" color="#FFF" intensity="0.6"></a-light>
 
-        let ballVelocity = new THREE.Vector3(0, 0, 0);
-        const gravity = 9.8;
-        let playerScore = 0;
-        let aiScore = 0;
-        
-        // 3D 스코어보드
-        let scoreCanvas, scoreContext, scoreTexture, scoreBoard;
+        <!-- 메인 대시보드 (학습 패널) -->
+        <a-plane id="dashboard-plane" position="0 2 -4" width="3" height="3" material="shader: flat; src: #dashboardCanvas; transparent: true">
+        </a-plane>
 
-        init();
+        <!-- 사용자 카메라 및 Vision Pro / 핸드 트래킹 최적화 컨트롤러 설정 -->
+        <a-entity position="0 0 2">
+            <a-camera></a-camera>
 
-        function init() {
-            // 1. 씬 및 카메라
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
+            <!-- Vision Pro 시선+핀치 및 Quest 핸드 트래킹 핀치 지원 -->
+            <a-entity cursor="rayOrigin: xrselect" raycaster="objects: .clickable"></a-entity>
+            <!-- 데스크톱 마우스 클릭 지원 -->
+            <a-entity cursor="rayOrigin: mouse" raycaster="objects: .clickable"></a-entity>
+        </a-entity>
 
-            // 2. 조명 (공간 컴퓨팅에 어울리는 부드럽고 사실적인 조명)
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-            scene.add(ambientLight);
-
-            const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
-            dirLight.position.set(2, 4, 1);
-            dirLight.castShadow = true;
-            scene.add(dirLight);
-
-            // 3. 렌더러 (PBR 및 투명도 지원 강화)
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.xr.enabled = true;
-            renderer.xr.setReferenceSpaceType('local-floor');
-            document.body.appendChild(renderer.domElement);
-
-            // 4. Vision Pro 최적화 AR 버튼 (핸드 트래킹 옵션 추가)
-            const arButton = ARButton.createButton(renderer, { 
-                requiredFeatures: ['local-floor'],
-                optionalFeatures: ['hand-tracking'] 
-            });
-            // 기존 UI 패널 스타일링에 맞게 버튼 텍스트/스타일 오버라이드 (Three.js 기본 버튼을 감쌈)
-            arButton.style.position = 'relative';
-            arButton.style.bottom = 'auto';
-            arButton.style.backgroundColor = '#ffffff';
-            arButton.style.color = '#000000';
-            arButton.style.borderRadius = '20px';
-            arButton.style.padding = '12px 24px';
-            arButton.style.fontWeight = '600';
-            arButton.style.border = 'none';
-            
-            document.getElementById('ar-button-container').appendChild(arButton);
-            
-            arButton.addEventListener('click', () => {
-                document.getElementById('vision-panel').style.opacity = '0';
-                setTimeout(() => { document.getElementById('vision-panel').style.display = 'none'; }, 500);
-            });
-
-            // 5. 오브젝트 및 컨트롤러 생성
-            createPremiumGameObjects();
-            createScoreBoard();
-            setupHandTrackingControllers();
-
-            window.addEventListener('resize', onWindowResize);
-            renderer.setAnimationLoop(render);
-            resetBall(true);
-        }
-
-        // Vision Pro 스타일에 맞는 고급스러운 머티리얼 적용
-        function createPremiumGameObjects() {
-            // 탁구대 (무광 다크 메탈 느낌)
-            const tableGeo = new THREE.BoxGeometry(tableWidth, 0.04, tableLength);
-            const tableMat = new THREE.MeshStandardMaterial({ 
-                color: 0x222225, 
-                roughness: 0.7, 
-                metalness: 0.3 
-            });
-            table = new THREE.Mesh(tableGeo, tableMat);
-            table.position.set(0, tableHeight, tableZ);
-            scene.add(table);
-
-            // 네트 (Vision Pro의 유리/반투명 질감인 MeshPhysicalMaterial 사용)
-            const netGeo = new THREE.BoxGeometry(tableWidth + 0.05, 0.15, 0.015);
-            const netMat = new THREE.MeshPhysicalMaterial({
-                color: 0xffffff,
-                metalness: 0.1,
-                roughness: 0.1,
-                transmission: 0.8, // 유리 같은 투명도
-                thickness: 0.05,
-                side: THREE.DoubleSide
-            });
-            net = new THREE.Mesh(netGeo, netMat);
-            net.position.set(0, tableHeight + 0.075, tableZ);
-            scene.add(net);
-
-            // 네트 테두리(기둥)
-            const poleGeo = new THREE.CylinderGeometry(0.01, 0.01, 0.18);
-            const poleMat = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, metalness: 0.8, roughness: 0.2 });
-            const leftPole = new THREE.Mesh(poleGeo, poleMat);
-            leftPole.position.set(-tableWidth / 2, tableHeight + 0.05, tableZ);
-            const rightPole = leftPole.clone();
-            rightPole.position.set(tableWidth / 2, tableHeight + 0.05, tableZ);
-            scene.add(leftPole, rightPole);
-
-            // 공 (밝고 시인성 높은 흰색 무광)
-            const ballGeo = new THREE.SphereGeometry(ballRadius, 32, 32);
-            const ballMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4 });
-            ball = new THREE.Mesh(ballGeo, ballMat);
-            scene.add(ball);
-
-            // AI 패들 (매끈한 우주선 느낌의 디자인)
-            aiPaddle = createSleekPaddle(0x0a84ff); // Apple Blue
-            aiPaddle.position.set(0, tableHeight + 0.2, tableZ - tableLength / 2 - 0.2);
-            scene.add(aiPaddle);
-        }
-
-        function createScoreBoard() {
-            scoreCanvas = document.createElement('canvas');
-            scoreCanvas.width = 1024;
-            scoreCanvas.height = 256;
-            scoreContext = scoreCanvas.getContext('2d');
-            
-            scoreTexture = new THREE.CanvasTexture(scoreCanvas);
-            // 공간에 떠있는 유리 패널 느낌의 스코어보드
-            const scoreMat = new THREE.MeshPhysicalMaterial({ 
-                map: scoreTexture, 
-                transparent: true,
-                transmission: 0.2,
-                roughness: 0.1,
-                clearcoat: 1.0
-            });
-            const scoreGeo = new THREE.PlaneGeometry(1.5, 0.375);
-            scoreBoard = new THREE.Mesh(scoreGeo, scoreMat);
-            
-            scoreBoard.position.set(0, tableHeight + 0.4, tableZ - tableLength / 2);
-            // 사용자 쪽을 살짝 향하게 각도 조절
-            scoreBoard.rotation.x = 0.1;
-            scene.add(scoreBoard);
-            
-            updateScoreBoardText();
-        }
-
-        function updateScoreBoardText() {
-            scoreContext.clearRect(0, 0, scoreCanvas.width, scoreCanvas.height);
-            
-            // 반투명 배경
-            scoreContext.fillStyle = 'rgba(20, 20, 20, 0.6)';
-            scoreContext.beginPath();
-            scoreContext.roundRect(0, 0, scoreCanvas.width, scoreCanvas.height, 40);
-            scoreContext.fill();
-            
-            scoreContext.fillStyle = '#ffffff';
-            scoreContext.font = '700 80px -apple-system, sans-serif';
-            scoreContext.textAlign = 'center';
-            scoreContext.textBaseline = 'middle';
-            scoreContext.fillText(`YOU   ${playerScore}  -  ${aiScore}   AI`, scoreCanvas.width / 2, scoreCanvas.height / 2);
-            
-            scoreTexture.needsUpdate = true;
-        }
-
-        // 비전프로 감성의 심플/미래지향적 패들 생성 함수
-        function createSleekPaddle(colorHex) {
-            const group = new THREE.Group();
-
-            // 패들 헤드 (타원형, 얇고 매끄러움)
-            const headGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.015, 64);
-            const headMat = new THREE.MeshStandardMaterial({ 
-                color: colorHex, 
-                roughness: 0.2,
-                metalness: 0.1
-            });
-            const head = new THREE.Mesh(headGeo, headMat);
-            head.rotation.x = Math.PI / 2;
-            group.add(head);
-
-            // 패들 그립 (금속 질감)
-            const gripGeo = new THREE.CylinderGeometry(0.012, 0.015, 0.12, 32);
-            const gripMat = new THREE.MeshStandardMaterial({ 
-                color: 0xdddddd, 
-                metalness: 0.9, 
-                roughness: 0.3 
-            });
-            const grip = new THREE.Mesh(gripGeo, gripMat);
-            grip.position.y = -0.09;
-            group.add(grip);
-
-            return group;
-        }
-
-        function setupHandTrackingControllers() {
-            // 비전프로의 경우 getControllerGrip을 사용하면 손의 위치(손바닥/손목 부근)를 추적할 수 있습니다.
-            // 양손 모두 추적하여 편한 손으로 플레이 가능
-            controllerGrip1 = renderer.xr.getControllerGrip(0);
-            scene.add(controllerGrip1);
-            const paddle1 = createSleekPaddle(0xff453a); // Apple Red
-            // 손목 방향에 맞게 탁구채 회전 보정
-            paddle1.rotation.x = -Math.PI / 3; 
-            paddle1.position.z = -0.05; 
-            controllerGrip1.add(paddle1);
-            paddles.push(controllerGrip1);
-
-            controllerGrip2 = renderer.xr.getControllerGrip(1);
-            scene.add(controllerGrip2);
-            const paddle2 = createSleekPaddle(0xff453a);
-            paddle2.rotation.x = -Math.PI / 3;
-            paddle2.position.z = -0.05;
-            controllerGrip2.add(paddle2);
-            paddles.push(controllerGrip2);
-        }
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        function resetBall(serveToPlayer) {
-            ball.position.set(0, tableHeight + 0.4, tableZ);
-            
-            // 서브 속도 약간 하향 (맨손 트래킹 시 너무 빠르면 치기 어려움)
-            const speedZ = serveToPlayer ? 2.0 : -2.0;
-            const speedX = (Math.random() - 0.5) * 1.2;
-            
-            ballVelocity.set(speedX, 0, speedZ);
-        }
-
-        let clock = new THREE.Clock();
-        let isResetting = false;
-        
-        // 속도 계산을 위한 이전 프레임 위치 저장 배열
-        let previousGripPositions = [new THREE.Vector3(), new THREE.Vector3()];
-
-        function render() {
-            const delta = Math.min(clock.getDelta(), 0.05);
-
-            if (!isResetting && renderer.xr.isPresenting) {
-                updatePhysics(delta);
-                updateAI(delta);
-            }
-
-            renderer.render(scene, camera);
-        }
-
-        function updatePhysics(delta) {
-            // 중력 적용 및 위치 이동
-            ballVelocity.y -= gravity * delta;
-            ball.position.addScaledVector(ballVelocity, delta);
-
-            // 1. 테이블 충돌
-            if (ball.position.y - ballRadius < tableHeight + 0.02 && ballVelocity.y < 0) {
-                if (Math.abs(ball.position.x) < tableWidth / 2 && 
-                    Math.abs(ball.position.z - tableZ) < tableLength / 2) {
-                    
-                    ball.position.y = tableHeight + 0.02 + ballRadius;
-                    ballVelocity.y = Math.abs(ballVelocity.y) * 0.85; // 탄성
-                    ballVelocity.x *= 0.95;
-                    ballVelocity.z *= 0.95;
-                }
-            }
-
-            // 2. 플레이어 패들 (손) 충돌
-            paddles.forEach((grip, index) => {
-                const padPos = new THREE.Vector3();
-                grip.getWorldPosition(padPos);
-                
-                // 핸드 트래킹 속도 추론
-                const handSpeedVec = new THREE.Vector3().subVectors(padPos, previousGripPositions[index]).divideScalar(delta || 0.016);
-                previousGripPositions[index].copy(padPos);
-                
-                // 손(패들)과 공의 거리 체크 (충돌 반경 0.12)
-                if (ball.position.distanceTo(padPos) < 0.12 && ballVelocity.z > 0) {
-                    
-                    // 기본 반발력 + 손이 휘두르는 속도(Z축) 비례
-                    let hitPowerZ = Math.abs(ballVelocity.z) * 0.5 + Math.abs(handSpeedVec.z) * 0.2 + 1.5;
-                    if(hitPowerZ > 6) hitPowerZ = 6; // 너무 빠른 속도 제한
-                    
-                    ballVelocity.z = -hitPowerZ;
-                    // 위로 띄워주는 힘
-                    ballVelocity.y = 2.0 + (handSpeedVec.y > 0 ? handSpeedVec.y * 0.2 : 0); 
-                    // 좌우 스핀/방향
-                    ballVelocity.x = (ball.position.x - padPos.x) * 8.0 + (handSpeedVec.x * 0.3);
-                }
-            });
-
-            // 3. AI 패들 충돌
-            const aiPos = new THREE.Vector3();
-            aiPaddle.getWorldPosition(aiPos);
-            
-            if (ball.position.distanceTo(aiPos) < 0.12 && ballVelocity.z < 0) {
-                ballVelocity.z = Math.abs(ballVelocity.z) + 1.0;
-                ballVelocity.y = 2.2; 
-                ballVelocity.x = (ball.position.x - aiPos.x) * 6.0;
-                if(ballVelocity.z > 5) ballVelocity.z = 5;
-            }
-
-            // 4. 네트 충돌 감지 (간단하게 Z축 중앙, Y축 네트 높이 내외일 때 튕겨냄)
-            if (Math.abs(ball.position.z - tableZ) < 0.05 && ball.position.y < tableHeight + 0.15 + ballRadius) {
-                ballVelocity.z *= -0.5; // 맞고 튕겨 떨어짐
-            }
-
-            // 5. 득점 판정
-            if (ball.position.y < 0 || Math.abs(ball.position.z - tableZ) > tableLength + 1.5) {
-                if (ball.position.z > tableZ) {
-                    aiScore++;
-                    triggerReset(true);
-                } else {
-                    playerScore++;
-                    triggerReset(false);
-                }
-                updateScoreBoardText();
-            }
-        }
-
-        function updateAI(delta) {
-            const targetX = ball.position.x;
-            
-            if (ballVelocity.z < 0) {
-                // 부드러운 lerp를 사용하되, 비전프로 프레임레이트에 맞게 수치 조정
-                aiPaddle.position.x = THREE.MathUtils.lerp(aiPaddle.position.x, targetX, 0.08);
-            } else {
-                aiPaddle.position.x = THREE.MathUtils.lerp(aiPaddle.position.x, 0, 0.03);
-            }
-
-            const targetY = Math.max(tableHeight + 0.1, ball.position.y);
-            aiPaddle.position.y = THREE.MathUtils.lerp(aiPaddle.position.y, targetY, 0.06);
-        }
-
-        function triggerReset(serveToPlayer) {
-            isResetting = true;
-            setTimeout(() => {
-                resetBall(serveToPlayer);
-                isResetting = false;
-            }, 1500);
-        }
-    </script>
+    </a-scene>
 </body>
 </html>
