@@ -2,67 +2,10 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>크로스플랫폼 3D 핑퐁 (AR/VR/PC)</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background-color: #111;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        #info {
-            position: absolute;
-            top: 10px;
-            width: 100%;
-            text-align: center;
-            color: white;
-            z-index: 100;
-            pointer-events: none;
-            text-shadow: 1px 1px 2px black;
-        }
-        #instructions {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            background: rgba(0, 0, 0, 0.85);
-            padding: 30px;
-            border-radius: 12px;
-            text-align: center;
-            max-width: 80%;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            z-index: 200;
-        }
-        .btn-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        .play-btn {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .play-btn:hover {
-            background-color: #45a049;
-        }
-        .ar-btn-hint {
-            font-size: 0.85em;
-            color: #aaa;
-            margin-top: 5px;
-        }
-    </style>
-    <!-- Three.js 및 관련 모듈 임포트맵 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>태양계 3D 체험 - 크로스 플랫폼 VR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
     <script type="importmap">
         {
             "imports": {
@@ -71,251 +14,471 @@
             }
         }
     </script>
+
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #000; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        #canvas-container { width: 100vw; height: 100vh; display: block; }
+        
+        #ui-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 10;
+        }
+        .interactive-ui { pointer-events: auto; }
+
+        /* 🚀 VR 버튼 강조 디자인 (애플 비전 프로 / 메타 퀘스트 공통 지원) */
+        #VRButton {
+            z-index: 99999 !important;
+            background-color: #3b82f6 !important;
+            color: white !important; font-weight: bold !important;
+            padding: 18px 30px !important; font-size: 22px !important;
+            border-radius: 12px !important; bottom: 40px !important;
+            border: 2px solid rgba(255, 255, 255, 0.5) !important;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.6) !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+        }
+        #VRButton:hover {
+            background-color: #2563eb !important;
+            transform: scale(1.05) !important;
+        }
+    </style>
 </head>
 <body>
-    <div id="info">크로스플랫폼 3D 핑퐁 게임</div>
-    <div id="instructions">
-        <h2>🏓 3D & AR 탁구</h2>
-        <p>기기에 맞는 플레이 방식을 선택하세요.</p>
-        <ul style="text-align: left; font-size: 0.9em; line-height: 1.6; color: #ddd;">
-            <li><strong>PC/모바일:</strong> 마우스나 터치로 채를 움직여 플레이합니다.</li>
-            <li><strong>메타퀘스트/비전프로:</strong> 하단의 AR 버튼을 눌러 현실 공간에서 컨트롤러나 손으로 플레이합니다.</li>
-        </ul>
-        <div class="btn-container">
-            <button class="play-btn" id="pc-play-btn">💻 PC / 모바일 모드로 시작</button>
-            <div class="ar-btn-hint">* AR 모드는 브라우저 하단에 생성되는 'START AR' 버튼을 누르세요.</div>
+
+    <div id="canvas-container"></div>
+
+    <div id="ui-layer" class="p-6">
+        <header class="flex justify-between items-start interactive-ui">
+            <div class="bg-black/60 backdrop-blur-md border border-white/20 p-5 rounded-2xl shadow-2xl max-w-md">
+                <h1 class="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">태양계 VR 체험</h1>
+                <p class="text-gray-300 text-sm mb-4">비전 프로와 메타 퀘스트를 모두 지원하는 고화질 몰입형 VR 환경입니다. 컨트롤러나 손으로 행성을 가리켜보세요.</p>
+                <div class="mt-4">
+                    <label for="speed-slider" class="block text-sm font-medium text-gray-300 mb-2">시간 가속: <span id="speed-value">1x</span></label>
+                    <input type="range" id="speed-slider" min="0" max="5" step="0.1" value="1" class="w-full accent-blue-500">
+                </div>
+                <button id="html-play-pause-btn" class="mt-4 w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition">
+                    ⏸ 일시정지
+                </button>
+            </div>
+        </header>
+
+        <div class="flex justify-center interactive-ui mb-6">
+            <div id="info-panel" class="hidden bg-black/80 backdrop-blur-lg border border-white/30 p-6 rounded-2xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 translate-y-4 opacity-0">
+                <div class="flex items-center gap-4 border-b border-white/20 pb-4 mb-4">
+                    <div id="info-color" class="w-6 h-6 rounded-full shadow-inner"></div>
+                    <h2 id="info-title" class="text-2xl font-bold text-white">행성 이름</h2>
+                </div>
+                <p id="info-desc" class="text-gray-200 leading-relaxed text-lg"></p>
+                <div class="grid grid-cols-2 gap-4 mt-6 text-sm">
+                    <div class="bg-white/10 p-3 rounded-lg">
+                        <span class="text-gray-400 block mb-1">태양으로부터의 거리</span>
+                        <span id="info-dist" class="font-semibold text-white"></span>
+                    </div>
+                    <div class="bg-white/10 p-3 rounded-lg">
+                        <span class="text-gray-400 block mb-1">상대적 크기</span>
+                        <span id="info-size" class="font-semibold text-white"></span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script type="module">
         import * as THREE from 'three';
-        import { ARButton } from 'three/addons/webxr/ARButton.js';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { VRButton } from 'three/addons/webxr/VRButton.js';
 
-        let camera, scene, renderer;
+        let scene, camera, renderer, controls, starMesh;
+        let time = 0;
+        let baseSpeedMultiplier = 1;
+        let isPlaying = true;
+        
+        const celestialBodies = [];
+        const raycasterVR = new THREE.Raycaster();
         let controller1, controller2;
-        
-        // 게임 객체들
-        let table, net, ball;
-        let aiPaddle;
-        let paddles = []; // XR 컨트롤러 패들
-        let pcPaddle;     // PC/모바일 마우스 패들
-        
-        // 게임 상태 및 물리 변수
-        const ballRadius = 0.02;
-        const tableWidth = 1.52;
-        const tableLength = 2.74;
-        const tableHeight = 0.76;
-        const tableZ = -1.8; // 사용자 기준 앞쪽에 배치
+        let raycastThrottle = 0;
 
-        let ballVelocity = new THREE.Vector3(0, 0, 0);
-        const gravity = 9.8;
-        let playerScore = 0;
-        let aiScore = 0;
+        // 3D UI 패널 관련
+        let uiPlayPauseMesh;
+        let uiTextureCanvas, uiTextureCtx, uiTexture;
         
-        // PC 마우스 컨트롤용
-        let mouseCoords = new THREE.Vector2(0, 0);
-        let pcModeActive = false;
-        
-        // 점수판 텍스처
-        let scoreCanvas, scoreContext, scoreTexture, scoreBoard;
+        const planetData = [
+            { id: 'sun', name: '태양', radius: 6, distance: 0, speed: 0, type: 'star', color: 0xffcc00, desc: '엄청난 에너지를 뿜어내는 태양입니다. 이제 스스로 빛을 발산하여 다른 행성들에 실시간 그림자를 만듭니다.' },
+            { id: 'mercury', name: '수성', radius: 0.6, distance: 10, speed: 0.04, type: 'planet', color: 0x888888, desc: '태양과 가장 가까워 크레이터가 많은 회색빛 표면을 지닙니다.', realDist: '5,790만 km', realSize: '지구의 0.38배' },
+            { id: 'venus', name: '금성', radius: 1.2, distance: 14, speed: 0.015, type: 'planet', color: 0xe3bb76, desc: '두꺼운 대기층으로 덮여 있어 빛 반사율이 높습니다.', realDist: '1억 820만 km', realSize: '지구의 0.95배' },
+            { id: 'earth', name: '지구', radius: 1.3, distance: 20, speed: 0.01, type: 'planet', color: 0x2b82c9, desc: '아름다운 푸른빛의 바다와 구름이 덮인 우리의 행성입니다.', realDist: '1억 4,960만 km', realSize: '기준 (1배)' },
+            { id: 'mars', name: '화성', radius: 0.7, distance: 26, speed: 0.008, type: 'planet', color: 0xc1440e, desc: '표면의 산화철 성분으로 인해 붉게 빛나는 행성입니다.', realDist: '2억 2,790만 km', realSize: '지구의 0.53배' },
+            { id: 'jupiter', name: '목성', radius: 3.5, distance: 36, speed: 0.002, type: 'planet', color: 0xd39c7e, desc: '가스로 이루어진 거대한 행성으로, 소용돌이치는 표면 무늬가 생생하게 보입니다.', realDist: '7억 7,830만 km', realSize: '지구의 11.2배' },
+            { id: 'saturn', name: '토성', radius: 2.8, distance: 48, speed: 0.0009, type: 'planet', color: 0xead6b8, hasRing: true, desc: '입체적인 그림자가 드리워진 아름다운 얼음 고리를 감상해보세요.', realDist: '14억 2,700만 km', realSize: '지구의 9.4배' },
+            { id: 'uranus', name: '천왕성', radius: 2.0, distance: 58, speed: 0.0004, type: 'planet', color: 0x4b70dd, desc: '신비로운 청록색의 얼음 가스 행성입니다.', realDist: '28억 7,100만 km', realSize: '지구의 4배' },
+            { id: 'neptune', name: '해왕성', radius: 1.9, distance: 68, speed: 0.0001, type: 'planet', color: 0x274687, desc: '태양계 가장 바깥을 도는 짙고 푸른 행성입니다.', realDist: '44억 9,700만 km', realSize: '지구의 3.9배' }
+        ];
 
-        init();
+        let selectionRing;
 
         function init() {
-            // 1. 씬 및 카메라 설정
             scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
+            scene.background = new THREE.Color(0x000000); // 완벽한 우주 배경 (AR 제거, 완전 몰입형)
             
-            // PC 모드 기본 카메라 위치 셋팅
-            camera.position.set(0, tableHeight + 0.7, tableZ + tableLength / 2 + 0.6);
-            camera.lookAt(0, tableHeight, tableZ);
-
-            // 2. 조명 설정
-            const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
-            light.position.set(0.5, 1, 0.25);
-            scene.add(light);
-
-            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            dirLight.position.set(0, 2, 0);
-            scene.add(dirLight);
-
-            // 3. 렌더러 설정 (WebXR 활성화)
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setPixelRatio(window.devicePixelRatio);
+            // 🚀 그림자 및 물리 기반 렌더링
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
             renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 40, 80);
+
+            createStarfield();
+
+            // 🚀 조명 세팅
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.05); 
+            scene.add(ambientLight);
+
+            const sunLight = new THREE.PointLight(0xffeedd, 5, 500);
+            sunLight.castShadow = true;
+            sunLight.shadow.mapSize.width = 2048; 
+            sunLight.shadow.mapSize.height = 2048;
+            sunLight.shadow.bias = -0.001;
+            scene.add(sunLight);
+
+            // 고해상도 절차적 텍스처로 태양계 구성 (네트워크 지연 없음)
+            createSolarSystem();
+
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.maxDistance = 300;
+            controls.minDistance = 10;
+
+            // 🚀 WebXR VR 지원 (메타 퀘스트, 비전 프로 모두 호환)
             renderer.xr.enabled = true;
-            // AR 환경의 실제 바닥 높이를 기준으로 설정
-            renderer.xr.setReferenceSpaceType('local-floor');
-            document.body.appendChild(renderer.domElement);
+            document.body.appendChild(VRButton.createButton(renderer));
 
-            // 4. AR 시작 버튼 추가 (Quest, Vision Pro 용)
-            const arButton = ARButton.createButton(renderer, { requiredFeatures: ['local-floor'] });
-            document.body.appendChild(arButton);
-            
-            arButton.addEventListener('click', () => {
-                document.getElementById('instructions').style.display = 'none';
-                pcModeActive = false;
-                pcPaddle.visible = false; // AR모드에서는 PC 패들 숨김
-            });
-
-            // PC 모드 시작 버튼
-            document.getElementById('pc-play-btn').addEventListener('click', () => {
-                document.getElementById('instructions').style.display = 'none';
-                pcModeActive = true;
-                pcPaddle.visible = true;
-                // PC모드에서는 가상의 배경(방)을 어둡게 생성 (AR이 아니므로)
-                scene.background = new THREE.Color(0x222222);
-            });
-
-            // 5. 게임 오브젝트 생성
-            createGameObjects();
-            createScoreBoard();
-
-            // 6. 컨트롤러 (VR/AR용) 및 PC 마우스 설정
-            setupControllers();
-            setupPCControls();
-
-            // 7. 리사이즈 이벤트
+            setupVRControllers();
             window.addEventListener('resize', onWindowResize);
-
-            // 애니메이션 루프 시작
-            renderer.setAnimationLoop(render);
             
-            // 공 초기화
-            resetBall(true);
+            document.getElementById('speed-slider').addEventListener('input', (e) => {
+                baseSpeedMultiplier = parseFloat(e.target.value);
+                document.getElementById('speed-value').textContent = baseSpeedMultiplier.toFixed(1) + 'x';
+            });
+            
+            document.getElementById('html-play-pause-btn').addEventListener('click', togglePlayPause);
+
+            const ringGeo = new THREE.RingGeometry(1.4, 1.5, 64);
+            const ringMat = new THREE.MeshBasicMaterial({ color: 0x3b82f6, side: THREE.DoubleSide, transparent: true, opacity: 0.8 });
+            selectionRing = new THREE.Mesh(ringGeo, ringMat);
+            selectionRing.rotation.x = Math.PI / 2;
+            selectionRing.visible = false;
+            scene.add(selectionRing);
+
+            renderer.setAnimationLoop(animate);
         }
 
-        function createGameObjects() {
-            // 탁구대 (테이블)
-            const tableGeo = new THREE.BoxGeometry(tableWidth, 0.05, tableLength);
-            const tableMat = new THREE.MeshLambertMaterial({ color: 0x1a5e20 }); // 진한 녹색
-            table = new THREE.Mesh(tableGeo, tableMat);
-            table.position.set(0, tableHeight, tableZ);
-            scene.add(table);
-
-            // 네트
-            const netGeo = new THREE.BoxGeometry(tableWidth + 0.1, 0.15, 0.02);
-            const netMat = new THREE.MeshLambertMaterial({ color: 0xffffff, transparent: true, opacity: 0.7 });
-            net = new THREE.Mesh(netGeo, netMat);
-            net.position.set(0, tableHeight + 0.075, tableZ);
-            scene.add(net);
-
-            // 네트 기둥
-            const poleGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.2);
-            const poleMat = new THREE.MeshLambertMaterial({ color: 0x555555 });
-            const leftPole = new THREE.Mesh(poleGeo, poleMat);
-            leftPole.position.set(-tableWidth / 2 - 0.05, tableHeight + 0.05, tableZ);
-            const rightPole = leftPole.clone();
-            rightPole.position.set(tableWidth / 2 + 0.05, tableHeight + 0.05, tableZ);
-            scene.add(leftPole, rightPole);
-
-            // 공
-            const ballGeo = new THREE.SphereGeometry(ballRadius, 32, 32);
-            const ballMat = new THREE.MeshLambertMaterial({ color: 0xffa500 }); // 오렌지색
-            ball = new THREE.Mesh(ballGeo, ballMat);
-            scene.add(ball);
-
-            // AI 탁구채
-            aiPaddle = createPaddle(0x0000ff); // 파란색
-            aiPaddle.position.set(0, tableHeight + 0.2, tableZ - tableLength / 2 - 0.2);
-            scene.add(aiPaddle);
-            
-            // PC용 탁구채
-            pcPaddle = createPaddle(0xff0000); // 빨간색
-            pcPaddle.position.set(0, tableHeight + 0.2, tableZ + tableLength / 2 + 0.1);
-            pcPaddle.visible = false; // 기본은 숨김, PC 모드에서 활성화
-            scene.add(pcPaddle);
+        // 별 배경
+        function createStarfield() {
+            const starsGeometry = new THREE.BufferGeometry();
+            const starsCount = 4000;
+            const posArray = new Float32Array(starsCount * 3);
+            for(let i = 0; i < starsCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 800; 
+            }
+            starsGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const starsMaterial = new THREE.PointsMaterial({ size: 0.2, color: 0xffffff, transparent: true, opacity: 0.8 });
+            starMesh = new THREE.Points(starsGeometry, starsMaterial);
+            scene.add(starMesh);
         }
 
-        function createScoreBoard() {
-            scoreCanvas = document.createElement('canvas');
-            scoreCanvas.width = 512;
-            scoreCanvas.height = 256;
-            scoreContext = scoreCanvas.getContext('2d');
-            
-            scoreTexture = new THREE.CanvasTexture(scoreCanvas);
-            const scoreMat = new THREE.MeshBasicMaterial({ map: scoreTexture, transparent: true });
-            const scoreGeo = new THREE.PlaneGeometry(1, 0.5);
-            scoreBoard = new THREE.Mesh(scoreGeo, scoreMat);
-            
-            // 네트 위쪽에 점수판 배치
-            scoreBoard.position.set(0, tableHeight + 0.5, tableZ);
-            scene.add(scoreBoard);
-            
-            updateScoreBoardText();
+        // 🚀 고해상도 절차적 텍스처 생성 함수 (네트워크 에러 방지, 고화질 보장)
+        function generateHighResTexture(id) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024; canvas.height = 1024;
+            const ctx = canvas.getContext('2d');
+
+            if (id === 'sun') {
+                const grd = ctx.createRadialGradient(512, 512, 0, 512, 512, 512);
+                grd.addColorStop(0, '#ffffff');
+                grd.addColorStop(0.3, '#ffea00');
+                grd.addColorStop(0.8, '#ff6600');
+                grd.addColorStop(1, '#cc1100');
+                ctx.fillStyle = grd;
+                ctx.fillRect(0,0,1024,1024);
+                // 태양 플레어 노이즈
+                for(let i=0; i<10000; i++) {
+                    ctx.fillStyle = Math.random() > 0.5 ? 'rgba(255,255,255,0.4)' : 'rgba(200,50,0,0.3)';
+                    ctx.beginPath();
+                    ctx.arc(Math.random()*1024, Math.random()*1024, Math.random()*8, 0, Math.PI*2);
+                    ctx.fill();
+                }
+            } else if (id === 'earth') {
+                ctx.fillStyle = '#0a3d7a'; ctx.fillRect(0,0,1024,1024); // 깊은 바다
+                ctx.fillStyle = '#228b22'; // 대륙
+                for(let i=0; i<150; i++) {
+                    ctx.beginPath();
+                    ctx.arc(Math.random()*1024, Math.random()*1024, Math.random()*80+20, 0, Math.PI*2);
+                    ctx.fill();
+                }
+                ctx.fillStyle = '#e6cca3'; // 사막/산맥
+                for(let i=0; i<80; i++) {
+                    ctx.beginPath();
+                    ctx.arc(Math.random()*1024, Math.random()*1024, Math.random()*40+10, 0, Math.PI*2);
+                    ctx.fill();
+                }
+                ctx.fillStyle = 'rgba(255,255,255,0.5)'; // 구름
+                for(let i=0; i<200; i++) {
+                    ctx.beginPath();
+                    ctx.ellipse(Math.random()*1024, Math.random()*1024, Math.random()*100+20, Math.random()*30+10, Math.random()*Math.PI, 0, Math.PI*2);
+                    ctx.fill();
+                }
+            } else if (id === 'jupiter' || id === 'saturn' || id === 'venus') {
+                const colors = id === 'jupiter' ? ['#8c5c38', '#d6b89c', '#c28b61', '#e8d2bd', '#ffffff'] :
+                               id === 'saturn' ? ['#d4c3a3', '#eaddc5', '#c2ad82', '#f2ead8'] :
+                               ['#d4a355', '#e8c482', '#c98a3c'];
+                for(let y=0; y<1024; y+=10) {
+                    ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+                    ctx.fillRect(0, y, 1024, 10 + Math.random()*20);
+                }
+                if(id === 'jupiter') {
+                    const grd = ctx.createRadialGradient(512, 700, 0, 512, 700, 80);
+                    grd.addColorStop(0, 'rgba(180, 50, 20, 0.9)');
+                    grd.addColorStop(1, 'rgba(180, 50, 20, 0)');
+                    ctx.fillStyle = grd;
+                    ctx.beginPath(); ctx.ellipse(512, 700, 100, 60, 0, 0, Math.PI*2); ctx.fill();
+                }
+            } else if (id === 'mars') {
+                ctx.fillStyle = '#a1330a'; ctx.fillRect(0,0,1024,1024);
+                ctx.fillStyle = 'rgba(60, 10, 0, 0.4)';
+                for(let i=0; i<200; i++) {
+                    ctx.beginPath(); ctx.arc(Math.random()*1024, Math.random()*1024, Math.random()*100, 0, Math.PI*2); ctx.fill();
+                }
+            } else if (id === 'mercury') {
+                ctx.fillStyle = '#666666'; ctx.fillRect(0,0,1024,1024);
+                ctx.fillStyle = 'rgba(30, 30, 30, 0.6)';
+                for(let i=0; i<300; i++) {
+                    ctx.beginPath(); ctx.arc(Math.random()*1024, Math.random()*1024, Math.random()*20+5, 0, Math.PI*2); ctx.fill();
+                }
+            } else {
+                ctx.fillStyle = id === 'uranus' ? '#739be6' : '#2b4f9e';
+                ctx.fillRect(0,0,1024,1024);
+                ctx.fillStyle = 'rgba(255,255,255,0.15)';
+                for(let y=0; y<1024; y+=60) ctx.fillRect(0, y, 1024, 20);
+            }
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.colorSpace = THREE.SRGBColorSpace;
+            return texture;
         }
 
-        function updateScoreBoardText() {
-            scoreContext.clearRect(0, 0, scoreCanvas.width, scoreCanvas.height);
-            scoreContext.fillStyle = 'rgba(0, 0, 0, 0.5)';
-            scoreContext.fillRect(0, 0, scoreCanvas.width, scoreCanvas.height);
-            
-            scoreContext.fillStyle = '#ffffff';
-            scoreContext.font = 'bold 50px sans-serif';
-            scoreContext.textAlign = 'center';
-            scoreContext.textBaseline = 'middle';
-            scoreContext.fillText(`내 점수: ${playerScore}  |  AI 점수: ${aiScore}`, scoreCanvas.width / 2, scoreCanvas.height / 2);
-            
-            scoreTexture.needsUpdate = true;
-        }
+        function createSolarSystem() {
+            const sphereGeometry = new THREE.SphereGeometry(1, 64, 64);
 
-        function createPaddle(color) {
-            const paddleGroup = new THREE.Group();
+            planetData.forEach((data) => {
+                let material;
+                const tex = generateHighResTexture(data.id);
 
-            // 채 부분 (원통형을 납작하게)
-            const padGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.02, 32);
-            const padMat = new THREE.MeshLambertMaterial({ color: color });
-            const padMesh = new THREE.Mesh(padGeo, padMat);
-            padMesh.rotation.x = Math.PI / 2; // 세우기
-            paddleGroup.add(padMesh);
-
-            // 손잡이 부분
-            const handleGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.1, 16);
-            const handleMat = new THREE.MeshLambertMaterial({ color: 0x8b4513 }); // 갈색
-            const handleMesh = new THREE.Mesh(handleGeo, handleMat);
-            handleMesh.position.y = -0.09;
-            paddleGroup.add(handleMesh);
-
-            return paddleGroup;
-        }
-
-        function setupControllers() {
-            // XR 환경 양손 컨트롤러 
-            controller1 = renderer.xr.getController(0);
-            scene.add(controller1);
-            const playerPaddle1 = createPaddle(0xff0000); // 빨간색
-            playerPaddle1.rotation.x = -Math.PI / 4; 
-            playerPaddle1.position.set(0, 0, -0.05);
-            controller1.add(playerPaddle1);
-            paddles.push(controller1);
-
-            controller2 = renderer.xr.getController(1);
-            scene.add(controller2);
-            const playerPaddle2 = createPaddle(0xff0000);
-            playerPaddle2.rotation.x = -Math.PI / 4;
-            playerPaddle2.position.set(0, 0, -0.05);
-            controller2.add(playerPaddle2);
-            paddles.push(controller2);
-        }
-
-        function setupPCControls() {
-            // 마우스 및 터치 이벤트 매핑
-            const onPointerMove = (event) => {
-                let clientX = event.clientX;
-                let clientY = event.clientY;
-
-                if (event.touches && event.touches.length > 0) {
-                    clientX = event.touches[0].clientX;
-                    clientY = event.touches[0].clientY;
+                if (data.type === 'star') {
+                    material = new THREE.MeshBasicMaterial({ map: tex });
+                } else {
+                    material = new THREE.MeshStandardMaterial({ 
+                        map: tex,
+                        roughness: data.id === 'earth' ? 0.4 : 0.8,
+                        metalness: 0.1,
+                        bumpMap: tex, 
+                        bumpScale: 0.02
+                    });
                 }
 
-                // 정규화된 기기 좌표 (NDC)
-                mouseCoords.x = (clientX / window.innerWidth) * 2 - 1;
-                mouseCoords.y = -(clientY / window.innerHeight) * 2 + 1;
-            };
+                const mesh = new THREE.Mesh(sphereGeometry, material);
+                mesh.scale.set(data.radius, data.radius, data.radius);
+                mesh.userData = data;
 
-            window.addEventListener('mousemove', onPointerMove);
-            window.addEventListener('touchmove', onPointerMove, { passive: false });
+                // 그림자 옵션
+                if (data.type === 'planet') {
+                    mesh.castShadow = true;     
+                    mesh.receiveShadow = true;  
+                }
+
+                const sprite = createNameSprite(data.name);
+                sprite.position.y = 1.5; 
+                sprite.visible = false;
+                mesh.add(sprite);
+
+                if (data.distance > 0) {
+                    const orbitGeo = new THREE.BufferGeometry();
+                    const orbitPoints = [];
+                    for (let i = 0; i <= 64; i++) {
+                        const theta = (i / 64) * Math.PI * 2;
+                        orbitPoints.push(new THREE.Vector3(Math.cos(theta) * data.distance, 0, Math.sin(theta) * data.distance));
+                    }
+                    orbitGeo.setFromPoints(orbitPoints);
+                    const orbitMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.1 });
+                    scene.add(new THREE.Line(orbitGeo, orbitMat));
+                }
+
+                if (data.hasRing) {
+                    const ringCanvas = document.createElement('canvas');
+                    ringCanvas.width = 512; ringCanvas.height = 1;
+                    const rCtx = ringCanvas.getContext('2d');
+                    const grad = rCtx.createLinearGradient(0,0,512,0);
+                    grad.addColorStop(0, 'rgba(200, 180, 150, 0)');
+                    grad.addColorStop(0.2, 'rgba(234, 214, 184, 0.9)');
+                    grad.addColorStop(0.5, 'rgba(150, 130, 100, 0.5)');
+                    grad.addColorStop(0.8, 'rgba(234, 214, 184, 0.9)');
+                    grad.addColorStop(1, 'rgba(200, 180, 150, 0)');
+                    rCtx.fillStyle = grad; rCtx.fillRect(0,0,512,1);
+                    const ringTex = new THREE.CanvasTexture(ringCanvas);
+
+                    const ringGeo = new THREE.RingGeometry(data.radius * 1.5, data.radius * 2.5, 128);
+                    const pos = ringGeo.attributes.position;
+                    const v3 = new THREE.Vector3();
+                    for (let i = 0; i < pos.count; i++) {
+                        v3.fromBufferAttribute(pos, i);
+                        const dist = v3.length();
+                        const uv = (dist - data.radius * 1.5) / (data.radius * 1.0);
+                        ringGeo.attributes.uv.setXY(i, uv, 0);
+                    }
+                    const ringMat = new THREE.MeshStandardMaterial({ 
+                        map: ringTex, color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.9,
+                        roughness: 0.5
+                    });
+                    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+                    ringMesh.rotation.x = Math.PI / 2 + 0.3; 
+                    ringMesh.castShadow = true;
+                    ringMesh.receiveShadow = true;
+                    mesh.add(ringMesh); 
+                }
+
+                scene.add(mesh);
+                celestialBodies.push({
+                    mesh: mesh, sprite: sprite, data: data,
+                    angle: Math.random() * Math.PI * 2 
+                });
+            });
+        }
+
+        function createNameSprite(name) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256; canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+            ctx.beginPath(); ctx.roundRect(0, 0, 256, 64, 16); ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 36px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(name, 128, 32);
+            const tex = new THREE.CanvasTexture(canvas);
+            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }));
+            sprite.scale.set(3, 0.75, 1);
+            return sprite;
+        }
+
+        function togglePlayPause() {
+            isPlaying = !isPlaying;
+            const htmlBtn = document.getElementById('html-play-pause-btn');
+            if(isPlaying) {
+                htmlBtn.textContent = '⏸ 일시정지';
+                htmlBtn.className = 'mt-4 w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition';
+            } else {
+                htmlBtn.textContent = '▶ 재생';
+                htmlBtn.className = 'mt-4 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition';
+            }
+            drawUiTexture();
+        }
+
+        function drawUiTexture() {
+            if(!uiTextureCtx) return;
+            uiTextureCtx.clearRect(0,0,256,128);
+            uiTextureCtx.fillStyle = isPlaying ? '#ef4444' : '#10b981'; 
+            uiTextureCtx.beginPath();
+            uiTextureCtx.roundRect(10, 10, 236, 108, 20);
+            uiTextureCtx.fill();
+            uiTextureCtx.strokeStyle = '#ffffff';
+            uiTextureCtx.lineWidth = 5;
+            uiTextureCtx.stroke();
+
+            uiTextureCtx.fillStyle = '#ffffff';
+            uiTextureCtx.font = 'bold 36px sans-serif';
+            uiTextureCtx.textAlign = 'center';
+            uiTextureCtx.textBaseline = 'middle';
+            uiTextureCtx.fillText(isPlaying ? '⏸ 일시정지' : '▶ 재생', 128, 64);
+
+            if (uiTexture) uiTexture.needsUpdate = true;
+        }
+
+        function setupVRControllers() {
+            function onSelectStart(event) {
+                const controller = event.target;
+                const tempMatrix = new THREE.Matrix4().identity().extractRotation(controller.matrixWorld);
+                raycasterVR.ray.origin.setFromMatrixPosition(controller.matrixWorld);
+                raycasterVR.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
+                
+                const targetMeshes = celestialBodies.map(body => body.mesh);
+                if (uiPlayPauseMesh) targetMeshes.push(uiPlayPauseMesh);
+
+                const intersects = raycasterVR.intersectObjects(targetMeshes);
+                
+                if (intersects.length > 0) {
+                    const object = intersects[0].object;
+                    
+                    if (object.userData && object.userData.isPlayPauseBtn) {
+                        togglePlayPause();
+                        return;
+                    }
+
+                    const data = object.userData;
+                    if(data && data.type) {
+                        selectionRing.visible = true;
+                        selectionRing.scale.set(data.radius, data.radius, data.radius);
+                        celestialBodies.forEach(body => { body.isSelected = (body.mesh === object); });
+                        showInfoPanel(data);
+                    }
+                } else {
+                    selectionRing.visible = false;
+                    celestialBodies.forEach(body => body.isSelected = false);
+                    hideInfoPanel();
+                }
+            }
+
+            controller1 = renderer.xr.getController(0);
+            controller1.addEventListener('selectstart', onSelectStart);
+            scene.add(controller1);
+
+            controller2 = renderer.xr.getController(1);
+            controller2.addEventListener('selectstart', onSelectStart);
+            scene.add(controller2);
+
+            const lineGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -1)]);
+            const lineMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 });
+            const line = new THREE.Line(lineGeo, lineMat);
+            line.scale.z = 50; 
+            
+            controller1.add(line.clone());
+            controller2.add(line.clone());
+
+            // 왼손 3D 일시정지 패널 (비전 프로/퀘스트 공통)
+            uiTextureCanvas = document.createElement('canvas');
+            uiTextureCanvas.width = 256; uiTextureCanvas.height = 128;
+            uiTextureCtx = uiTextureCanvas.getContext('2d');
+            uiTexture = new THREE.CanvasTexture(uiTextureCanvas);
+            drawUiTexture();
+
+            uiPlayPauseMesh = new THREE.Mesh(
+                new THREE.PlaneGeometry(0.2, 0.1),
+                new THREE.MeshBasicMaterial({ map: uiTexture, transparent: true, side: THREE.DoubleSide })
+            );
+            uiPlayPauseMesh.rotation.x = -Math.PI / 2;
+            uiPlayPauseMesh.position.set(0, 0.08, -0.05); 
+            uiPlayPauseMesh.userData = { isPlayPauseBtn: true };
+            
+            controller1.add(uiPlayPauseMesh);
         }
 
         function onWindowResize() {
@@ -324,145 +487,84 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        function resetBall(serveToPlayer) {
-            // 공을 테이블 중앙, 약간 위로 초기화
-            ball.position.set(0, tableHeight + 0.3, tableZ);
+        function showInfoPanel(data) {
+            const panel = document.getElementById('info-panel');
+            document.getElementById('info-title').textContent = data.name;
+            document.getElementById('info-desc').textContent = data.desc;
             
-            // 초기 속도: 서브 방향에 따라 다르게 설정
-            const speedZ = serveToPlayer ? 2.5 : -2.5;
-            const speedX = (Math.random() - 0.5) * 1.5; // 약간의 좌우 랜덤성
+            const colorHex = '#' + data.color.toString(16).padStart(6, '0');
+            document.getElementById('info-color').style.backgroundColor = colorHex;
             
-            ballVelocity.set(speedX, 0, speedZ);
-        }
-
-        let clock = new THREE.Clock();
-        let isResetting = false;
-
-        function render() {
-            const delta = Math.min(clock.getDelta(), 0.1); // 최대 delta 제한 (랙 방지)
-
-            if (!isResetting) {
-                // PC 모드 패들 위치 업데이트
-                if (pcModeActive && !renderer.xr.isPresenting) {
-                    // 마우스 좌표를 3D 공간으로 변환 (탁구대 끝자락 기준)
-                    const targetX = mouseCoords.x * (tableWidth / 2 + 0.5);
-                    const targetY = tableHeight + 0.2 + mouseCoords.y * 0.5;
-                    
-                    // 패들을 마우스 위치로 부드럽게 이동
-                    pcPaddle.position.x = THREE.MathUtils.lerp(pcPaddle.position.x, targetX, 0.3);
-                    pcPaddle.position.y = THREE.MathUtils.lerp(pcPaddle.position.y, targetY, 0.3);
-                    
-                    // 좌우 이동에 따라 패들에 약간의 기울기 추가
-                    pcPaddle.rotation.y = -mouseCoords.x * 0.5;
-                }
-
-                // 물리 엔진 업데이트
-                updatePhysics(delta);
-                // AI 움직임 업데이트
-                updateAI(delta);
+            if(data.type === 'planet') {
+                document.getElementById('info-dist').textContent = data.realDist;
+                document.getElementById('info-size').textContent = data.realSize;
+                document.getElementById('info-dist').parentElement.style.display = 'block';
+                document.getElementById('info-size').parentElement.style.display = 'block';
+            } else {
+                document.getElementById('info-dist').parentElement.style.display = 'none';
+                document.getElementById('info-size').parentElement.style.display = 'none';
             }
 
+            panel.classList.remove('hidden', 'opacity-0', 'translate-y-4');
+            panel.classList.add('opacity-100', 'translate-y-0');
+        }
+
+        function hideInfoPanel() {
+            const panel = document.getElementById('info-panel');
+            panel.classList.remove('opacity-100', 'translate-y-0');
+            panel.classList.add('opacity-0', 'translate-y-4');
+            setTimeout(() => { if(panel.classList.contains('opacity-0')) panel.classList.add('hidden'); }, 300); 
+        }
+
+        function updateHoverState() {
+            if (!renderer.xr.isPresenting || raycastThrottle % 10 !== 0) return;
+            
+            celestialBodies.forEach(body => { body.sprite.visible = false; });
+            const targetMeshes = celestialBodies.map(b => b.mesh);
+            let hit = false;
+            
+            [controller1, controller2].forEach(ctrl => {
+                if(!ctrl || hit) return;
+                const tempMatrix = new THREE.Matrix4().identity().extractRotation(ctrl.matrixWorld);
+                raycasterVR.ray.origin.setFromMatrixPosition(ctrl.matrixWorld);
+                raycasterVR.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
+                
+                const intersects = raycasterVR.intersectObjects(targetMeshes);
+                if(intersects.length > 0) {
+                    const object = intersects[0].object;
+                    if (!object.userData.isPlayPauseBtn) {
+                        const body = celestialBodies.find(b => b.mesh === object || object.parent === b.mesh);
+                        if(body) { body.sprite.visible = true; hit = true; }
+                    }
+                }
+            });
+        }
+
+        function animate() {
+            raycastThrottle++;
+            updateHoverState();
+
+            const currentSpeedMultiplier = isPlaying ? baseSpeedMultiplier : 0;
+            time += 0.05 * currentSpeedMultiplier;
+
+            celestialBodies.forEach((body) => {
+                if (body.data.distance > 0 && currentSpeedMultiplier > 0) {
+                    body.angle -= body.data.speed * currentSpeedMultiplier;
+                    body.mesh.position.x = Math.cos(body.angle) * body.data.distance;
+                    body.mesh.position.z = Math.sin(body.angle) * body.data.distance;
+                }
+                if(currentSpeedMultiplier > 0) body.mesh.rotation.y += 0.01 * currentSpeedMultiplier;
+                
+                if (body.isSelected) selectionRing.position.copy(body.mesh.position);
+            });
+
+            if(selectionRing.visible && currentSpeedMultiplier > 0) selectionRing.rotation.z -= 0.02;
+
+            controls.update(); 
             renderer.render(scene, camera);
         }
 
-        function updatePhysics(delta) {
-            // 1. 공에 중력 적용
-            ballVelocity.y -= gravity * delta;
-            
-            // 2. 공 위치 업데이트
-            ball.position.x += ballVelocity.x * delta;
-            ball.position.y += ballVelocity.y * delta;
-            ball.position.z += ballVelocity.z * delta;
-
-            // 3. 테이블 바운스 (충돌 처리)
-            if (ball.position.y - ballRadius < tableHeight + 0.025 && ballVelocity.y < 0) {
-                if (Math.abs(ball.position.x) < tableWidth / 2 && 
-                    Math.abs(ball.position.z - tableZ) < tableLength / 2) {
-                    
-                    ball.position.y = tableHeight + 0.025 + ballRadius;
-                    ballVelocity.y = Math.abs(ballVelocity.y) * 0.85; // 탄성계수
-                    
-                    ballVelocity.x *= 0.98;
-                    ballVelocity.z *= 0.98;
-                }
-            }
-
-            // 4. 플레이어 패들 충돌 처리 (XR 모드 vs PC 모드)
-            let activePaddles = renderer.xr.isPresenting ? paddles : [];
-            if (pcModeActive && !renderer.xr.isPresenting) {
-                activePaddles = [pcPaddle];
-            }
-
-            activePaddles.forEach(paddleObj => {
-                const padPos = new THREE.Vector3();
-                paddleObj.getWorldPosition(padPos);
-                
-                // 간단한 구형 충돌 감지 (패들 반지름 0.08 + 공 0.02 = 0.1)
-                if (ball.position.distanceTo(padPos) < 0.13 && ballVelocity.z > 0) {
-                    // 패들에 맞음!
-                    // 기본 반발력 + 날아오던 속도
-                    ballVelocity.z = -Math.abs(ballVelocity.z) - 1.5; 
-                    ballVelocity.y = 2.5; // 살짝 위로 띄움
-                    
-                    // 패들의 어느 부위에 맞았는지에 따라 좌우 회전/속도 부여
-                    ballVelocity.x = (ball.position.x - padPos.x) * 10.0;
-                    
-                    // 최대/최소 속도 제한
-                    if(ballVelocity.z < -7) ballVelocity.z = -7;
-                }
-            });
-
-            // 5. AI 패들 충돌 처리
-            const aiPos = new THREE.Vector3();
-            aiPaddle.getWorldPosition(aiPos);
-            
-            if (ball.position.distanceTo(aiPos) < 0.13 && ballVelocity.z < 0) {
-                // AI 패들에 맞음
-                ballVelocity.z = Math.abs(ballVelocity.z) + 1.2; // 플레이어 쪽으로
-                ballVelocity.y = 2.5; 
-                ballVelocity.x = (ball.position.x - aiPos.x) * 8.0;
-                
-                if(ballVelocity.z > 6) ballVelocity.z = 6;
-            }
-
-            // 6. 득점/실점 판정
-            // 공이 바닥에 떨어졌거나 너무 멀리 날아간 경우
-            if (ball.position.y < 0 || Math.abs(ball.position.z - tableZ) > tableLength + 2) {
-                if (ball.position.z > tableZ) {
-                    // 사용자 쪽으로 넘어와서 아웃됨 -> AI 득점
-                    aiScore++;
-                    triggerReset(true);
-                } else {
-                    // AI 쪽으로 넘어가서 아웃됨 -> 사용자 득점
-                    playerScore++;
-                    triggerReset(false);
-                }
-                updateScoreBoardText();
-            }
-        }
-
-        function updateAI(delta) {
-            const targetX = ball.position.x;
-            // 공이 네트를 넘어 AI 쪽으로 올 때만 집중해서 따라가도록 설정
-            if (ballVelocity.z < 0) {
-                aiPaddle.position.x = THREE.MathUtils.lerp(aiPaddle.position.x, targetX, 0.06);
-            } else {
-                // 플레이어 쪽으로 갈 때는 중앙으로 복귀
-                aiPaddle.position.x = THREE.MathUtils.lerp(aiPaddle.position.x, 0, 0.02);
-            }
-
-            // 약간 위아래로 움직이게 (자연스러움을 위해)
-            const targetY = Math.max(tableHeight + 0.1, ball.position.y);
-            aiPaddle.position.y = THREE.MathUtils.lerp(aiPaddle.position.y, targetY, 0.05);
-        }
-
-        function triggerReset(serveToPlayer) {
-            isResetting = true;
-            setTimeout(() => {
-                resetBall(serveToPlayer);
-                isResetting = false;
-            }, 1500); // 1.5초 후 재시작
-        }
+        window.onload = init;
     </script>
 </body>
 </html>
