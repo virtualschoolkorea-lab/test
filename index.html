@@ -1,830 +1,1361 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>헤이청주 - 일정 한눈에 보기</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>헤이청주 - 일정 한눈에 보기</title>
 
-    <meta name="referrer" content="no-referrer" />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="헤이청주 🚀교육/체험 링크모음" />
-    <meta property="og:description" content="⬆️오늘 새소식 확인하러가기⬆️" />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
-    
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2755313313061030" crossorigin="anonymous"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-HGXPJ0KLHD"></script>
-    <script>
-      window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-HGXPJ0KLHD');
-    </script>
+    <meta name="referrer" content="no-referrer" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="헤이청주 🚀교육/체험 링크모음" />
+    <meta property="og:description" content="⬆️오늘 새소식 확인하러가기⬆️" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+    
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2755313313061030"
+     crossorigin="anonymous"></script>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-HGXPJ0KLHD"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-HGXPJ0KLHD');
+    </script>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-    <style>
-        :root { --primary-color: #4CAF50; --bg-color: #f4f7f6; --card-bg: #ffffff; --text-main: #333333; --text-sub: #666666; --border-color: #e0e0e0; }
-        body { font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; display: flex; justify-content: center; }
-        body.modal-open { overflow: hidden; }
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-sub: #666666;
+            --border-color: #e0e0e0;
+        }
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; display: flex; justify-content: center; }
+        
+        body.modal-open { overflow: hidden; }
 
-        .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; padding-bottom: 120px; box-sizing: border-box; }
-        .sticky-wrapper { position: sticky; top: 0; z-index: 100; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .app-container { width: 100%; max-width: 500px; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; padding-bottom: 50px; }
+        
+        .sticky-wrapper { position: sticky; top: 0; z-index: 100; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: inherit; }
 
-        header { background-color: var(--primary-color); color: white; padding: 12px 16px 8px 16px; display: flex; flex-direction: column; }
-        h1 { margin: 0 0 6px 0; font-size: 1.25rem; font-weight: 700; text-align: center; line-height: 1.2; }
-        .sub-header { font-size: 0.65rem; opacity: 0.85; margin: 0 0 4px 0; text-align: center; line-height: 1; } 
-        .header-action-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2px; }
-        .header-stats { display: flex; flex-direction: row; gap: 12px; font-size: 0.65rem; line-height: 1; opacity: 0.95; align-items: flex-end; margin-bottom: 2px; }
-        .header-stats div { display: flex; align-items: baseline; }
-        .header-stats span { font-weight: 700; color: #fff; margin-left: 4px; font-size: 0.75rem; }
-        .header-buttons-row { display: flex; gap: 6px; align-items: center; }
-        
-        .btn-share { background: rgba(255, 255, 255, 0.25); border: none; color: white; padding: 4px 8px; border-radius: 20px; cursor: pointer; font-size: 0.65rem; font-weight: 700; display: flex; align-items: center; gap: 4px; transition: background 0.2s; margin: 0; }
-        .btn-share:hover { background: rgba(255, 255, 255, 0.35); }
-        .btn-share svg { width: 10px; height: 10px; fill: currentColor; }
-        .btn-login-top { background: #FEE500; color: #371D1E; border: none; padding: 4px 10px; border-radius: 20px; cursor: pointer; font-size: 0.65rem; font-weight: 800; display: flex; align-items: center; gap: 4px; transition: background 0.2s; margin: 0; }
-        .btn-login-top:hover { background: #FADA0A; }
+        header { background-color: var(--primary-color); color: white; padding: 12px 16px 8px 16px; display: flex; flex-direction: column; border-radius: inherit; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
 
-        .notice-container { background: rgba(0, 0, 0, 0.15); border-radius: 6px; padding: 4px 8px; text-align: center; font-size: 0.7rem; font-weight: 500; height: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 5px; }
-        .notice-container a { color: #fff; text-decoration: none; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
+        h1 { margin: 0 0 6px 0; font-size: 1.25rem; font-weight: 700; text-align: center; line-height: 1.2; }
+        
+        .sub-header { font-size: 0.65rem; opacity: 0.85; margin: 0 0 4px 0; text-align: center; line-height: 1; } 
+        .header-action-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 0px; margin-bottom: 2px; }
+        
+        .header-stats { display: flex; flex-direction: row; gap: 12px; font-size: 0.65rem; line-height: 1; opacity: 0.95; align-items: flex-end; margin-bottom: 2px; }
+        .header-stats div { display: flex; align-items: baseline; }
+        .header-stats span { font-weight: 700; color: #fff; margin-left: 4px; font-size: 0.75rem; }
 
-        /* 하단 배너 (탭바 위) */
-        .promo-area-wrap { position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; height: 54px; background-color: #fff; padding: 5px 10px; box-sizing: border-box; border-top: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; z-index: 900; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+        .header-buttons-row { display: flex; gap: 8px; align-items: center; }
+        
+        .btn-share { background: rgba(255, 255, 255, 0.25); border: none; color: white; padding: 4px 8px; border-radius: 20px; cursor: pointer; font-size: 0.65rem; font-weight: 700; display: flex; align-items: center; gap: 4px; transition: background 0.2s; margin: 0; }
+        .btn-share:hover { background: rgba(255, 255, 255, 0.35); }
+        .btn-share svg { width: 10px; height: 10px; fill: currentColor; }
 
-        .search-container { padding: 6px 15px; background-color: #fff; border-bottom: 1px solid var(--border-color); }
-        .search-input { width: 100%; padding: 6px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.85rem; outline: none; box-sizing: border-box; background-color: #f9f9f9; transition: all 0.2s; }
-        .search-input:focus { border-color: var(--primary-color); background-color: #fff; box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2); }
-        .tabs { display: flex; background: white; border-bottom: 1px solid var(--border-color); }
-        .tab { flex: 1; text-align: center; padding: 7px 0; cursor: pointer; font-size: 0.9rem; font-weight: 500; color: var(--text-sub); border-bottom: 3px solid transparent; transition: all 0.2s; }
-        .tab.active { color: var(--primary-color); border-bottom: 3px solid var(--primary-color); font-weight: 700; }
-        .new-badge, .card-new-badge { display: inline-block; background-color: #E53935; color: white; font-size: 0.6rem; font-weight: 800; padding: 1px 5px; border-radius: 6px; margin-left: 4px; }
-        .card-new-badge { font-size: 0.65rem; padding: 2px 6px; vertical-align: baseline; flex-shrink: 0; }
+        .notice-container { background: rgba(0, 0, 0, 0.15); border-radius: 6px; padding: 4px 8px; text-align: center; font-size: 0.7rem; font-weight: 500; height: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 5px; }
+        .notice-container a { color: #fff; text-decoration: none; transition: opacity 0.3s ease-in-out; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
 
-        .filter-wrapper { position: relative; background: #fafafa; border-bottom: 1px solid #eee; }
-        .checkbox-group { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 4px; padding: 8px 10px; -ms-overflow-style: none; scrollbar-width: none; }
-        .checkbox-group::-webkit-scrollbar { display: none; }
-        .fade-right { position: absolute; right: 0; top: 0; bottom: 0; width: 35px; background: linear-gradient(to right, rgba(250,250,250,0), rgba(250,250,250,1)); pointer-events: none; transition: opacity 0.3s; }
-        .filter-cb { display: none; }
-        .cb-label { padding: 3px 8px; background: #fff; border: 1px solid #ddd; border-radius: 14px; font-size: 0.72rem; color: #555; cursor: pointer; transition: all 0.2s; user-select: none; white-space: nowrap; }
-        .filter-cb:checked + .cb-label { background: var(--primary-color); color: #fff; border-color: var(--primary-color); font-weight: 700; }
-        .filter-cb:checked + .cb-label.age-label { background: #ff9800; border-color: #ff9800; }
+        /* 하단 배너 광고영역 */
+        .promo-area-wrap {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 500px;
+            height: 54px;
+            background-color: #fff;
+            padding: 5px 10px; 
+            box-sizing: border-box;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100000;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
 
-        .content { padding: 15px; }
-        .main-tab-content { display: none; }
-        .main-tab-content.active { display: block; animation: fadeInTab 0.3s ease; }
-        @keyframes fadeInTab { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .search-container { padding: 6px 15px; background-color: #fff; border-bottom: 1px solid var(--border-color); }
+        .search-input { width: 100%; padding: 6px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.85rem; outline: none; box-sizing: border-box; background-color: #f9f9f9; transition: all 0.2s; }
+        .search-input:focus { border-color: var(--primary-color); background-color: #fff; box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2); }
 
-        /* 하단 4개 탭 바 */
-        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; height: 60px; background-color: #fff; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; z-index: 1000; border-top: 1px solid #eaeaea; }
-        .b-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #999; cursor: pointer; user-select: none; transition: 0.2s; }
-        .b-nav-item svg { width: 22px; height: 22px; fill: currentColor; }
-        .b-nav-item span { font-size: 0.65rem; font-weight: 500; }
-        .b-nav-item.active { color: var(--primary-color); }
-        .b-nav-item.active svg { fill: var(--primary-color); }
+        .tabs { display: flex; background: white; border-bottom: 1px solid var(--border-color); }
+        .tab { flex: 1; text-align: center; padding: 7px 0; cursor: pointer; font-size: 0.9rem; font-weight: 500; color: var(--text-sub); border-bottom: 3px solid transparent; transition: all 0.2s; }
+        .tab.active { color: var(--primary-color); border-bottom: 3px solid var(--primary-color); font-weight: 700; }
+        .new-badge { display: inline-block; background-color: #E53935; color: white; font-size: 0.6rem; font-weight: 800; padding: 1px 5px; border-radius: 6px; margin-left: 4px; vertical-align: super; }
+        .card-new-badge { display: inline-block; background-color: #E53935; color: white; font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 6px; margin-left: 4px; vertical-align: baseline; flex-shrink: 0; }
 
-        /* PC 버전 최적화 (탭 및 배너 위치 완벽 정렬) */
-        @media (min-width: 768px) {
-            body { padding-top: 30px; padding-bottom: 30px; background-color: #e9ecef; }
-            .app-container { max-width: 800px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; padding-bottom: 140px; margin: 0 auto; }
-            header { border-radius: 16px 16px 0 0; padding: 20px 24px 15px 24px; }
-            .sticky-wrapper { border-radius: 16px 16px 0 0; }
-            .promo-area-wrap { max-width: 800px; bottom: 90px; border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color); }
-            .bottom-nav { max-width: 800px; bottom: 30px; border-radius: 0 0 16px 16px; border: 1px solid var(--border-color); }
-            #list-container, #wishlist-container { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; align-items: stretch; padding: 20px; }
-            .card { margin-bottom: 0; height: auto; display: flex; flex-direction: column; }
-            .card-title-row { margin-top: auto; padding-top: 10px; }
-        }
+        .filter-wrapper { position: relative; background: #fafafa; border-bottom: 1px solid #eee; }
+        .checkbox-group { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 4px; padding: 8px 10px; -ms-overflow-style: none; scrollbar-width: none; }
+        .checkbox-group::-webkit-scrollbar { display: none; }
+        .fade-right { position: absolute; right: 0; top: 0; bottom: 0; width: 35px; background: linear-gradient(to right, rgba(250,250,250,0), rgba(250,250,250,1)); pointer-events: none; transition: opacity 0.3s; }
 
-        /* 카드 UI 공통 (오픈런 예약 & 찜한 목록 완벽 동일) */
-        .card { background: var(--card-bg); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--border-color); display: block; transition: transform 0.2s; cursor: pointer; position: relative; }
-        .card:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
-        .card.disabled-card { pointer-events: none; user-select: none; }
-        .status-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.45); z-index: 10; display: flex; align-items: center; justify-content: center; border-radius: 12px; }
-        .status-stamp { color: #fff; border: 2px solid #fff; padding: 4px 12px; font-size: 1.2rem; font-weight: 800; transform: rotate(-10deg); border-radius: 6px; background: rgba(0, 0, 0, 0.3); }
-        .status-stamp.closed { color: #ff5252; border-color: #ff5252; background: rgba(255, 82, 82, 0.15); }
-        
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
-        .badges { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; }
-        .badge { padding: 3px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; color: white; }
-        .badge-loc { background-color: #3498db; } .badge-age { background-color: #9b59b6; } .badge-free { background-color: #4CAF50; } .badge-paid { background-color: #f39c12; } .badge-today { background-color: #E53935; } .badge-open { background-color: #2ecc71; } .badge-close { background-color: #F06292; } .badge-hot { background-color: #ffebee; color: #d32f2f; border-radius: 20px; padding: 3px 4px 3px 8px; }
+        .filter-cb { display: none; }
+        .cb-label { padding: 3px 8px; background: #fff; border: 1px solid #ddd; border-radius: 14px; font-size: 0.72rem; color: #555; cursor: pointer; transition: all 0.2s; user-select: none; white-space: nowrap; }
+        .filter-cb:checked + .cb-label { background: var(--primary-color); color: #fff; border-color: var(--primary-color); font-weight: 700; box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3); }
+        .filter-cb:checked + .cb-label.age-label { background: #ff9800; border-color: #ff9800; box-shadow: 0 2px 4px rgba(255, 152, 0, 0.3); }
 
-        .card-header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-left: 8px; position: relative; z-index: 15;}
-        .view-count { display: flex; align-items: center; gap: 3px; font-size: 0.7rem; color: #aaa; font-weight: 500; }
-        .view-count svg { width: 14px; height: 14px; fill: currentColor; }
-        
-        /* 하트 버튼 (빈하트/찬하트) */
-        .btn-wish { background: none; border: none; padding: 0; cursor: pointer; color: #ccc; transition: 0.2s; display: flex; align-items: center; }
-        .btn-wish svg { width: 22px; height: 22px; fill: currentColor; pointer-events: none; }
-        .btn-wish.wished { color: #E53935; }
-        .btn-wish .filled-heart { display: none; }
-        .btn-wish.wished .filled-heart { display: block; }
-        .btn-wish.wished .empty-heart { display: none; }
+        .content { padding: 15px; }
 
-        .card-title-row { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 2px; min-width: 0; }
-        .card-title-row .title { font-size: 1rem; font-weight: 700; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; padding-right: 4px; }
-        .card-more-text { flex-shrink: 0; font-size: 0.65rem; color: #999; font-weight: 500; background: #f4f4f4; padding: 2px 6px; border-radius: 4px; }
-        .card-bottom-info { margin-top: 8px; font-size: 0.7rem; color: #888; display: flex; gap: 6px; overflow: hidden; }
+        @media (min-width: 768px) {
+            body { padding-top: 30px; padding-bottom: 30px; background-color: #e9ecef; }
+            
+            .app-container { max-width: 800px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: visible; padding-bottom: 75px; }
+            header { border-radius: 16px 16px 0 0; padding: 20px 24px 15px 24px; }
+            .sticky-wrapper { border-radius: 16px 16px 0 0; }
+            
+            h1 { font-size: 1.6rem; margin-bottom: 8px; }
+            .sub-header { font-size: 0.8rem; }
+            .header-stats { font-size: 0.8rem; }
+            .header-stats span { font-size: 1rem; }
+            .search-input { font-size: 1rem; padding: 10px 15px; }
+            .tab { font-size: 1rem; padding: 10px 0; }
 
-        .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; grid-column: 1 / -1; }
-        .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; grid-column: 1 / -1; }
+            .promo-area-wrap { 
+                max-width: 800px; 
+                height: 78px; 
+                padding: 8px 20px; 
+                bottom: 0; 
+                border-radius: 16px 16px 0 0; 
+                border: 1px solid var(--border-color);
+                border-bottom: none;
+                box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            }
+            
+            #list-container { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; align-items: stretch; padding: 20px; }
+            .card { margin-bottom: 0; height: auto; display: flex; flex-direction: column; }
+            .card-title-row { margin-top: auto; padding-top: 10px; }
+        }
 
-        /* 탭 2: 블로그(읽기자료) 카드 */
-        .blog-card { display: flex; gap: 12px; background: #fff; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); border: 1px solid #eee; cursor: pointer; }
-        .blog-img { width: 80px; height: 80px; border-radius: 8px; object-fit: cover; background-color: #f0f0f0; flex-shrink: 0; }
-        .blog-content { flex: 1; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
-        .blog-title { font-size: 0.95rem; font-weight: 700; margin: 0 0 4px 0; color: #333; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .blog-desc { font-size: 0.75rem; color: #777; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--border-color); display: block; transition: transform 0.2s; cursor: pointer; min-width: 0; }
+        .card:not(.disabled-card):hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        .card.disabled-card { position: relative; overflow: hidden; pointer-events: none; user-select: none; }
+        .status-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.45); z-index: 10; display: flex; align-items: center; justify-content: center; }
+        .status-stamp { color: #fff; border: 2px solid #fff; padding: 4px 12px; font-size: 1.2rem; font-weight: 800; letter-spacing: 1px; transform: rotate(-10deg); border-radius: 6px; background: rgba(0, 0, 0, 0.3); text-align: center; }
+        .status-stamp.closed { color: #ff5252; border-color: #ff5252; background: rgba(255, 82, 82, 0.15); }
 
-        /* 탭 3: 자체 커뮤니티 피드 UI */
-        .feed-input-box { background: #fff; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); border: 1px solid #eee; }
-        .feed-input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.85rem; outline: none; box-sizing: border-box; margin-bottom: 8px; }
-        .feed-input:focus { border-color: var(--primary-color); }
-        .btn-feed-submit { background: var(--primary-color); color: #fff; border: none; padding: 10px; width: 100%; border-radius: 8px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
-        .btn-feed-submit:hover { background: #388E3C; }
-        .btn-feed-submit:disabled { background: #aaa; cursor: not-allowed; }
-        .feed-login-overlay { background: #fafafa; border: 1px dashed #ccc; border-radius: 12px; padding: 20px; text-align: center; font-size: 0.9rem; color: #666; margin-bottom: 20px; }
-        
-        .feed-card { background: #fff; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #eee; }
-        .feed-header { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: baseline; border-bottom: 1px dashed #eee; padding-bottom: 8px; }
-        .feed-author { font-weight: 700; font-size: 0.9rem; color: var(--primary-color); }
-        .feed-date { font-size: 0.7rem; color: #aaa; }
-        .feed-details p { margin: 4px 0; font-size: 0.85rem; color: #444; }
-        .feed-details b { color: #222; }
-        .feed-review-text { background: #fafafa; padding: 10px; border-radius: 8px; margin-top: 8px !important; line-height: 1.4; color: #333 !important; }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+        .badges { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; }
+        .badge { padding: 3px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; color: white; }
+        .badge-loc { background-color: #3498db; }
+        .badge-age { background-color: #9b59b6; }
+        .badge-free { background-color: #4CAF50; }
+        .badge-paid { background-color: #f39c12; }
+        .badge-today { background-color: #E53935; }
+        .badge-open { background-color: #2ecc71; }
+        .badge-close { background-color: #F06292; }
+        .badge-hot { 
+            background-color: #ffebee; 
+            color: #d32f2f; 
+            border-radius: 20px; 
+            padding: 3px 4px 3px 8px;
+        }
 
-        /* 모달 공통 */
-        .modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99998; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
-        .modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
-        .modal-content-box { background: #fff; width: 90%; max-width: 320px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); padding: 20px; text-align: center; transform: translateY(20px); transition: transform 0.3s; }
-        .modal-overlay.active .modal-content-box { transform: translateY(0); }
-        .modal-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; color: #333; }
-        
-        .login-input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box; font-size: 0.9rem; }
-        .login-btns { display: flex; gap: 10px; margin-top: 10px; }
-        .login-btns button { flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
-        .btn-cancel { background: #f0f0f0; color: #555; }
-        .btn-login-submit { background: #FEE500; color: #371D1E; }
+        .view-count { display: flex; align-items: center; gap: 3px; font-size: 0.7rem; color: #aaa; font-weight: 500; flex-shrink: 0; margin-left: 8px; margin-top: 2px; }
+        .view-count svg { width: 14px; height: 14px; fill: currentColor; }
 
-        /* 읽기자료 전용 모달 */
-        .article-modal-box { max-width: 450px; padding: 0; text-align: left; display: flex; flex-direction: column; max-height: 80vh; }
-        .article-modal-header { padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: flex-start; }
-        .article-modal-title { font-size: 1.1rem; font-weight: 700; margin: 0; line-height: 1.3; padding-right: 20px; }
-        .article-close-btn { background: none; border: none; font-size: 1.6rem; cursor: pointer; color: #888; padding: 0; line-height: 1; margin-top: -2px; }
-        .article-modal-body { padding: 20px; overflow-y: auto; font-size: 0.95rem; line-height: 1.6; color: #333; }
+        .card-title-row { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 2px; min-width: 0; }
+        .card-title-row .title { font-size: 1rem; font-weight: 700; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; padding-right: 4px; }
+        
+        .card-more-text { flex-shrink: 0; font-size: 0.65rem; color: #999; font-weight: 500; background: #f4f4f4; padding: 2px 6px; border-radius: 4px; }
 
-        /* 이벤트 상세 팝업 */
-        .event-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding-bottom: 0; }
-        .event-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
-        .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: calc(100% - 60px); border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; transform: translateY(120%); transition: transform 0.3s; margin: 0 10px 10px 10px; }
-        .event-modal-overlay.active .event-modal-content-box { transform: translateY(0); }
-        .event-modal-header { padding: 16px 20px; border-bottom: 1px solid #eee; display: flex; align-items: flex-start; position: relative; }
-        .event-modal-title { font-size: 1.15rem; font-weight: 700; margin: 0; flex: 1; padding-right: 60px; line-height: 1.4; word-break: keep-all; }
-        .event-modal-close-btn { position: absolute; top: 16px; right: 12px; background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #888; width: 32px; height: 32px; border-radius: 50%; }
-        .event-modal-body { padding: 20px; overflow-y: auto; flex: 1; }
-        .event-modal-footer { padding: 15px 20px; border-top: 1px solid #eee; background: #fafafa; display: flex; flex-direction: column; gap: 10px; }
-        .btn-link { display: flex; align-items: center; justify-content: center; background: var(--primary-color); color: white; padding: 10px 0; border-radius: 6px; font-weight: 700; width: 100%; text-decoration: none; border: none; cursor: pointer; }
-        
-        .info-row { font-size: 0.95rem; color: #444; margin-bottom: 10px; display: flex; align-items: flex-start; }
-        .info-label { font-weight: 700; color: #333; line-height: 1.4; flex-shrink: 0; }
-        .info-divider { color: #ddd; margin: 0 10px; flex-shrink: 0; }
-        .info-desc { flex: 1; word-break: keep-all; line-height: 1.4; color: #222; }
-        .popup-img-container img { max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px; }
+        .card-bottom-info { margin-top: 8px; font-size: 0.7rem; color: #888; display: flex; flex-direction: row; align-items: center; flex-wrap: nowrap; gap: 6px; overflow: hidden; min-width: 0; }
+        .card-bottom-info span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 3px; }
 
-        /* 리뷰 섹션 (UI 개선) */
-        .review-section { margin-top: 15px; padding-top: 10px; }
-        .review-toggle-btn { width: 100%; background: #f9f9f9; border: 1px solid #ddd; padding: 10px 12px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; color: #555; cursor: pointer; display: flex; justify-content: space-between; }
-        .review-collapsible { display: none; padding-top: 12px; }
-        .review-collapsible.open { display: block; }
-        
-        /* 💡 닉네임, 리뷰내용 한줄 배치 */
-        .review-input-row { display: flex; gap: 6px; align-items: stretch; width: 100%; margin-bottom: 8px; }
-        .review-nickname { width: 70px; flex-shrink: 0; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.8rem; outline: none; background: #f9f9f9; text-align: center; }
-        .review-content { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.8rem; outline: none; min-width: 0; }
-        .btn-submit-review { width: 50px; flex-shrink: 0; background: var(--primary-color); color: #fff; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
-        
-        /* 💡 동행 구하기 UI 변경 (버튼 토글 방식) */
-        .btn-companion-open { width: 100%; background: #f4f4f4; border: 1px dashed #ccc; color: #555; padding: 8px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; font-weight: 700; }
-        .btn-companion-open:hover { background: #eee; }
-        .companion-wrap { display: flex; align-items: center; background: #FEE500; border-radius: 6px; padding: 2px; }
-        .kakao-label { padding: 0 8px; font-size: 0.75rem; font-weight: 700; color: #371D1E; }
-        .kakao-input { flex: 1; padding: 8px; border: none; border-radius: 4px; outline: none; font-size: 0.8rem; margin-right: 2px; }
-        .btn-comp-cancel { background: none; border: none; color: #371D1E; font-size: 1.2rem; padding: 0 8px; cursor: pointer; line-height: 1; }
+        .empty-state { text-align: center; padding: 40px 0; color: #888; font-size: 0.95rem; grid-column: 1 / -1; }
+        .loading-state { text-align: center; padding: 40px 0; color: var(--primary-color); font-size: 1rem; font-weight: 700; grid-column: 1 / -1; }
 
-        .review-list { display: flex; flex-direction: column; gap: 6px; max-height: 180px; overflow-y: auto; margin-top: 10px; }
-        .review-card { display: flex; flex-direction: column; padding-bottom: 8px; border-bottom: 1px dashed #eee; font-size: 0.8rem; }
-        .btn-kakao-chat { display: inline-flex; align-items: center; gap: 4px; background-color: #FEE500; color: #371D1E; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-decoration: none; align-self: flex-start; margin-top: 4px; }
-    </style>
+        .img-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; padding-bottom: 65px; box-sizing: border-box; }
+        .img-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
+        
+        .img-modal-wrapper { 
+            position: relative; 
+            max-width: min(90%, 600px); 
+            max-height: calc(100% - 100px); 
+            display: inline-block; 
+        }
+        .img-modal-scroll-area { max-height: calc(100vh - 100px); overflow-y: auto; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); background: #fff; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+        
+        .img-modal-scroll-area::-webkit-scrollbar { width: 6px; }
+        .img-modal-scroll-area::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
+        
+        .img-modal-content { display: block; width: 100%; height: auto; }
+        
+        .img-modal-close { position: absolute; top: -14px; right: -14px; background: #fff; color: #111; border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 1.6rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); z-index: 100; line-height: 1; padding: 0 0 2px 0; }
+
+        .event-modal-overlay { display: flex; visibility: hidden; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99998; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding-bottom: 0; box-sizing: border-box; }
+        .event-modal-overlay.active { visibility: visible; opacity: 1; pointer-events: auto; }
+        
+        .event-modal-content-box { background: #fff; width: 100%; max-width: 500px; max-height: calc(100% - 80px); border-radius: 16px 16px 8px 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; transform: translateY(120%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin: 0 10px 65px 10px; }
+        .event-modal-overlay.active .event-modal-content-box { transform: translateY(0); }
+
+        @media (min-width: 768px) {
+            .img-modal-overlay { padding-bottom: 90px; }
+            .event-modal-content-box { border-radius: 16px; transform: scale(0.95); opacity: 0; transition: all 0.2s ease-out; margin-bottom: 90px; }
+            .event-modal-overlay.active .event-modal-content-box { transform: scale(1); opacity: 1; }
+        }
+
+        .event-modal-header { padding: 16px 20px; position: relative; border-bottom: 1px solid #eee; display: flex; align-items: flex-start; }
+        .event-modal-title { font-size: 1.15rem; font-weight: 700; padding-right: 70px; margin: 0; line-height: 1.4; flex: 1; word-break: keep-all; white-space: pre-wrap; }
+        .event-modal-share-btn { position: absolute; top: 16px; right: 48px; background: none; border: none; cursor: pointer; color: #666; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s; padding: 4px; }
+        .event-modal-share-btn:hover { background: #f0f0f0; }
+        .event-modal-share-btn svg { width: 100%; height: 100%; fill: currentColor; }
+
+        .event-modal-close-btn { position: absolute; top: 16px; right: 12px; background: none; border: none; font-size: 1.8rem; line-height: 1; cursor: pointer; color: #888; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s; }
+        .event-modal-close-btn:hover { background: #f0f0f0; }
+
+        .event-modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+        
+        .popup-img-container { width: 100%; margin-bottom: 15px; border-radius: 8px; overflow: hidden; text-align: center; background-color: #f9f9f9; }
+        .popup-img-container img { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+
+        .info-row { font-size: 0.95rem; color: #444; margin-bottom: 10px; display: flex; align-items: flex-start; }
+        .info-label { font-weight: 700; color: #333; line-height: 1.4; flex-shrink: 0; }
+        .info-divider { color: #ddd; margin: 0 10px; line-height: 1.4; flex-shrink: 0; font-weight: 400; }
+        .info-desc { flex: 1; word-break: keep-all; line-height: 1.4; color: #222; }
+
+        .event-modal-footer { padding: 15px 20px; border-top: 1px solid #eee; background: #fafafa; display: flex; flex-direction: column; gap: 10px; }
+        .footer-btn-row { display: flex; gap: 10px; width: 100%; }
+        
+        .btn-link { display: flex; align-items: center; justify-content: center; text-align: center; background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); text-decoration: none; padding: 10px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; transition: all 0.2s; box-sizing: border-box; cursor: pointer; font-family: inherit; width: 100%; flex: 1; margin: 0; }
+        .btn-link:hover { background-color: #388E3C; }
+        .btn-disabled { background-color: #f2f2f2 !important; color: #888 !important; border: 1px solid #ddd !important; cursor: default !important; pointer-events: auto; }
+        .btn-disabled:hover { background-color: #f2f2f2 !important; }
+
+        .btn-benefit { display: flex; align-items: center; justify-content: center; background-color: #E53935; color: white; border: none; padding: 10px 0; border-radius: 6px; font-size: 1rem; font-weight: 700; width: 100%; cursor: pointer; transition: all 0.2s; box-sizing: border-box; font-family: inherit; }
+        .btn-benefit:hover { background-color: #C62828; }
+
+        /* 리뷰 섹션 CSS */
+        .review-section { margin-top: 15px; padding-top: 10px; }
+        
+        /* 댓글창 드롭다운 토글 버튼 */
+        .review-toggle-btn {
+            width: 100%;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #555;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        .review-toggle-btn:hover { background: #f1f1f1; }
+        .review-toggle-btn .count { color: var(--primary-color); }
+        .toggle-arrow { font-size: 0.8rem; transition: transform 0.3s; color: #888; }
+        .review-toggle-btn.open .toggle-arrow { transform: rotate(180deg); } 
+
+        /* 숨겨질 댓글 본문 영역 */
+        .review-collapsible {
+            display: none; 
+            padding-top: 12px;
+        }
+        .review-collapsible.open {
+            display: block; 
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(-5px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        .review-form { margin-bottom: 10px; }
+        .review-input-group { display: flex; gap: 4px; }
+        .review-nickname { width: 60px; padding: 6px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.8rem; outline: none; }
+        .review-content { flex: 1; padding: 6px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.8rem; outline: none; min-width: 0; }
+        .review-nickname:focus, .review-content:focus { border-color: var(--primary-color); }
+        
+        /* 플레이스홀더 색상 연하게 변경 */
+        .review-nickname::placeholder, .review-content::placeholder {
+            color: #cccccc;
+            opacity: 1;
+        }
+
+        .btn-submit-review { background: var(--primary-color); color: #fff; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: 0.2s; }
+        .btn-submit-review:hover { background: #388E3C; }
+
+        .review-list { display: flex; flex-direction: column; gap: 6px; max-height: 140px; overflow-y: auto; padding-right: 2px; overscroll-behavior: contain; }
+        .review-list::-webkit-scrollbar { width: 4px; }
+        .review-list::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+        
+        .review-card { display: flex; align-items: baseline; gap: 6px; background: none; padding: 0; }
+        .review-card-author { font-weight: 700; color: #444; font-size: 0.75rem; white-space: nowrap; flex-shrink: 0; }
+        .review-card-text { font-size: 0.8rem; color: #333; line-height: 1.3; word-break: break-all; flex-grow: 1; margin: 0; padding: 0 4px; }
+        .review-card-date { font-size: 0.65rem; color: #aaa; white-space: nowrap; flex-shrink: 0; }
+        .empty-review { text-align: center; color: #999; font-size: 0.8rem; padding: 10px 0; background: #fafafa; border-radius: 6px; }
+    </style>
 </head>
 <body>
 
 <div class="app-container">
-    <div class="sticky-wrapper">
-        <header id="app-header">
-            <h1>헤이청주 📢 교육/체험 링크모음</h1>
-            <div class="sub-header" id="last-updated-text">최근 업데이트: 계산중...</div>
+    <div class="sticky-wrapper">
+        <header id="app-header">
+            <h1>헤이청주 📢 교육/체험 링크모음</h1>
+            <div class="sub-header" id="last-updated-text">최근 업데이트: 계산중...</div>
 
-            <div class="header-action-row">
-                <div class="header-stats">
-                    <div>TODAY<span id="count-today">...</span></div>
-                    <div>TOTAL<span id="count-total">...</span></div>
-                </div>
-                <div class="header-buttons-row">
-                    <button class="btn-share" onclick="window.open('https://forms.gle/E2vPFK6P7p3R95vH8', '_blank')">문의</button>
-                    <button class="btn-share" onclick="sharePage()">공유</button>
-                    <button class="btn-login-top" id="topLoginBtn" onclick="toggleLoginModal()">로그인</button>
-                </div>
-            </div>
+            <div class="header-action-row">
+                <div class="header-stats">
+                    <div>TODAY<span id="count-today">...</span></div>
+                    <div>TOTAL<span id="count-total">...</span></div>
+                </div>
 
-            <div class="notice-container"><a id="notice-link"></a></div>
-        </header>
+                <div class="header-buttons-row">
+                    <button class="btn-share" onclick="window.open('https://forms.gle/E2vPFK6P7p3R95vH8', '_blank')">
+                        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                        문의
+                    </button>
+                    <button class="btn-share" onclick="sharePage()">
+                        <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
+                        공유
+                    </button>
+                </div>
+            </div>
 
-        <div id="tab1-header-area">
-            <div class="search-container">
-                <input type="text" id="search-input" class="search-input" placeholder="검색어를 입력하세요 (예: 도서관, 과학, 공연)" onkeyup="applyFilters()" />
-            </div>
-            <div class="tabs">
-                <div class="tab" onclick="changeSubTab(this, 'ongoing')">사전예약 중</div>
-                <div class="tab" onclick="changeSubTab(this, 'always')">상시/현장접수</div>
-                <div class="tab active" onclick="changeSubTab(this, 'affiliate')">제휴/이벤트</div>
-            </div>
-            <div class="filter-wrapper">
-                <div class="checkbox-group" id="combined-filter-group" onscroll="handleFilterScroll(this)"></div>
-                <div class="fade-right" id="filter-fade"></div>
-            </div>
-        </div>
-    </div>
+            <div class="notice-container"><a id="notice-link"></a></div>
+        </header>
 
-    <div id="main-tab-1" class="main-tab-content active content">
-        <div id="list-container">
-            <div class="loading-state">데이터를 불러오는 중입니다... ⏳</div>
-        </div>
-    </div>
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-input" placeholder="검색어를 입력하세요 (예: 도서관, 과학, 공연)" onkeyup="applyFilters()" />
+        </div>
 
-    <div id="main-tab-2" class="main-tab-content content">
-        <h3 style="margin-top:0; color:#333;">이번 주말, 아이와 어딜 갈까? 🚗</h3>
-        <div id="article-list-container">
-            <div class="empty-state">자료를 불러오는 중입니다... ⏳</div>
-        </div>
-    </div>
+        <div class="tabs">
+            <div class="tab" onclick="changeTab(this, 'ongoing')">사전예약 중</div>
+            <div class="tab" onclick="changeTab(this, 'always')">상시/현장접수</div>
+            <div class="tab active" onclick="changeTab(this, 'affiliate')">제휴/이벤트</div>
+        </div>
 
-    <div id="main-tab-3" class="main-tab-content content">
-        <div id="feed-login-prompt" class="feed-login-overlay">
-            📝 <b>생생한 후기나 꿀팁을 나누고 싶으신가요?</b><br>
-            <span style="font-size:0.8rem;">로그인 후 이웃들과 정보를 공유해보세요!</span><br>
-            <button onclick="toggleLoginModal()" style="margin-top:10px; background:#FEE500; border:none; padding:6px 16px; border-radius:20px; font-weight:700; cursor:pointer; color:#371D1E;">간편 로그인하기</button>
-        </div>
+        <div class="filter-wrapper">
+            <div class="checkbox-group" id="combined-filter-group" onscroll="handleFilterScroll(this)"></div>
+            <div class="fade-right" id="filter-fade"></div>
+        </div>
+    </div>
 
-        <div id="feed-input-area" class="feed-input-box" style="display:none;">
-            <input type="text" id="feedPlace" class="feed-input" placeholder="📍 방문장소 (예: 청주동물원)">
-            <input type="text" id="feedDate" class="feed-input" placeholder="🗓️ 방문시기 (예: 10월 주말)">
-            <input type="text" id="feedAge" class="feed-input" placeholder="👶 자녀연령 (예: 5세, 초등 저학년)">
-            <textarea id="feedReview" class="feed-input" placeholder="✍️ 한줄평 및 꿀팁을 자유롭게 남겨주세요" rows="3" style="resize:none;"></textarea>
-            <button class="btn-feed-submit" onclick="submitFeed()">후기 공유하기 🚀</button>
-        </div>
-
-        <div id="feed-list-container">
-            <div class="empty-state">불러오는 중...</div>
-        </div>
-    </div>
-
-    <div id="main-tab-4" class="main-tab-content content">
-        <h3 style="margin-top:0; margin-bottom:15px; color:#333;">❤️ 내가 찜한 행사</h3>
-        <div id="wishlist-container"></div>
-    </div>
+    <div class="content" id="list-container">
+        <div class="loading-state">데이터를 불러오는 중입니다... ⏳</div>
+    </div>
 </div>
 
 <div class="promo-area-wrap" id="main-promo-wrap">
-    <div style="position: relative; width: 100%; height: 100%;">
-        <a href="https://blog.naver.com/hyejuousflower" target="_blank" id="fallback-banner" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;">
-            <img src="https://firebasestorage.googleapis.com/v0/b/heycj-55b6a.firebasestorage.app/o/%EB%B0%B0%EB%84%883.png?alt=media" alt="배너광고" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;" />
-        </a>
-    </div>
+    <div style="position: relative; width: 100%; height: 100%;">
+        
+        <a href="https://blog.naver.com/hyejuousflower" target="_blank" id="fallback-banner" 
+   onclick="gtag('event', '배너_클릭', { 'event_category': '하단광고', 'event_label': '하단배너' });" 
+   style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; display: flex; justify-content: center; align-items: center; text-decoration: none;">
+</a>
+
+        <div id="adsense-banner" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;">
+            <ins class="adsbygoogle"
+                 style="display:inline-block; width:100%; height:100%;"
+                 data-ad-client="ca-pub-2755313313061030"
+                 data-ad-slot="여기에_발급받은_광고단위ID_입력"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    </div>
 </div>
 
-<nav class="bottom-nav">
-    <div class="b-nav-item active" onclick="switchMainTab(1, this)">
-        <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7v-5z"/></svg>
-        <span>오픈런예약</span>
-    </div>
-    <div class="b-nav-item" onclick="switchMainTab(2, this)">
-        <svg viewBox="0 0 24 24"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.09C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.06.1.05.15.09.25.09.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm-1 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>
-        <span>읽기자료</span>
-    </div>
-    <div class="b-nav-item" onclick="switchMainTab(3, this)">
-        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
-        <span>후기&꿀팁</span>
-    </div>
-    <div class="b-nav-item" onclick="switchMainTab(4, this)">
-        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-        <span>찜한 목록</span>
-    </div>
-</nav>
-
-<div class="modal-overlay" id="loginModal">
-    <div class="modal-content-box">
-        <div class="modal-title">간편 로그인</div>
-        <p style="font-size:0.8rem; color:#666; margin-bottom:15px;">비밀번호(숫자 4자리)만 기억하세요!</p>
-        <input type="text" id="loginNick" class="login-input" placeholder="닉네임 (최대 8자)" maxlength="8">
-        <input type="password" id="loginPass" class="login-input" placeholder="비밀번호 4자리" maxlength="6">
-        <div class="login-btns">
-            <button class="btn-cancel" onclick="toggleLoginModal()">취소</button>
-            <button class="btn-login-submit" onclick="handleLogin()">로그인 / 가입</button>
-        </div>
-    </div>
-</div>
-
-<div class="modal-overlay" id="articleModal">
-    <div class="modal-content-box article-modal-box">
-        <div class="article-modal-header">
-            <h3 class="article-modal-title" id="articleTitle">제목</h3>
-            <button class="article-close-btn" onclick="document.getElementById('articleModal').classList.remove('active')">×</button>
-        </div>
-        <div class="article-modal-body" id="articleBody">
-            <img src="" id="articleImg" style="width:100%; border-radius:8px; margin-bottom:15px; display:none;">
-            <div id="articleContentText">내용</div>
-        </div>
-    </div>
+<div class="img-modal-overlay" id="imageModal">
+    <div class="img-modal-wrapper">
+        <button class="img-modal-close" id="closeModalBtn">×</button>
+        <div class="img-modal-scroll-area" id="imageModalScroll">
+            <img src="" alt="상세정보 이미지" class="img-modal-content" id="imageModalImg" />
+        </div>
+    </div>
 </div>
 
 <div class="event-modal-overlay" id="eventModal" onclick="closeEventPopup(event)">
-    <div class="event-modal-content-box">
-        <div class="event-modal-header">
-            <h2 class="event-modal-title" id="popupTitle">제목</h2>
-            <button class="event-modal-share-btn" id="popupShareBtn">
-                <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
-            </button>
-            <button class="event-modal-close-btn" onclick="closeEventPopup()">×</button>
-        </div>
-        <div class="event-modal-body" id="popupBody"></div>
-        <div class="event-modal-footer" id="popupFooter"></div>
-    </div>
+    <div class="event-modal-content-box">
+        <div class="event-modal-header">
+            <h2 class="event-modal-title" id="popupTitle">제목</h2>
+            <button class="event-modal-share-btn" id="popupShareBtn">
+                <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
+            </button>
+            <button class="event-modal-close-btn" onclick="closeEventPopup()">×</button>
+        </div>
+        <div class="event-modal-body" id="popupBody"></div>
+        <div class="event-modal-footer" id="popupFooter"></div>
+    </div>
 </div>
 
 <script>
-    // ⚠️ 1단계에서 만든 [읽기자료 구글 앱스 스크립트 웹 앱 URL]을 여기에 붙여넣으세요!
-    const ARTICLE_SCRIPT_URL = "여기에_웹_앱_URL을_붙여넣으세요"; 
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbw-a4MQEcaCa1KMSU0IoN_8yZGZk5WfUadbP9SL9DlW0ZJInExl8SVaTbd-wgQBffV7Ow/exec";
+    const firebaseConfig = {
+  apiKey: "AIzaSyAAcLTj-cYITigtCl354lrr4lfvGOFZPK0",
+  authDomain: "test-2ebbf.firebaseapp.com",
+  databaseURL: "https://test-2ebbf-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "test-2ebbf",
+  storageBucket: "test-2ebbf.firebasestorage.app",
+  messagingSenderId: "702080235125",
+  appId: "1:702080235125:web:58a64ce59e44b67bc56a3c",
+  measurementId: "G-S9W0HXWKMQ"
+};;
 
-    // 파이어베이스 설정
-    const firebaseConfig = {
-      apiKey: "AIzaSyBZg-wKztuG-Ak7-WqWSAYe9UIj874fYAY",
-      authDomain: "heycj-55b6a.firebaseapp.com",
-      databaseURL: "https://heycj-55b6a-default-rtdb.firebaseio.com",
-      projectId: "heycj-55b6a"
-    };
+    let db = null;
+    try {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        db = firebase.database();
+    } catch (error) {
+        console.warn("방화벽/광고차단기로 인해 파이어베이스 로딩이 제한되었습니다. 조회수 없이 행사를 정상 로딩합니다.", error);
+    }
 
-    let db = null;
-    try { if (!firebase.apps.length) firebase.initializeApp(firebaseConfig); db = firebase.database(); } 
-    catch (e) { console.warn("파이어베이스 에러:", e); }
+    function escapeHtml(text) {
+        return (text || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
 
-    function escapeHtml(t) { return (t || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
-    function nl2br(str) { return str ? str.replace(/(?:\r\n|\r|\n|\\n)/g, '<br>') : ''; }
-    function getTodayStr() { const d = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" })); return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`; }
+    function nl2br(str) {
+        if (!str) return '';
+        return str.replace(/(?:\r\n|\r|\n|\\n)/g, '<br>');
+    }
 
-    const noticeData = [{ text: "[⚡내일오픈/마감,긴급정보 알림 오픈챗 입장]👆", link: "https://open.kakao.com/o/gAUqOrai" }, { text: "[헤이청주에 ☎️ 협업문의/제안/건의하기]👆", link: "https://forms.gle/h8KLaLkfsU55aH5T9" }];
-    function initNotice() { let i = 0; const el = document.getElementById('notice-link'); setInterval(() => { el.style.opacity = '0'; setTimeout(() => { const d = noticeData[i]; el.innerText = d.text; if(d.link){el.href=d.link; el.target="_blank";}else{el.removeAttribute('href');} el.style.opacity = '1'; i = (i+1)%noticeData.length; }, 300); }, 4000); }
-    function initLastUpdated() { const lm = new Date(document.lastModified); document.getElementById('last-updated-text').innerText = `최근 업데이트: ${lm.getFullYear()}/${lm.getMonth() + 1}/${lm.getDate()} ${String(lm.getHours()).padStart(2, '0')}:${String(lm.getMinutes()).padStart(2, '0')}`; }
-    
-    async function initVisitCounters() {
-        if (!db) { document.getElementById('count-total').innerText = '-'; document.getElementById('count-today').innerText = '-'; return; }
-        const todayStr = getTodayStr(); const totalRef = db.ref('visits/total'); const todayRef = db.ref(`visits/today_${todayStr}`);
-        try {
-            if (!sessionStorage.getItem('visited_today_' + todayStr)) {
-                await totalRef.set(firebase.database.ServerValue.increment(1)); await todayRef.set(firebase.database.ServerValue.increment(1));
-                sessionStorage.setItem('visited_today_' + todayStr, 'true');
-            }
-            totalRef.on('value', s => document.getElementById('count-total').innerText = s.val() || 0);
-            todayRef.on('value', s => document.getElementById('count-today').innerText = s.val() || 0);
-        } catch (e) {}
-    }
+    function getTodayStr() {
+        const kstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
+        const yyyy = kstNow.getFullYear();
+        const mm = String(kstNow.getMonth() + 1).padStart(2, '0');
+        const dd = String(kstNow.getDate()).padStart(2, '0');
+        return `${yyyy}${mm}${dd}`;
+    }
 
-    function sharePage() { if (navigator.share) navigator.share({ title: '헤이청주 📢', text: '체험 행사 일정 확인!', url: window.location.href }); else { navigator.clipboard.writeText(window.location.href); alert('링크가 복사되었습니다!'); } }
-    function sharePopupLink(eventId) { const shareUrl = window.location.origin + window.location.pathname + '?id=' + encodeURIComponent(eventId); if (navigator.share) navigator.share({ title: '헤이청주 일정 공유', url: shareUrl }); else { navigator.clipboard.writeText(shareUrl); alert('팝업 링크가 복사되었습니다!'); } }
-    function handleFilterScroll(element) { const fade = document.getElementById('filter-fade'); if (element.scrollWidth - element.clientWidth <= element.scrollLeft + 5) fade.style.opacity = '0'; else fade.style.opacity = '1'; }
+    const noticeData = [
+        { text: "[⚡내일오픈/마감,긴급정보 실시간 알림 오픈챗 입장하기👆] ", link: "https://open.kakao.com/o/gAUqOrai" },
+        { text: "[헤이청주에 ☎️ 협업문의/제안/건의하기] 👆", link: "https://forms.gle/h8KLaLkfsU55aH5T9" },
+        { text: "📝간혹 오타가 발생하므로 상세정보확인 페이지 반드시 참고", link: "" },
+        { text: "📢[제휴/이벤트 준비중] 정서뮤직아트클래스 무료체험권 👇 ", link: "" }
+    ];
 
-    let currentLogNick = localStorage.getItem('heycj_nick') || '';
-    let currentLogPass = localStorage.getItem('heycj_pass') || '';
-    let wishlist = []; try { wishlist = JSON.parse(localStorage.getItem('heycj_wishlist')) || []; } catch(e){}
+    function initNotice() {
+        let currentIndex = 0;
+        const noticeLink = document.getElementById('notice-link');
 
-    function getHeartSVG() {
-        return `
-            <svg class="empty-heart" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3z"/></svg>
-            <svg class="filled-heart" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-        `;
-    }
+        function updateNotice() {
+            noticeLink.style.opacity = '0';
+            setTimeout(() => {
+                const data = noticeData[currentIndex];
+                noticeLink.innerText = data.text;
+                if (data.link) {
+                    noticeLink.href = data.link;
+                    noticeLink.target = "_blank";
+                    noticeLink.style.cursor = "pointer";
+                } else {
+                    noticeLink.removeAttribute('href');
+                    noticeLink.removeAttribute('target');
+                    noticeLink.style.cursor = "default";
+                }
+                noticeLink.style.opacity = '1';
+                currentIndex = (currentIndex + 1) % noticeData.length;
+            }, 300);
+        }
+        updateNotice();
+        setInterval(updateNotice, 4000);
+    }
 
-    function updateHeaderLoginState() {
-        const topBtn = document.getElementById('topLoginBtn');
-        const feedInput = document.getElementById('feed-input-area');
-        const feedPrompt = document.getElementById('feed-login-prompt');
-        if (currentLogNick) {
-            topBtn.innerText = currentLogNick + '님'; topBtn.style.background = '#fff'; topBtn.style.color = 'var(--primary-color)';
-            if(feedInput) feedInput.style.display = 'block'; if(feedPrompt) feedPrompt.style.display = 'none';
-        } else {
-            topBtn.innerText = '로그인'; topBtn.style.background = '#FEE500'; topBtn.style.color = '#371D1E';
-            if(feedInput) feedInput.style.display = 'none'; if(feedPrompt) feedPrompt.style.display = 'block';
-        }
-    }
+    function initLastUpdated() {
+        const updateElem = document.getElementById('last-updated-text');
+        const lm = new Date(document.lastModified);
+        const y = lm.getFullYear();
+        const m = lm.getMonth() + 1;
+        const d = lm.getDate();
+        const h = String(lm.getHours()).padStart(2, '0');
+        const min = String(lm.getMinutes()).padStart(2, '0');
+        updateElem.innerText = `최근 업데이트: ${y}/${m}/${d} ${h}:${min}`;
+    }
 
-    function toggleLoginModal() {
-        const modal = document.getElementById('loginModal');
-        if (currentLogNick && !modal.classList.contains('active')) {
-            if (confirm("로그아웃 하시겠습니까?")) {
-                localStorage.removeItem('heycj_nick'); localStorage.removeItem('heycj_pass');
-                currentLogNick = ''; currentLogPass = ''; updateHeaderLoginState(); alert("로그아웃 되었습니다.");
-            } return;
-        }
-        modal.classList.contains('active') ? modal.classList.remove('active') : modal.classList.add('active');
-    }
+    async function initVisitCounters() {
+        if (!db) {
+            document.getElementById('count-total').innerText = '-';
+            document.getElementById('count-today').innerText = '-';
+            return;
+        }
 
-    function handleLogin() {
-        const nick = document.getElementById('loginNick').value.trim(); const pass = document.getElementById('loginPass').value.trim();
-        if(!nick || !pass) return alert("닉네임과 비밀번호를 입력해주세요.");
-        localStorage.setItem('heycj_nick', nick); localStorage.setItem('heycj_pass', pass);
-        currentLogNick = nick; currentLogPass = pass;
-        updateHeaderLoginState(); toggleLoginModal(); alert(`환영합니다, ${nick}님!`);
-    }
+        const todayStr = getTodayStr(); 
+        const totalRef = db.ref('visits/total');
+        const todayRef = db.ref(`visits/today_${todayStr}`);
 
-    function toggleWish(e, eventId) {
-        e.stopPropagation();
-        if (!currentLogNick) { alert('로그인 후 하트를 누를 수 있습니다.'); return toggleLoginModal(); }
+        try {
+            const hasVisited = sessionStorage.getItem('visited_today_' + todayStr);
+            if (!hasVisited) {
+                await totalRef.set(firebase.database.ServerValue.increment(1));
+                await todayRef.set(firebase.database.ServerValue.increment(1));
+                sessionStorage.setItem('visited_today_' + todayStr, 'true');
+            }
 
-        const index = wishlist.indexOf(eventId);
-        if (index > -1) wishlist.splice(index, 1); else wishlist.push(eventId);
-        localStorage.setItem('heycj_wishlist', JSON.stringify(wishlist));
+            totalRef.on('value', snap => {
+                document.getElementById('count-total').innerText = snap.val() || 0;
+            });
+            
+            todayRef.on('value', snap => {
+                document.getElementById('count-today').innerText = snap.val() || 0;
+            });
 
-        document.querySelectorAll(`.wish-btn-${eventId}`).forEach(btn => {
-            if (index > -1) btn.classList.remove('wished'); else btn.classList.add('wished');
-        });
+        } catch (error) {
+            console.warn("방문자 수 로딩 실패", error);
+            document.getElementById('count-total').innerText = '-';
+            document.getElementById('count-today').innerText = '-';
+        }
+    }
 
-        if(document.getElementById('main-tab-4').classList.contains('active')) renderWishlistItems();
-    }
+    function getCounterNumber(payload) {
+        if (payload == null) return 0;
+        if (typeof payload === 'number') return payload;
+        if (typeof payload.value === 'number') return payload.value;
+        if (typeof payload.count === 'number') return payload.count;
+        if (payload.data) {
+            if (typeof payload.data.value === 'number') return payload.data.value;
+            if (typeof payload.data.count === 'number') return payload.data.count;
+        }
+        if (typeof payload.value === 'string' && !isNaN(Number(payload.value))) return Number(payload.value);
+        if (typeof payload.count === 'string' && !isNaN(Number(payload.count))) return Number(payload.count);
+        return 0;
+    }
 
-    function switchMainTab(tabIndex, navElem) {
-        document.querySelectorAll('.b-nav-item').forEach(el => el.classList.remove('active')); navElem.classList.add('active');
-        document.querySelectorAll('.main-tab-content').forEach(el => el.classList.remove('active'));
-        document.getElementById(`main-tab-${tabIndex}`).classList.add('active');
-        document.getElementById('tab1-header-area').style.display = (tabIndex === 1) ? 'block' : 'none';
+    function trackEventAndOpen(e, url, title, btnType) {
+        if (e) e.preventDefault();
+        if (title) {
+            const actionName = (btnType === 'detail') ? '상세보기_클릭' : '신청하기_클릭';
+            gtag('event', actionName, { event_category: '버튼클릭', event_label: title, transport_type: 'beacon' });
+        }
+        setTimeout(() => { window.open(url, '_blank'); }, 200);
+    }
 
-        if (tabIndex === 2) loadArticles();
-        if (tabIndex === 3) loadFeeds();
-        if (tabIndex === 4) renderWishlistItems();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    function trackEventClick(title, btnType) {
+        if (!title) return;
+        const actionName = (btnType === 'detail') ? '상세보기_클릭' : '신청하기_클릭';
+        gtag('event', actionName, { event_category: '버튼클릭', event_label: title, transport_type: 'beacon' });
+    }
 
-    // 오픈런 예약 리스트 및 필터 로직
-    let eventData = []; let currentSubTab = 'affiliate'; let currentFilteredData = []; let itemsRendered = 0; const ITEMS_PER_PAGE = 20;
-    
-    async function fetchEventData() {
-        if (!db) return;
-        const snap = await db.ref('events_data').once('value'); const data = snap.val(); if(!data) return;
-        eventData = Array.isArray(data) ? data : Object.values(data);
-        
-        // 날짜 파싱 및 우선순위용 속성
-        const t = new Date(); const tm = new Date(t); tm.setDate(tm.getDate()+1); 
-        const tStr = `${t.getMonth()+1}/${t.getDate()}`; const tmStr = `${tm.getMonth()+1}/${tm.getDate()}`;
-        
-        eventData.forEach((i, idx) => {
-            i.originalIndex = idx;
-            if (i.type === 'affiliate' || i.type === 'always') { i.displayText = i.applyNote; } 
-            else {
-                i.isTodayOpen = i.applyStart && i.applyStart.includes(tStr); i.isTodayClose = i.applyEnd && i.applyEnd.includes(tStr);
-                i.isTomorrowOpen = i.applyStart && i.applyStart.includes(tmStr); i.isTomorrowClose = i.applyEnd && i.applyEnd.includes(tmStr);
-            }
-            const m = new Set(); if(i.ageFilter) i.ageFilter.split(',').forEach(f=>{if(f.trim()) m.add(f.trim())});
-            if(m.size===0) m.add('미취학').add('초등').add('중고등').add('성인'); i.mappedAges = Array.from(m);
-            i.isNew = (Date.now() - parseRegDate(i['등록일'])) <= (24*60*60*1000) && !(i['N숨김'] === 'O' || i['N숨김'] === 'o');
-        });
+    function sharePage() {
+        const shareData = {
+            title: '헤이청주 📢 교육/체험 링크모음',
+            text: '우리 지역 체험 행사 일정을 한눈에 확인하세요!',
+            url: window.location.href
+        };
+        if (navigator.share) {
+            navigator.share(shareData).catch(console.error);
+        } else {
+            navigator.clipboard.writeText(window.location.href).then(() => alert('링크가 복사되었습니다!'));
+        }
+    }
 
-        generateFilters();
-        
-        let viewsData = {}; try { const vSnap = await db.ref('event_views_total').once('value'); viewsData = vSnap.val() || {}; } catch(e){}
-        eventData.forEach(item => { const id = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex); item.viewCount = viewsData[id] || 0; item.isHot = item.viewCount >= 200; });
-        
-        const urlParams = new URLSearchParams(window.location.search);
-        const eventId = urlParams.get('id') || urlParams.get('event');
-        if (eventId) {
-            const targetItem = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
-            if (targetItem && targetItem.type) {
-                document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-                const targetTabElem = document.querySelector(`.tab[onclick*="${targetItem.type}"]`);
-                if (targetTabElem) targetTabElem.classList.add('active');
-                currentSubTab = targetItem.type;
-            }
-        }
-        applyFilters(); updateHeaderLoginState();
-        if(eventId) { setTimeout(() => { const tCard = document.getElementById('card-' + eventId); if (tCard) tCard.scrollIntoView({ behavior: 'smooth', block: 'center' }); openEventPopup(eventId); }, 300); }
-    }
+    function sharePopupLink(eventId) {
+        const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
+        const shareUrl = window.location.origin + window.location.pathname + '?id=' + encodeURIComponent(eventId);
+        const shareTitle = item ? item.title.replace(/(?:\r\n|\r|\n|\\n)/g, ' ') : '헤이청주 일정 공유'; 
+        const shareData = {
+            title: shareTitle,
+            text: '이 행사 어때요? 일정을 확인해보세요!',
+            url: shareUrl
+        };
+        if (navigator.share) {
+            navigator.share(shareData).catch(console.error);
+        } else {
+            navigator.clipboard.writeText(shareUrl).then(() => alert('팝업 링크가 복사되었습니다!\n원하는 곳에 붙여넣기 해주세요.'));
+        }
+    }
 
-    function parseDateValue(dateStr) { if (!dateStr) return 99999999; let s = String(dateStr).trim(); let match = s.match(/(\d{4})[-./]\s*(\d{1,2})[-./]\s*(\d{1,2})/); if (match) return parseInt(match[1]) * 10000 + parseInt(match[2]) * 100 + parseInt(match[3]); match = s.match(/(\d{2})[-./]\s*(\d{1,2})[-./]\s*(\d{1,2})/); if (match) return (parseInt(match[1]) + 2000) * 10000 + parseInt(match[2]) * 100 + parseInt(match[3]); const t = new Date(); match = s.match(/(\d{1,2})\/(\d{1,2})/); if (match) return t.getFullYear() * 10000 + parseInt(match[1]) * 100 + parseInt(match[2]); match = s.match(/(\d{1,2})월\s*(\d{1,2})일/); if (match) return t.getFullYear() * 10000 + parseInt(match[1]) * 100 + parseInt(match[2]); return 99999999; }
-    function parseRegDate(dateStr) { if (!dateStr) return 0; let s = String(dateStr).trim(); let match = s.match(/(\d{4})[./-]\s*(\d{1,2})[./-]\s*(\d{1,2})/i); if (match) return new Date(parseInt(match[1], 10), parseInt(match[2], 10) - 1, parseInt(match[3], 10)).getTime(); return new Date(s).getTime() || 0; }
-    
-    function generateFilters() { const fg = document.getElementById('combined-filter-group'); fg.innerHTML=''; const pLocs = new Set(); const fLocs = ['청주', '충북', '대전', '세종', '온라인']; eventData.forEach(i => { if(i.loc){ const l = i.loc.trim(); i.mappedLoc = fLocs.includes(l) ? l : '기타'; pLocs.add(i.mappedLoc); }else i.mappedLoc = null; }); ['미취학', '초등', '중고등', '성인'].forEach((a,i) => { fg.innerHTML += `<input type="checkbox" id="age-${i}" value="${a}" class="filter-cb age-cb" onchange="applyFilters()"><label for="age-${i}" class="cb-label age-label">${a}</label>`; }); if(pLocs.size>0) fg.innerHTML += `<span style="color:#ccc; margin:0 4px;">|</span>`; [...fLocs, '기타'].forEach((l,i) => { if(pLocs.has(l)) fg.innerHTML += `<input type="checkbox" id="loc-${i}" value="${l}" class="filter-cb loc-cb" onchange="applyFilters()"><label for="loc-${i}" class="cb-label">${l}</label>`; }); }
-    function changeSubTab(el, t) { document.querySelectorAll('.tab').forEach(tb => tb.classList.remove('active')); el.classList.add('active'); currentSubTab = t; applyFilters(); }
-    
-    function applyFilters() {
-        const sLocs = Array.from(document.querySelectorAll('.loc-cb:checked')).map(c=>c.value); const sAges = Array.from(document.querySelectorAll('.age-cb:checked')).map(c=>c.value); const kw = document.getElementById('search-input').value.trim().toLowerCase();
-        currentFilteredData = eventData.filter(i => {
-            const mT = kw ? true : i.type === currentSubTab; const mL = sLocs.length===0 ? true : sLocs.some(l => i.mappedLoc === l); const mA = sAges.length===0 ? true : sAges.some(a => i.mappedAges && i.mappedAges.includes(a));
-            const mS = kw ? ((i.title||'').toLowerCase().includes(kw) || (i.place||'').toLowerCase().includes(kw)) : true;
-            return mT && mL && mA && mS;
-        });
+    const imgModal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('imageModalImg');
+    const imgModalScroll = document.getElementById('imageModalScroll');
 
-        if (currentSubTab === 'ongoing' || kw) { currentFilteredData.sort((a,b) => { if(a.isHot && !b.isHot) return -1; if(!a.isHot && b.isHot) return 1; const getP = i => { if(i.isTodayOpen) return 1; if(i.isTodayClose) return 2; if(i.isTomorrowOpen) return 3; if(i.isTomorrowClose) return 4; if(i.isNew) return 5; return 6; }; const pA = getP(a); const pB = getP(b); if(pA!==pB) return pA-pB; return parseDateValue(a.applyEnd) - parseDateValue(b.applyEnd); }); } 
-        else if (currentSubTab === 'always') { currentFilteredData.sort((a,b) => { if(a.isHot && !b.isHot) return -1; if(!a.isHot && b.isHot) return 1; if(a.isNew && !b.isNew) return -1; if(!a.isNew && b.isNew) return 1; const dA = parseDateValue(a['행사마감일']||a.eventEnd); const dB = parseDateValue(b['행사마감일']||b.eventEnd); if(dA!==dB) return dA-dB; return a.originalIndex - b.originalIndex; }); } 
-        else { currentFilteredData.sort((a,b) => { if(a.isHot && !b.isHot) return -1; if(!a.isHot && b.isHot) return 1; if(a.isNew && !b.isNew) return -1; if(!a.isNew && b.isNew) return 1; return a.originalIndex - b.originalIndex; }); }
+    imgModal.addEventListener('click', function(e) {
+        if (e.target === imgModal || e.target.id === 'closeModalBtn') {
+            imgModal.classList.remove('active');
+            setTimeout(() => { modalImg.src = ""; }, 200);
+        }
+    });
 
-        itemsRendered = 0; document.getElementById('list-container').innerHTML = currentFilteredData.length===0 ? '<div class="empty-state">해당하는 행사가 없습니다.</div>' : '';
-        renderMoreItems();
-    }
+    document.addEventListener('click', function(e) {
+        const imgBtn = e.target.closest('.btn-img-modal');
+        if (imgBtn) {
+            const url = imgBtn.getAttribute('data-url');
+            const title = imgBtn.getAttribute('data-title');
+            
+            if (imgModalScroll) imgModalScroll.scrollTop = 0;
+            
+            modalImg.src = url;
+            imgModal.classList.add('active');
+            trackEventClick(title, 'detail');
+        }
+    });
 
-    // 완벽 복구된 통합 카드 UI
-    function createCardHTML(item) {
-        const eventId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
-        const isWished = wishlist.includes(eventId);
-        
-        let costBadgeHTML = ''; let safeCost = item.costType || '';
-        if (safeCost.includes('무료')) costBadgeHTML = `<span class="badge badge-free">무료</span>`; else if (safeCost.includes('유료')) costBadgeHTML = `<span class="badge badge-paid">유료</span>`;
+    function handleFilterScroll(element) {
+        const fade = document.getElementById('filter-fade');
+        if (element.scrollWidth - element.clientWidth <= element.scrollLeft + 5) fade.style.opacity = '0';
+        else fade.style.opacity = '1';
+    }
 
-        let dateBadges = '';
-        if (item.isTodayOpen) dateBadges += `<span class="badge badge-open">오늘오픈</span> `;
-        if (item.isTodayClose) dateBadges += `<span class="badge badge-today">오늘마감</span> `;
-        if (item.isTomorrowOpen && !item.isTodayOpen) dateBadges += `<span class="badge badge-open" style="background-color:#ff9800;">내일오픈</span> `;
-        if (item.isTomorrowClose && !item.isTodayClose) dateBadges += `<span class="badge badge-close">내일마감</span> `;
+    let eventData = [];
+    let currentTab = 'affiliate'; 
+    
+    let currentFilteredData = [];
+    let itemsRendered = 0;
+    const ITEMS_PER_PAGE = 20;
 
-        let cClass = 'card'; let overlay = '';
-        let isClosed = false; 
-        const tVal = new Date().getFullYear()*10000 + (new Date().getMonth()+1)*100 + new Date().getDate();
-        const eVal = parseDateValue(item['행사마감일'] || item.eventEnd || item.applyEnd || '');
-        if(eVal !== 99999999 && eVal < tVal) isClosed = true;
+    async function fetchEventData() {
+        try {
+            if (!db) throw new Error("파이어베이스 연결이 준비되지 않았습니다.");
+            
+            const snapshot = await db.ref('events_data').once('value');
+            const data = snapshot.val();
 
-        if((item['커밍순']||'').includes('커밍순')) { cClass+=' disabled-card'; overlay='<div class="status-overlay"><div class="status-stamp">COMING SOON</div></div>'; }
-        else if(isClosed) { cClass+=' disabled-card'; overlay='<div class="status-overlay"><div class="status-stamp closed">마감</div></div>'; }
+            if (!data) {
+                document.getElementById('list-container').innerHTML = '<div class="empty-state">등록된 행사가 없습니다. 데이터베이스 연동을 확인해주세요.</div>';
+                return;
+            }
 
-        return `
-            <div class="${cClass}" id="card-${eventId}" onclick="openEventPopup('${eventId}')">
-                ${overlay}
-                <div class="card-header">
-                    <div class="badges">
-                        ${dateBadges}
-                        ${item.loc ? `<span class="badge badge-loc">${item.loc}</span>` : ''} 
-                        ${item.age ? `<span class="badge badge-age">${item.age}</span>` : ''} 
-                        ${costBadgeHTML}
-                        ${item.isHot ? '<span class="badge badge-hot">인기🔥</span>' : ''}
-                    </div>
-                    <div class="card-header-right">
-                        <div class="view-count" title="조회수"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg><span>${item.viewCount||0}</span></div>
-                        <button class="btn-wish wish-btn-${eventId} ${isWished ? 'wished' : ''}" onclick="toggleWish(event, '${eventId}')">${getHeartSVG()}</button>
-                    </div>
-                </div>
-                <div class="card-title-row">
-                    <h2 class="title">${(item.title||'').replace(/(?:\r\n|\r|\n|\\n)/g,' ')}</h2>
-                    ${item.isNew ? `<span class="card-new-badge">N</span>` : ''}
-                    <span class="card-more-text">+ 더보기</span>
-                </div>
-                <div class="card-bottom-info">
-                    <span style="flex-shrink:0;">📍 ${item.place||'미정'}</span><span style="color:#ddd;">|</span><span style="flex:1;">🗓️ ${item.date||'미정'}</span>
-                </div>
-            </div>
-        `;
-    }
+            eventData = Array.isArray(data) ? data : Object.values(data);
 
-    function renderMoreItems() {
-        if (itemsRendered >= currentFilteredData.length) return; 
-        const container = document.getElementById('list-container');
-        const itemsToRender = currentFilteredData.slice(itemsRendered, itemsRendered + ITEMS_PER_PAGE);
-        itemsToRender.forEach(item => container.insertAdjacentHTML('beforeend', createCardHTML(item)));
-        itemsRendered += itemsToRender.length;
-    }
+            processEventDates();
+            processEventAges();
+            generateFilters();
+            processNewItems();
+            updateTabNewBadges();
 
-    function renderWishlistItems() {
-        const container = document.getElementById('wishlist-container');
-        container.innerHTML = '';
-        if (wishlist.length === 0) { container.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">아직 찜한 일정이 없어요.<br>관심있는 행사의 하트를 꾹 눌러보세요!</div>'; return; }
-        
-        const wishData = eventData.filter(i => wishlist.includes(String(i['ID'] || i['id'] || i['고유번호'] || i.originalIndex)));
-        if (wishData.length === 0) return;
-        wishData.forEach(item => container.insertAdjacentHTML('beforeend', createCardHTML(item)));
-    }
+            let viewsData = {};
+            if (db) {
+                try {
+                    const viewSnapshot = await db.ref('event_views_total').once('value');
+                    viewsData = viewSnapshot.val() || {};
+                } catch (viewError) {
+                    console.warn("조회수를 불러오는 데 실패했습니다.", viewError);
+                }
+            }
+            
+            eventData.forEach(item => {
+                const eventId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
+                item.viewCount = viewsData[eventId] || 0;
+                item.isHot = item.viewCount >= 200; 
+            });
 
-    window.addEventListener('scroll', () => {
-        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-        if (document.getElementById('main-tab-1').classList.contains('active') && scrollTop + clientHeight >= scrollHeight - 300) renderMoreItems();
-    });
+            const urlParams = new URLSearchParams(window.location.search);
+            const eventId = urlParams.get('id') || urlParams.get('event');
 
-    // 💡 이벤트 팝업 (깔끔해진 닉네임 입력 + 토글식 동행 버튼)
-    function openEventPopup(eventId) {
-        const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
-        if (!item) return;
-        document.body.classList.add('modal-open');
-        if (db) db.ref(`event_views_total/${eventId}`).set(firebase.database.ServerValue.increment(1));
+            if (eventId !== null) {
+                const targetItem = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
+                if (targetItem && targetItem.type) {
+                    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+                    const targetTabElem = document.querySelector(`.tab[onclick*="${targetItem.type}"]`);
+                    if (targetTabElem) targetTabElem.classList.add('active');
+                    currentTab = targetItem.type;
+                }
+            }
 
-        document.getElementById('popupTitle').innerHTML = nl2br(item.title);
-        
-        let reviewHtml = `
-            <div class="review-section">
-                <button class="review-toggle-btn" onclick="document.getElementById('reviewCollapsible').classList.toggle('open')">
-                    <span>💬 댓글 (<span id="reviewCount">0</span>) | 👫 동행 <span id="companionCount" style="color:#E53935;">0</span>명</span> ▼
-                </button>
-                <div class="review-collapsible" id="reviewCollapsible">
-                    <div class="review-form">
-                        <div class="review-input-row">
-                            <input type="text" id="rvNick" class="review-nickname" placeholder="닉네임" readonly>
-                            <input type="text" id="rvContent" class="review-content" placeholder="후기나 꿀팁을 남겨주세요!" onkeypress="if(event.key==='Enter') submitReview('${eventId}')">
-                            <button class="btn-submit-review" onclick="submitReview('${eventId}')">등록</button>
-                        </div>
-                        <button type="button" class="btn-companion-open" id="btnCompOpen" onclick="this.style.display='none'; document.getElementById('compWrap').style.display='flex';">🙋‍♂️ 같이 갈 사람 구하기 (카톡 연결)</button>
-                        <div id="compWrap" class="companion-wrap" style="display:none;">
-                            <span class="kakao-label">오픈채팅 링크</span>
-                            <input type="text" id="rvKakao" class="kakao-input" placeholder="https://open.kakao.com/...">
-                            <button type="button" class="btn-comp-cancel" onclick="document.getElementById('rvKakao').value=''; document.getElementById('compWrap').style.display='none'; document.getElementById('btnCompOpen').style.display='block';">×</button>
-                        </div>
-                    </div>
-                    <div class="review-list" id="rvList"><div class="empty-state">로딩중...</div></div>
-                </div>
-            </div>
-        `;
+            applyFilters();
 
-        document.getElementById('popupBody').innerHTML = `
-            ${item['이미지'] ? `<img src="${item['이미지']}" style="width:100%; border-radius:8px; margin-bottom:15px;">` : ''}
-            <div class="info-row"><span class="info-label">장소</span><span class="info-divider">|</span><span class="info-desc">${nl2br(item.place)}</span></div>
-            <div class="info-row"><span class="info-label">대상</span><span class="info-divider">|</span><span class="info-desc">${nl2br(item.age)}</span></div>
-            <div class="info-row"><span class="info-label">비용</span><span class="info-divider">|</span><span class="info-desc">${nl2br(item.costType)}</span></div>
-            <div class="info-row"><span class="info-label">일정</span><span class="info-divider">|</span><span class="info-desc">${nl2br(item.date)}</span></div>
-            ${item['꿀팁'] ? `<div class="info-row"><span class="info-label">메모</span><span class="info-divider">|</span><span class="info-desc" style="font-weight:bold;">${nl2br(item['꿀팁'])}</span></div>` : ''}
-            ${reviewHtml}
-        `;
-        
-        let btnDetails = ''; const detailUrl = item.link || item['링크']; let isImgUrl = false;
-        if (detailUrl) isImgUrl = /\.(jpeg|jpg|gif|png|webp)(?:[\?#].*)?$/i.test(detailUrl.toLowerCase()) || detailUrl.includes('drive.google.com/uc?') || detailUrl.includes('phinf.pstatic.net');
-        if (detailUrl) { if(isImgUrl) btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${detailUrl}">상세정보 확인🖼️</button>`; else btnDetails = `<a href="${detailUrl}" target="_blank" class="btn-link">관련사이트👆</a>`; } 
-        else btnDetails = `<button type="button" class="btn-link btn-disabled">사이트 정보 없음</button>`;
+            if (eventId !== null) {
+                setTimeout(() => {
+                    const targetCard = document.getElementById('card-' + eventId);
+                    if (targetCard) targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    openEventPopup(eventId);
+                }, 300);
+            }
+        } catch (error) {
+            console.error(error);
+            document.getElementById('list-container').innerHTML = '<div class="empty-state">행사 정보를 불러오는데 실패했습니다. 새로고침을 해주세요. 😥</div>';
+        }
+    }
 
-        let btnApply = ''; const rawApplyValue = item['신청링크'] || item.applyLink;
-        if (rawApplyValue) { const isUrl = /^(https?:\/\/|www\.|javascript:)/i.test(rawApplyValue); if(isUrl) btnApply = `<a href="${rawApplyValue}" target="_blank" class="btn-link">예약하기👆</a>`; else btnApply = `<button type="button" class="btn-link btn-disabled">${rawApplyValue}</button>`; } 
-        else btnApply = `<button type="button" class="btn-link btn-disabled">현장접수</button>`;
+    function processEventDates() {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
 
-        let btnBenefit = ''; const benefitUrl = item['혜택'];
-        if (item.type === 'affiliate' && benefitUrl) btnBenefit = `<button type="button" class="btn-benefit btn-img-modal" data-url="${benefitUrl}">🎁 혜택받기 (쿠폰/할인권)</button>`;
+        const todayStr = `${today.getMonth() + 1}/${today.getDate()}`;
+        const tomorrowStr = `${tomorrow.getMonth() + 1}/${tomorrow.getDate()}`;
 
-        document.getElementById('popupFooter').innerHTML = `${btnBenefit}<div class="footer-btn-row">${btnDetails}${btnApply}</div>`;
-        document.getElementById('eventModal').classList.add('active');
+        eventData.forEach(item => {
+            if (item.type === 'affiliate' || item.type === 'always') {
+                item.displayText = item.applyNote;
+                return;
+            }
 
-        setTimeout(() => {
-            const nInput = document.getElementById('rvNick');
-            if(currentLogNick) nInput.value = currentLogNick; else nInput.placeholder = "로그인필요";
-        }, 50);
+            item.isTodayOpen = false;
+            item.isTodayClose = false;
+            item.isTomorrowOpen = false;
+            item.isTomorrowClose = false;
 
-        if(db) db.ref(`event_reviews/${eventId}`).on('value', snap => {
-            const arr = []; let cc = 0;
-            snap.forEach(c => { const v=c.val(); arr.push({id: c.key, ...v}); if(v.isCompanion==='true'||v.isCompanion===true) cc++; });
-            arr.reverse();
-            if(document.getElementById('reviewCount')) document.getElementById('reviewCount').innerText = arr.length;
-            if(document.getElementById('companionCount')) document.getElementById('companionCount').innerText = cc;
-            
-            let html = '';
-            arr.forEach(r => {
-                const kBtn = (r.isCompanion==='true'||r.isCompanion===true) && r.kakaoLink ? `<a href="${escapeHtml(r.kakaoLink)}" target="_blank" class="btn-kakao-chat">💬 카톡하기</a>` : '';
-                let delBtn = (currentLogNick===r.nickname && currentLogPass===r.password) ? `<button onclick="deleteNormalReview('${eventId}', '${r.id}')" style="background:none;border:none;color:#E53935;cursor:pointer;">삭제</button>` : '';
-                html += `<div class="review-card"><div style="display:flex; justify-content:space-between;"><b style="color:var(--primary-color);">👤 ${escapeHtml(r.nickname)}</b>${delBtn}</div><span style="color:#333; margin:2px 0;">${escapeHtml(r.content)}</span>${kBtn}</div>`;
-            });
-            if(document.getElementById('rvList')) document.getElementById('rvList').innerHTML = html || '<div class="empty-state">첫 댓글을 남겨주세요.</div>';
-        });
-    }
+            if (item.applyStart && item.applyStart.includes(todayStr)) item.isTodayOpen = true;
+            if (item.applyEnd && item.applyEnd.includes(todayStr)) item.isTodayClose = true;
+            if (item.applyStart && item.applyStart.includes(tomorrowStr)) item.isTomorrowOpen = true;
+            if (item.applyEnd && item.applyEnd.includes(tomorrowStr)) item.isTomorrowClose = true;
 
-    function closeEventPopup(e) { if (e && e.target !== e.currentTarget && !e.target.classList.contains('event-modal-close-btn')) return; document.body.classList.remove('modal-open'); document.getElementById('eventModal').classList.remove('active'); }
+            let text = '';
+            if (item.applyStart && item.applyEnd) text = `${item.applyStart} ~ ${item.applyEnd}`;
+            else if (item.applyStart) text = `${item.applyStart} 오픈`;
+            else if (item.applyEnd) text = `~ ${item.applyEnd}`;
 
-    // 기존 댓글 등록은 GAS를 무조건 태워서 구글 시트에도 저장되도록 유지 (안전 보장)
-    function submitReview(eventId) {
-        if (!currentLogNick) return toggleLoginModal();
-        const content = document.getElementById('rvContent').value.trim(); 
-        const kakao = document.getElementById('rvKakao').value.trim();
-        const isCompanion = document.getElementById('compWrap').style.display === 'flex' && kakao.length > 0;
-        
-        if(!content) return alert("내용을 입력해주세요.");
-        if(isCompanion && !kakao.includes('open.kakao')) return alert("올바른 카카오톡 링크를 입력하세요.");
+            if (item.applyNote) {
+                if (text) text += ` <span style="font-weight:700; font-size:0.8rem;">[${item.applyNote}]</span>`;
+                else text = `<span style="font-weight:700;">${item.applyNote}</span>`;
+            }
 
-        const btn = document.querySelector('.btn-submit-review'); btn.innerText = '...'; btn.disabled = true;
-        
-        const fd = new URLSearchParams();
-        fd.append('action', 'create'); fd.append('eventId', eventId); fd.append('nickname', currentLogNick); fd.append('password', currentLogPass); fd.append('content', content); fd.append('isCompanion', isCompanion); fd.append('kakaoLink', kakao);
+            item.displayText = text || '상시 접수';
+        });
+    }
 
-        fetch(scriptUrl, { method: 'POST', body: fd }).then(()=>{
-            document.getElementById('rvContent').value = ''; document.getElementById('rvKakao').value=''; 
-            document.getElementById('compWrap').style.display='none'; document.getElementById('btnCompOpen').style.display='block';
-        }).finally(() => { btn.innerText = '등록'; btn.disabled = false; });
-    }
+    function processEventAges() {
+        eventData.forEach(item => {
+            const mapped = new Set();
+            if (item.ageFilter && item.ageFilter.trim() !== '') {
+                item.ageFilter.split(',').forEach(f => {
+                    const cleanF = f.trim();
+                    if (cleanF) mapped.add(cleanF);
+                });
+            }
+            if (mapped.size === 0) mapped.add('미취학').add('초등').add('중고등').add('성인');
+            item.mappedAges = Array.from(mapped);
+        });
+    }
 
-    function deleteNormalReview(eventId, reviewId) {
-        if(!confirm("삭제하시겠습니까?")) return;
-        const fd = new URLSearchParams(); fd.append('action', 'delete'); fd.append('eventId', eventId); fd.append('reviewId', reviewId); fd.append('password', currentLogPass);
-        fetch(scriptUrl, { method: 'POST', body: fd }).catch(e=>alert("통신오류"));
-    }
+    function generateFilters() {
+        const filterGroup = document.getElementById('combined-filter-group');
+        filterGroup.innerHTML = '';
 
+        const presentLocs = new Set();
+        const fixedLocs = ['청주', '충북', '대전', '세종', '온라인'];
+        const chungbukSubRegions = ['괴산', '음성', '증평', '보은', '옥천', '충주', '제천', '진천', '단양', '영동'];
 
-    // 💡 메인 탭 2: 구글 시트 기반 읽기 자료
-    function loadArticles() {
-        if(!ARTICLE_SCRIPT_URL.startsWith('http')) return;
-        const container = document.getElementById('article-list-container');
-        fetch(ARTICLE_SCRIPT_URL).then(res => res.json()).then(data => {
-            if(!data || data.length === 0) { container.innerHTML = '<div class="empty-state">등록된 읽기자료가 없습니다.</div>'; return; }
-            let html = ''; const defaultImg = "https://firebasestorage.googleapis.com/v0/b/heycj-55b6a.firebasestorage.app/o/%EB%B0%B0%EB%84%883.png?alt=media";
-            data.forEach(item => {
-                const titleStr = escapeHtml(item['제목']).replace(/'/g, "\\'"); const contentStr = escapeHtml(item['내용']).replace(/'/g, "\\'").replace(/(?:\r\n|\r|\n)/g, '<br>');
-                const imgStr = item['썸네일'] ? escapeHtml(item['썸네일']) : defaultImg;
-                html += `
-                    <div class="blog-card" onclick="openArticleModal('${titleStr}', '${contentStr}', '${imgStr}')">
-                        <img src="${imgStr}" class="blog-img" alt="썸네일">
-                        <div class="blog-content"><h4 class="blog-title">${escapeHtml(item['제목'])}</h4></div>
-                    </div>`;
-            });
-            container.innerHTML = html;
-        }).catch(e => { container.innerHTML = '<div class="empty-state">자료를 불러오는데 실패했습니다.</div>'; });
-    }
+        eventData.forEach(item => {
+            if (item.loc && item.loc.trim() !== '') {
+                const locText = item.loc.trim();
+                if (chungbukSubRegions.includes(locText) || locText === '충북') item.mappedLoc = '충북';
+                else if (fixedLocs.includes(locText)) item.mappedLoc = locText;
+                else item.mappedLoc = '기타';
+                presentLocs.add(item.mappedLoc);
+            } else {
+                item.mappedLoc = null;
+            }
+        });
 
-    function openArticleModal(title, content, imgSrc) {
-        document.getElementById('articleTitle').innerText = title; document.getElementById('articleContentText').innerHTML = content;
-        const imgEl = document.getElementById('articleImg'); if(imgSrc) { imgEl.src = imgSrc; imgEl.style.display = 'block'; } else imgEl.style.display = 'none';
-        document.getElementById('articleModal').classList.add('active');
-    }
+        const ageFilters = ['미취학', '초등', '중고등', '성인'];
+        ageFilters.forEach((age, index) => {
+            const id = `age-dynamic-${index}`;
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = id;
+            checkbox.value = age;
+            checkbox.className = 'filter-cb age-cb';
+            checkbox.onchange = applyFilters;
 
-    // 💡 메인 탭 3: 자체 커뮤니티 피드 등록 (GAS를 통한 파이어베이스 보안규칙 우회 등록!)
-    function submitFeed() {
-        if(!currentLogNick) { alert("로그인 후 작성해주세요."); return toggleLoginModal(); }
-        const place = document.getElementById('feedPlace').value.trim(); const date = document.getElementById('feedDate').value.trim(); const age = document.getElementById('feedAge').value.trim(); const review = document.getElementById('feedReview').value.trim();
+            const label = document.createElement('label');
+            label.htmlFor = id;
+            label.className = 'cb-label age-label';
+            label.innerText = age;
 
-        if(!place || !review) return alert("방문장소와 한줄평은 필수입니다!");
+            filterGroup.appendChild(checkbox);
+            filterGroup.appendChild(label);
+        });
 
-        const btn = document.querySelector('.btn-feed-submit'); btn.innerText = '등록 중...'; btn.disabled = true;
+        if (presentLocs.size > 0) {
+            const divider = document.createElement('span');
+            divider.innerText = '|';
+            divider.style.color = '#ccc';
+            divider.style.display = 'flex';
+            divider.style.alignItems = 'center';
+            divider.style.fontSize = '0.7rem';
+            divider.style.margin = '0 2px';
+            filterGroup.appendChild(divider);
+        }
 
-        const feedDataJSON = JSON.stringify({ place: place, date: date, age: age, review: review });
-        
-        const fd = new URLSearchParams();
-        fd.append('action', 'create');
-        fd.append('eventId', 'GLOBAL_FEED'); // 파이어베이스 규칙을 우회하기 위해 'GLOBAL_FEED'라는 가상의 이벤트ID로 저장
-        fd.append('nickname', currentLogNick);
-        fd.append('password', currentLogPass || '0000');
-        fd.append('content', feedDataJSON);
+        const orderedLocs = [...fixedLocs, '기타'];
+        orderedLocs.forEach((loc, index) => {
+            if (presentLocs.has(loc)) {
+                const id = `loc-dynamic-${index}`;
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = id;
+                checkbox.value = loc;
+                checkbox.className = 'filter-cb loc-cb';
+                checkbox.onchange = applyFilters;
 
-        fetch(scriptUrl, { method: 'POST', body: fd })
-        .then(res => res.text())
-        .then(result => {
-            document.getElementById('feedPlace').value = ''; document.getElementById('feedDate').value = '';
-            document.getElementById('feedAge').value = ''; document.getElementById('feedReview').value = '';
-            alert("후기가 등록되었습니다!");
-        }).catch(e => alert("등록 중 오류가 발생했습니다."))
-        .finally(()=>{ btn.innerText = '후기 공유하기 🚀'; btn.disabled = false; });
-    }
+                const label = document.createElement('label');
+                label.htmlFor = id;
+                label.className = 'cb-label';
+                label.innerText = loc;
 
-    function loadFeeds() {
-        if(!db) return;
-        // GLOBAL_FEED 데이터를 불러와 피드 형태로 뿌려줍니다.
-        db.ref('event_reviews/GLOBAL_FEED').orderByChild('timestamp').limitToLast(50).on('value', snap => {
-            const container = document.getElementById('feed-list-container');
-            const arr = []; snap.forEach(c => { arr.push({id: c.key, ...c.val()}); }); arr.reverse();
-            
-            if(arr.length === 0) { container.innerHTML = '<div class="empty-state">첫 번째 후기를 공유해주세요! 😊</div>'; return; }
+                filterGroup.appendChild(checkbox);
+                filterGroup.appendChild(label);
+            }
+        });
 
-            let html = '';
-            arr.forEach(f => {
-                const d = new Date(f.timestamp); const dateStr = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-                
-                let parsed = {};
-                try { parsed = JSON.parse(f.content); } catch(e) { parsed = { review: f.content }; }
+        setTimeout(() => handleFilterScroll(filterGroup), 100);
+    }
 
-                let delBtn = '';
-                if(currentLogNick === f.nickname && currentLogPass === f.password) {
-                    delBtn = `<button onclick="deleteFeed('${f.id}')" style="background:none; border:none; color:#E53935; font-size:0.7rem; cursor:pointer;">삭제</button>`;
-                }
+// 날짜 추출 함수 (한국시간 기준 연도 자동 삽입)
+function parseDateValue(dateStr) {
+    if (!dateStr) return 99999999; 
+    let s = String(dateStr).trim();
 
-                html += `
-                    <div class="feed-card">
-                        <div class="feed-header">
-                            <div><span class="feed-author">👤 ${escapeHtml(f.nickname)}</span> <span class="feed-date">${dateStr}</span></div>
-                            ${delBtn}
-                        </div>
-                        <div class="feed-details">
-                            ${parsed.place ? `<p><b>📍 장소:</b> ${escapeHtml(parsed.place)}</p>` : ''}
-                            ${parsed.date ? `<p><b>🗓️ 시기:</b> ${escapeHtml(parsed.date)}</p>` : ''}
-                            ${parsed.age ? `<p><b>👶 연령:</b> ${escapeHtml(parsed.age)}</p>` : ''}
-                            <p class="feed-review-text"><b>💡 꿀팁:</b><br>${nl2br(escapeHtml(parsed.review))}</p>
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        });
-    }
+    let match = s.match(/(\d{4})[-./]\s*(\d{1,2})[-./]\s*(\d{1,2})/);
+    if (match) return parseInt(match[1]) * 10000 + parseInt(match[2]) * 100 + parseInt(match[3]);
 
-    function deleteFeed(reviewId) {
-        if(!confirm("후기를 삭제하시겠습니까?")) return;
-        const fd = new URLSearchParams(); fd.append('action', 'delete'); fd.append('eventId', 'GLOBAL_FEED'); fd.append('reviewId', reviewId); fd.append('password', currentLogPass);
-        fetch(scriptUrl, { method: 'POST', body: fd }).catch(e => alert("오류 발생"));
-    }
+    match = s.match(/(\d{2})[-./]\s*(\d{1,2})[-./]\s*(\d{1,2})/);
+    if (match) {
+        let year = parseInt(match[1]) + 2000;
+        return year * 10000 + parseInt(match[2]) * 100 + parseInt(match[3]);
+    }
 
-    // 초기 실행
-    document.addEventListener('DOMContentLoaded', () => {
-        initNotice(); initLastUpdated(); initVisitCounters(); fetchEventData();
-    });
+    // 한국 시간 기준으로 현재 연도 가져오기
+    const kstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
+    const currentYear = kstNow.getFullYear();
 
+    // 3/22 형태 완벽 인식
+    match = s.match(/(\d{1,2})\/(\d{1,2})/);
+    if (match) return currentYear * 10000 + parseInt(match[1]) * 100 + parseInt(match[2]);
+
+    match = s.match(/(\d{1,2})월\s*(\d{1,2})일/);
+    if (match) return currentYear * 10000 + parseInt(match[1]) * 100 + parseInt(match[2]);
+
+    return 99999999;
+}
+
+// 오늘 날짜 비교 함수 (한국시간 기준)
+function isDatePassed(dateStr) {
+    if (!dateStr) return false;
+    const val = parseDateValue(dateStr);
+    if (val === 99999999) return false;
+    
+    // 한국 시간 기준으로 오늘 날짜(YYYYMMDD) 계산
+    const kstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
+    const todayVal = kstNow.getFullYear() * 10000 + (kstNow.getMonth() + 1) * 100 + kstNow.getDate();
+    
+    return val < todayVal;
+}
+
+    function parseRegDate(dateStr) {
+        if (!dateStr) return 0;
+        let s = String(dateStr).trim();
+        let match = s.match(/(\d{4})[./-]\s*(\d{1,2})[./-]\s*(\d{1,2})(?:[.\s]+(?:오전|오후|AM|PM)?\s*(\d{1,2})[:시]\s*(\d{1,2}))?/i);
+        if (match) {
+            let year = parseInt(match[1], 10);
+            let month = parseInt(match[2], 10) - 1;
+            let day = parseInt(match[3], 10);
+            let hour = match[4] ? parseInt(match[4], 10) : 0;
+            let minute = match[5] ? parseInt(match[5], 10) : 0;
+
+            if (s.includes('오후') || s.toUpperCase().includes('PM')) {
+                if (hour < 12) hour += 12;
+            }
+            if ((s.includes('오전') || s.toUpperCase().includes('AM')) && hour === 12) {
+                hour = 0;
+            }
+            return new Date(year, month, day, hour, minute).getTime();
+        }
+
+        let parsed = new Date(s).getTime();
+        return isNaN(parsed) ? 0 : parsed;
+    }
+
+    function processNewItems() {
+        const now = Date.now();
+        const ONE_DAY = 24 * 60 * 60 * 1000;
+
+        eventData.forEach((item, index) => {
+            item.originalIndex = index;
+            item.isNew = false;
+
+            const regDateMs = parseRegDate(item['등록일']);
+            if (regDateMs > 0) {
+                const timeDiff = now - regDateMs;
+                if (timeDiff >= -ONE_DAY && timeDiff <= ONE_DAY) item.isNew = true;
+            }
+            if (item['N숨김'] === 'O' || item['N숨김'] === 'o') item.isNew = false;
+        });
+    }
+
+    function updateTabNewBadges() {
+        const tabs = ['ongoing', 'always', 'affiliate'];
+        tabs.forEach(tabType => {
+            const hasNew = eventData.some(item => item.type === tabType && item.isNew);
+            const tabElement = document.querySelector(`.tab[onclick*="${tabType}"]`);
+            if (!tabElement) return;
+            const existingBadge = tabElement.querySelector('.new-badge');
+            if (hasNew) {
+                if (!existingBadge) tabElement.insertAdjacentHTML('beforeend', '<span class="new-badge">N</span>');
+            } else {
+                if (existingBadge) existingBadge.remove();
+            }
+        });
+    }
+
+    function changeTab(element, type) {
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        element.classList.add('active');
+        currentTab = type;
+        applyFilters();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function applyFilters() {
+        const selectedLocs = Array.from(document.querySelectorAll('.loc-cb:checked')).map(cb => cb.value);
+        const selectedAges = Array.from(document.querySelectorAll('.age-cb:checked')).map(cb => cb.value);
+        const keyword = document.getElementById('search-input').value.trim().toLowerCase();
+        const container = document.getElementById('list-container');
+
+        if (eventData.length === 0) return;
+
+        let filteredData = eventData.filter(item => {
+            const matchTab = keyword ? true : (item.type === currentTab);
+            const matchLoc = selectedLocs.length === 0 ? true : selectedLocs.some(loc => item.mappedLoc === loc);
+            const matchAge = selectedAges.length === 0 ? true : selectedAges.some(age => item.mappedAges && item.mappedAges.includes(age));
+
+            let matchSearch = true;
+            if (keyword) {
+                matchSearch =
+                    (item.title && item.title.toLowerCase().includes(keyword)) ||
+                    (item.place && item.place.toLowerCase().includes(keyword)) ||
+                    (item.loc && item.loc.toLowerCase().includes(keyword));
+            }
+
+            return matchTab && matchLoc && matchAge && matchSearch;
+        });
+
+        if (currentTab === 'ongoing' || keyword) {
+            filteredData.sort((a, b) => {
+                if (a.isHot && !b.isHot) return -1;
+                if (!a.isHot && b.isHot) return 1;
+
+                const getPriority = (item) => {
+                    if (item.isTodayOpen) return 1;
+                    if (item.isTodayClose) return 2;
+                    if (item.isTomorrowOpen) return 3;
+                    if (item.isTomorrowClose) return 4;
+                    if (item.isNew) return 5;
+                    return 6;
+                };
+
+                const pA = getPriority(a);
+                const pB = getPriority(b);
+                if (pA !== pB) return pA - pB;
+
+                return parseDateValue(a.applyEnd) - parseDateValue(b.applyEnd);
+            });
+        } else if (currentTab === 'always') {
+            filteredData.sort((a, b) => {
+                if (a.isHot && !b.isHot) return -1;
+                if (!a.isHot && b.isHot) return 1;
+                
+                if (a.isNew && !b.isNew) return -1;
+                if (!a.isNew && b.isNew) return 1;
+
+                const dateA = parseDateValue(a['행사마감일'] || a.eventEnd);
+                const dateB = parseDateValue(b['행사마감일'] || b.eventEnd);
+                if (dateA !== dateB) return dateA - dateB;
+                return a.originalIndex - b.originalIndex;
+            });
+        } else if (currentTab === 'affiliate') {
+            filteredData.sort((a, b) => {
+                if (a.isHot && !b.isHot) return -1;
+                if (!a.isHot && b.isHot) return 1;
+                
+                if (a.isNew && !b.isNew) return -1;
+                if (!a.isNew && b.isNew) return 1;
+                return a.originalIndex - b.originalIndex;
+            });
+        }
+
+        currentFilteredData = filteredData;
+        itemsRendered = 0;
+        container.innerHTML = ''; 
+
+        if (currentFilteredData.length === 0) {
+            container.innerHTML = '<div class="empty-state">해당하는 행사가 없습니다. 조건이나 검색어를 변경해 보세요! 😥</div>';
+            return;
+        }
+
+        renderMoreItems();
+    }
+
+    function renderMoreItems() {
+        if (itemsRendered >= currentFilteredData.length) return; 
+
+        const container = document.getElementById('list-container');
+        const itemsToRender = currentFilteredData.slice(itemsRendered, itemsRendered + ITEMS_PER_PAGE);
+        let htmlBuffer = '';
+
+        itemsToRender.forEach(item => {
+            let safeCost = item.costType || '';
+            let costBadgeHTML = '';
+            
+            if (safeCost.includes('무료')) {
+                costBadgeHTML = `<span class="badge badge-free">무료</span>`;
+            } else if (safeCost.includes('유료')) {
+                costBadgeHTML = `<span class="badge badge-paid">유료</span>`;
+            }
+
+            let dateBadges = '';
+            if (item.isTodayOpen) dateBadges += `<span class="badge badge-open">오늘오픈</span> `;
+            if (item.isTodayClose) dateBadges += `<span class="badge badge-today">오늘마감</span> `;
+            if (item.isTomorrowOpen && !item.isTodayOpen) dateBadges += `<span class="badge badge-open" style="background-color:#ff9800;">내일오픈</span> `;
+            if (item.isTomorrowClose && !item.isTodayClose) dateBadges += `<span class="badge badge-close">내일마감</span> `;
+
+            let cardClass = 'card';
+            let overlayHTML = '';
+            
+            let statusVal = item['커밍순'] ? item['커밍순'].replace(/\s+/g, '') : '';
+// 파이어베이스에서 사용할 법한 '마감일' 관련 열(Column) 이름을 모두 추가해서 찾게 만듭니다.
+const targetDateStr = item['행사마감일'] || item.eventEnd || item.applyEnd || item['접수마감일'] || item['신청마감일'];
+
+if (isDatePassed(targetDateStr)) {
+    statusVal = '마감';
+}
+
+            if (statusVal === '커밍순') {
+                cardClass += ' disabled-card';
+                overlayHTML = `<div class="status-overlay"><div class="status-stamp">COMING SOON</div></div>`;
+            } else if (statusVal === '마감') {
+                cardClass += ' disabled-card';
+                overlayHTML = `<div class="status-overlay"><div class="status-stamp closed">마감</div></div>`;
+            }
+
+            const eventUniqueId = String(item['ID'] || item['id'] || item['고유번호'] || item.originalIndex);
+            
+            const cardTitle = (item.title || '').replace(/(?:\r\n|\r|\n|\\n)/g, ' '); 
+
+            const cardHTML = `
+                <div class="${cardClass}" id="card-${eventUniqueId}" onclick="openEventPopup('${eventUniqueId}')">
+                    ${overlayHTML}
+                    <div class="card-header">
+                        <div class="badges">
+                            ${dateBadges}
+                            <span class="badge badge-loc">${item.loc || ''}</span>
+                            <span class="badge badge-age">${item.age || ''}</span>
+                            ${costBadgeHTML}
+                            ${item.isHot ? `<span class="badge badge-hot">인기🔥</span>` : ''}
+                        </div>
+                        <div class="view-count" title="조회수">
+                            <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                            <span id="view-count-${eventUniqueId}">${item.viewCount}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-title-row">
+                        <h2 class="title">${cardTitle}</h2>
+                        ${item.isNew ? `<span class="card-new-badge">N</span>` : ''}
+                        <span class="card-more-text">+ 더보기</span>
+                    </div>
+                    
+                    <div class="card-bottom-info">
+                        <span style="flex-shrink:0;">📍 ${item.place ? item.place : '장소미정'}</span>
+                        <span style="color:#ddd;">|</span>
+                        <span style="flex:1;">🗓️ ${item.date ? item.date : '일정미정'}</span>
+                    </div>
+                </div>
+            `;
+            htmlBuffer += cardHTML;
+        });
+
+        container.insertAdjacentHTML('beforeend', htmlBuffer);
+        itemsRendered += itemsToRender.length;
+    }
+
+    window.addEventListener('scroll', () => {
+        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+        if (scrollTop + clientHeight >= scrollHeight - 300) {
+            renderMoreItems();
+        }
+    });
+
+    // 💡 리뷰 창 드롭다운 토글 기능 추가
+    function toggleReviewSection() {
+        const collapsible = document.getElementById('reviewCollapsible');
+        const toggleBtn = document.getElementById('reviewToggleBtn');
+        
+        if (collapsible.classList.contains('open')) {
+            collapsible.classList.remove('open');
+            toggleBtn.classList.remove('open');
+        } else {
+            collapsible.classList.add('open');
+            toggleBtn.classList.add('open');
+        }
+    }
+
+    function loadReviews(eventId) {
+        const reviewListContainer = document.getElementById('reviewListContainer');
+        if (!reviewListContainer || !db) return;
+
+        db.ref(`event_reviews/${eventId}`).orderByChild('timestamp').on('value', (snapshot) => {
+            const reviews = [];
+            snapshot.forEach(child => {
+                reviews.push({ id: child.key, ...child.val() });
+            });
+            
+            reviews.reverse(); // 최신순 정렬
+            
+            const countElem = document.getElementById('reviewCount');
+            if(countElem) countElem.innerText = reviews.length;
+
+            if (reviews.length === 0) {
+                reviewListContainer.innerHTML = '<div class="empty-review">아직 등록된 댓글이 없습니다.<br>첫 번째 댓글을 남겨주세요! 😃</div>';
+                return;
+            }
+
+            let html = '';
+            reviews.forEach(review => {
+                const dateObj = new Date(review.timestamp);
+                const dateStr = `${dateObj.getFullYear()}.${String(dateObj.getMonth()+1).padStart(2,'0')}.${String(dateObj.getDate()).padStart(2,'0')}`;
+                
+                html += `
+                    <div class="review-card">
+                        <span class="review-card-author">👤 ${escapeHtml(review.nickname)}</span>
+                        <span class="review-card-text">${escapeHtml(review.content)}</span>
+                        <span class="review-card-date">${dateStr}</span>
+                    </div>
+                `;
+            });
+            reviewListContainer.innerHTML = html;
+        });
+    }
+
+    function submitReview(eventId) {
+        const nicknameInput = document.getElementById('reviewNickname');
+        const contentInput = document.getElementById('reviewContent');
+        
+        const nickname = nicknameInput.value.trim();
+        const content = contentInput.value.trim();
+
+        if (!nickname) return alert('닉네임을 입력해주세요.');
+        if (!content) return alert('내용을 입력해주세요.');
+
+        /* ▼ 무관용 원칙! 확장된 비속어/악플 차단 리스트 ▼ */
+        const badWords = [
+            '씨발', '시발', '쒸발', '슈발', '쓔발', '띠발', '찌발', '씨방새', '씨부랄', '씨불', '씨팔', '십알', '씹알', '썅', '썅년', '썅놈',
+            '개새끼', '개새', '개년', '개놈', '개자식', '개소리', '개가튼', '개돼지', '개찌질',
+            '좆', '좃', '존나', '좃나', '좆나', '졸라', '죨라', '씹', '씹새', '씹새끼', '씹창', '씹덕', '좆밥', '좃밥',
+            '병신', '빙신', '븅신', '지랄', '염병', '똘추',
+            '애미', '애비', '느금마', '니미', '호로새끼', '창녀', '걸레', '맘충', '틀딱', '급식충', '김치녀', '된장녀', '한남', '메갈', '일베', '워마드', '페미년', '한녀',
+            '닥쳐', '아가리', '주둥이', '대가리', '모가지', '뒤져', '뒈져', '자살', '뒈져라', '죽어라',
+            '또라이', '미친', '미친놈', '미친년', '쓰레기', '찌질이', '관종', '호구', '빠가',
+            'ㅅㅂ', 'ㅆㅂ', 'ㅂㅅ', 'ㅄ', 'ㅈㄹ', 'ㅈㄴ', 'ㅁㅊ', 'ㄲㅈ', 'ㄷㅊ', 'ㅇㅁ', 'ㄴㄱㅁ'
+        ];
+        
+        // 닉네임이나 내용에 비속어가 포함되어 있는지 검사
+        const hasBadWord = badWords.some(word => nickname.includes(word) || content.includes(word));
+        
+        if (hasBadWord) {
+            alert('부적절한 단어가 포함되어 있어 등록할 수 없습니다.');
+            return; // 여기서 함수를 종료시켜서 서버로 전송하지 않음
+        }
+
+        const btn = document.querySelector('.btn-submit-review');
+        btn.disabled = true;
+        btn.innerText = '등록 중...';
+
+        const scriptUrl = "https://script.google.com/macros/s/AKfycbwPLSEZAtNXQxnGz4Cd1U_O9a_x05nxOzzbs4PBYmsCgj5yrybVo0S4zvWCkc8iNjG6/exec"; 
+
+        const formData = new URLSearchParams();
+        formData.append('eventId', eventId);
+        formData.append('nickname', nickname);
+        formData.append('content', content);
+
+        fetch(scriptUrl, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(result => {
+            contentInput.value = ''; 
+        })
+        .catch(error => {
+            console.error('리뷰 전송 실패:', error);
+            alert('등록 중 통신 오류가 발생했습니다.');
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerText = '등록';
+        });
+    }
+
+    async function openEventPopup(eventId) {
+        const item = eventData.find(d => String(d['ID'] || d['id'] || d['고유번호'] || d.originalIndex) === String(eventId));
+        if (!item) return;
+
+        document.body.classList.add('modal-open');
+
+        if (db) {
+            try {
+                const specificEventRef = db.ref(`event_views_total/${eventId}`);
+                
+                specificEventRef.set(firebase.database.ServerValue.increment(1)).then(() => {
+                    specificEventRef.once('value').then(snap => {
+                        const countElem = document.getElementById(`view-count-${eventId}`);
+                        if (countElem) countElem.innerText = snap.val() || 0;
+                    });
+                });
+            } catch (e) {
+                console.warn('조회수 업데이트가 차단되었습니다.', e);
+            }
+        }
+
+        const popupTitleHTML = nl2br(item.title);
+        document.getElementById('popupTitle').innerHTML = `${popupTitleHTML} ${item.isNew ? `<span class="card-new-badge" style="vertical-align: middle;">N</span>` : ''}`;
+        document.getElementById('popupShareBtn').setAttribute('onclick', `sharePopupLink('${eventId}')`);
+
+        let applyTextStyle = '';
+        if (item.isTodayClose) applyTextStyle = 'color:#E53935; font-weight:700;';
+
+        let popupImgHtml = '';
+        const popupImgUrl = item['이미지'] || item.image || item.Image || ''; 
+        if (popupImgUrl && popupImgUrl.trim() !== '') {
+            popupImgHtml = `
+                <div class="popup-img-container">
+                    <img src="${popupImgUrl.trim()}" alt="행사 썸네일" referrerpolicy="no-referrer" onerror="this.style.display='none'" />
+                </div>
+            `;
+        }
+
+        const popupPlace = nl2br(item.place || '정보 없음');
+        const popupAge = nl2br(item.age || '누구나');
+        const popupCost = nl2br(item.costType || '정보 없음');
+        const popupDisplayTxt = nl2br(item.displayText || '');
+        const popupDate = nl2br(item.date || '해당정보 없음');
+        const tipText = nl2br((item['꿀팁'] || '').trim());
+
+        // 💡 팝업창 내 리뷰 UI 구성 요소 (드롭다운 토글 버튼 적용)
+        const reviewSectionHtml = `
+            <div class="review-section" style="border-top:none; padding-top:0; margin-top:0;">
+                <button class="review-toggle-btn" id="reviewToggleBtn" onclick="toggleReviewSection()">
+                    <span>💬 댓글창 열기 (<span class="count" id="reviewCount">0</span>)</span>
+                    <span class="toggle-arrow">▼</span>
+                </button>
+                
+                <div class="review-collapsible" id="reviewCollapsible">
+                    <div class="review-form">
+                        <div class="review-input-group">
+                            <input type="text" id="reviewNickname" class="review-nickname" placeholder="(닉네임)" maxlength="8" />
+                            <input type="text" id="reviewContent" class="review-content" placeholder="(후기/꿀팁 등)" onkeypress="if(event.key==='Enter') submitReview('${eventId}')" />
+                            <button class="btn-submit-review" onclick="submitReview('${eventId}')">등록</button>
+                        </div>
+                    </div>
+                    <div class="review-list" id="reviewListContainer">
+                        <div class="empty-review">리뷰를 불러오는 중...</div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('popupBody').innerHTML = `
+            ${popupImgHtml}
+            <div class="info-row"><span class="info-label">장소</span><span class="info-divider">|</span><span class="info-desc">${popupPlace}</span></div>
+            <div class="info-row"><span class="info-label">대상</span><span class="info-divider">|</span><span class="info-desc">${popupAge}</span></div>
+            <div class="info-row"><span class="info-label">비용</span><span class="info-divider">|</span><span class="info-desc">${popupCost}</span></div>
+            <div class="info-row"><span class="info-label">접수</span><span class="info-divider">|</span><span class="info-desc" style="${applyTextStyle}">${popupDisplayTxt}</span></div>
+            <div class="info-row"><span class="info-label">일정</span><span class="info-divider">|</span><span class="info-desc">${popupDate}</span></div>
+            ${tipText ? `<div class="info-row"><span class="info-label">메모</span><span class="info-divider">|</span><span class="info-desc" style="font-weight:bold; color:var(--text-main);">${tipText}</span></div>` : ''}
+            ${reviewSectionHtml}
+        `;
+
+        let btnDetails = '';
+        const detailUrl = item.link || item['링크'];
+        let isImageUrl = false;
+
+        if (detailUrl && detailUrl.trim() !== '') {
+            const lowerUrl = detailUrl.trim().toLowerCase();
+            isImageUrl =
+                /\.(jpeg|jpg|gif|png|webp)(?:[\?#].*)?$/i.test(lowerUrl) ||
+                lowerUrl.includes('drive.google.com/uc?') ||
+                lowerUrl.includes('phinf.pstatic.net');
+        }
+
+        const whiteLinkIcon = `<svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor; margin-left:4px; vertical-align:text-bottom;"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>`;
+        const colorImgIcon = `<span style="margin-left:4px; font-size:16px; vertical-align:text-bottom;">🖼️</span>`;
+        const colorApplyIcon = `<span style="margin-left:4px; font-size:16px; vertical-align:text-bottom;">👆</span>`;
+
+        if (detailUrl && detailUrl.trim() !== '') {
+            const safeUrl = detailUrl.trim().replace(/"/g, '&quot;');
+            const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/(?:\r\n|\r|\n|\\n)/g, ' ');
+            
+            if (isImageUrl) {
+                btnDetails = `<button type="button" class="btn-link btn-img-modal" data-url="${safeUrl}" data-title="${trackTitle}">상세정보 확인${colorImgIcon}</button>`;
+            } else {
+                btnDetails = `<a href="${safeUrl}" onclick="trackEventAndOpen(event, '${safeUrl}', '${trackTitle}', 'detail')" class="btn-link">관련사이트${whiteLinkIcon}</a>`;
+            }
+        } else {
+            btnDetails = `<button type="button" class="btn-link btn-disabled" onclick="alert('등록된 상세정보 링크가 없습니다.');">사이트 정보 없음</button>`;
+        }
+
+        let btnApply = '';
+        const rawApplyValue = item['신청링크'] || item.applyLink;
+
+        if (rawApplyValue && rawApplyValue.trim() !== '') {
+            const cleanValue = rawApplyValue.trim();
+            const safeApplyValue = cleanValue.replace(/"/g, '&quot;');
+            const alertSafeValue = cleanValue.replace(/'/g, "\\'").replace(/"/g, '\\"');
+            const trackTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/(?:\r\n|\r|\n|\\n)/g, ' ');
+            const isUrl = /^(https?:\/\/|www\.|javascript:)/i.test(cleanValue);
+
+            if (isUrl) {
+                let actualUrl = safeApplyValue;
+                if (cleanValue.toLowerCase().startsWith('www.')) actualUrl = `http://${safeApplyValue}`;
+                btnApply = `<a href="${actualUrl}" onclick="trackEventAndOpen(event, '${actualUrl}', '${trackTitle}', 'apply')" class="btn-link">예약하기${colorApplyIcon}</a>`;
+            } else {
+                btnApply = `<button type="button" class="btn-link btn-disabled" onclick="alert('${alertSafeValue}');">${safeApplyValue}</button>`;
+            }
+        } else {
+            btnApply = `<button type="button" class="btn-link btn-disabled" onclick="alert('사전예약 링크가 필요 없는 현장접수 행사입니다.');">현장접수</button>`;
+        }
+
+        let btnBenefit = '';
+        const benefitUrl = item['혜택'];
+        if (item.type === 'affiliate' && benefitUrl && benefitUrl.trim() !== '') {
+            const safeBenefitUrl = benefitUrl.trim().replace(/"/g, '&quot;');
+            btnBenefit = `<button type="button" class="btn-benefit btn-img-modal" data-url="${safeBenefitUrl}" data-title="혜택받기">🎁 혜택받기 (쿠폰/할인권)</button>`;
+        }
+
+        document.getElementById('popupFooter').innerHTML = `
+            ${btnBenefit}
+            <div class="footer-btn-row">
+                ${btnDetails}
+                ${btnApply}
+            </div>
+        `;
+
+        document.getElementById('eventModal').classList.add('active');
+
+        // 💡 리뷰 데이터를 파이어베이스에서 실시간으로 불러와 붙이는 함수 실행
+        loadReviews(eventId);
+
+        try {
+            history.pushState({ eventPopup: true }, '', '?id=' + encodeURIComponent(eventId));
+        } catch (e) {
+            console.log("로컬 환경이라 URL이 변경되지 않습니다.");
+        }
+    }
+
+    function closeEventPopup(e) {
+        if (e && e.target !== e.currentTarget && !e.target.classList.contains('event-modal-close-btn')) return;
+        
+        document.body.classList.remove('modal-open');
+        document.getElementById('eventModal').classList.remove('active');
+        
+        try {
+            history.pushState(null, '', window.location.pathname);
+        } catch (e) {}
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initNotice();
+        initLastUpdated();
+        initVisitCounters();
+        fetchEventData(); 
+        
+        // 하단 배너 (기존 프레임 크기 유지, object-fit: cover로 이미지 꽉 채우기)
+        const fallbackBanner = document.getElementById('fallback-banner');
+        if (fallbackBanner) {
+            fallbackBanner.innerHTML = '<img src="https://firebasestorage.googleapis.com/v0/b/heycj-55b6a.firebasestorage.app/o/%EB%B0%B0%EB%84%883.png?alt=media&token=b2287e89-4281-4998-9182-2a741773487e" alt="하단 배너" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;" />';
+        }
+    });
 </script>
 </body>
 </html>
